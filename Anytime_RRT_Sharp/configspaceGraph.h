@@ -133,9 +133,7 @@ public:
 	// default destructor
 	~ConfigspaceGraph() { deleteGraph(); }
 
-
 	////////////////////////////////////////////////////////
-
 
 	ConfigspaceNode findClosestNode_basic(ConfigspaceNode node);
 	double computeCost_basic(ConfigspaceNode node_1, ConfigspaceNode node_2);
@@ -146,4 +144,4 @@ public:
 	void replaceNode_basic(ConfigspaceNode oldNode, ConfigspaceNode newNode);
 };
 
-#endif CONFIGSPACE_H
+#endif // CONFIGSPACE_H

@@ -35,13 +35,13 @@ void Vehicle::buildVehicle()
 	printf("Constructing a default vehicle.\n");
 	nodes = NULL;
 	offsetNodes = NULL;
-	numNodes = NULL;
-	theta = NULL;
-	centroid.id = NULL;
-	centroid.x = NULL;
-	centroid.y = NULL;
-	centroid.parentNodeId = NULL;
-	maxPointRadius = NULL;
+	numNodes = 0;
+	theta = 0.0;
+	centroid.id = 0;
+	centroid.x = 0.0;
+	centroid.y = 0.0;
+	centroid.parentNodeId = 0;
+	maxPointRadius = 0.0;
 }
 
 void Vehicle::updateState(ConfigspaceNode newConfigNode)
@@ -61,21 +61,29 @@ void Vehicle::updateState(ConfigspaceNode newConfigNode)
 
 void WorkspaceGraph::buildWorkspaceGraph()
 {
-	printf("Constructing a default empty graph.\n");
+	printf("Constructing a default empty workspace graph.\n");
 	numObstacles = 0;
-	minX = 0;
-	minY = 0;
-	maxX = 0;
-	maxY = 0;
-	minV = 0;
-	minW = 0;
-	maxV = 0;
-	maxW = 0;
+	numVehicles = 0;
+	minX = 0.0;
+	minY = 0.0;
+	maxX = 0.0;
+	maxY = 0.0;
+	minTheta = 0.0;
+	maxTheta = 0.0;
+	minV = 0.0;
+	minW = 0.0;
+	maxV = 0.0;
+	maxW = 0.0;
+	maxAbsA = 0.0;
+	maxAbsGamma = 0.0;
+	obstacles = NULL;
+	vehicles = NULL;
+	goalRegionReached = false;
 }
 
 void WorkspaceGraph::deleteWorkspaceGraph()
 {
-	printf("Deleting a graph.\n");
+	printf("Deleting a workspace graph.\n");
 
 	free(obstacles);
 	free(vehicles);
@@ -128,31 +136,37 @@ bool WorkspaceGraph::readVehicleFromFile(const char* vehicleFile)
 		fscanf(pFile, "%lf,%lf", &x, &y);
 		vehicles[numVehicles - 1].offsetNodes[i].x = x;
 		vehicles[numVehicles - 1].offsetNodes[i].y = y;
-		vehicles[numVehicles - 1].offsetNodes[i].id = NULL;
-		vehicles[numVehicles - 1].offsetNodes[i].parentNodeId = NULL;
+		vehicles[numVehicles - 1].offsetNodes[i].id = 0;
+		vehicles[numVehicles - 1].offsetNodes[i].parentNodeId = 0;
 
-		vehicles[numVehicles - 1].nodes[i].x = NULL;
-		vehicles[numVehicles - 1].nodes[i].y = NULL;
-		vehicles[numVehicles - 1].nodes[i].id = NULL;
-		vehicles[numVehicles - 1].nodes[i].parentNodeId = NULL;
+		vehicles[numVehicles - 1].nodes[i].x = 0.0;
+		vehicles[numVehicles - 1].nodes[i].y = 0.0;
+		vehicles[numVehicles - 1].nodes[i].id = 0;
+		vehicles[numVehicles - 1].nodes[i].parentNodeId = 0;
 
+		vehicles[numVehicles - 1].centroid.x += x;
+		vehicles[numVehicles - 1].centroid.y += y;
 	}
 
+	// calculate centriod
+	vehicles[numVehicles - 1].centroid.x /= pointCount;
+	vehicles[numVehicles - 1].centroid.y /= pointCount;
+
 	// set rotation default as zero
-	vehicles[numVehicles - 1].theta = NULL;
+	vehicles[numVehicles - 1].theta = 0.0;
 
 	// define radius of circle enscribing the vehicle
 	double maxTempRad;
-	double maxRad = sqrt(
-		pow((vehicles[numVehicles - 1].offsetNodes[0].x - vehicles[numVehicles - 1].centroid.x), 2) +
-		pow((vehicles[numVehicles - 1].offsetNodes[0].y - vehicles[numVehicles - 1].centroid.y), 2)
+	double maxRad = hypot(
+		(vehicles[numVehicles - 1].offsetNodes[0].x - vehicles[numVehicles - 1].centroid.x),
+		(vehicles[numVehicles - 1].offsetNodes[0].y - vehicles[numVehicles - 1].centroid.y)
 	);
 
 	for (int i = 1; i < vehicles[numVehicles - 1].numNodes; i++)
 	{
-		maxTempRad = sqrt(
-			pow((vehicles[numVehicles - 1].offsetNodes[i].x - vehicles[numVehicles - 1].centroid.x), 2) +
-			pow((vehicles[numVehicles - 1].offsetNodes[i].y - vehicles[numVehicles - 1].centroid.y), 2)
+		maxTempRad = hypot(
+			(vehicles[numVehicles - 1].offsetNodes[i].x - vehicles[numVehicles - 1].centroid.x),
+			(vehicles[numVehicles - 1].offsetNodes[i].y - vehicles[numVehicles - 1].centroid.y)
 		);
 		if (maxTempRad > maxRad) { maxRad = maxTempRad; }
 	}
@@ -303,7 +317,6 @@ bool WorkspaceGraph::checkCollision(ConfigspaceNode node)
 	}
 
 	return false;
-
 }
 
 ConfigspaceNode WorkspaceGraph::extendToNode(ConfigspaceNode parentNode, ConfigspaceNode newNode, double delta, double epsilon)
@@ -317,7 +330,7 @@ ConfigspaceNode WorkspaceGraph::extendToNode(ConfigspaceNode parentNode, Configs
 	iterationNode.w = parentNode.w;
 	iterationNode.t = parentNode.t;
 	iterationNode.parentNodeId = parentNode.id;			// set ID of iteration node to know what is returned from function
-	iterationNode.id = NULL;
+	iterationNode.id = 0;
 	iterationNode.numIterationPoints = 1;
 	iterationNode.iterationPoints = (ConfigspaceNode*)calloc(1, sizeof(ConfigspaceNode));
 	iterationNode.iterationPoints[0].x = parentNode.x;
@@ -480,7 +493,7 @@ ConfigspaceNode WorkspaceGraph::connectNodes(ConfigspaceNode parentNode, Configs
 	iterationNode.w = parentNode.w;
 	iterationNode.t = parentNode.t;
 	iterationNode.parentNodeId = parentNode.id;			// set ID of iteration node to know what is returned from function
-	iterationNode.id = NULL;
+	iterationNode.id = 0;
 	iterationNode.numIterationPoints = 1;
 	iterationNode.iterationPoints = (ConfigspaceNode*)calloc(1, sizeof(ConfigspaceNode));
 	iterationNode.iterationPoints[0].x = parentNode.x;
@@ -646,7 +659,7 @@ ConfigspaceNode WorkspaceGraph::connectNodes(ConfigspaceNode parentNode, Configs
 	// if the tolerances were met then we were
 	// able to connect the nodes and we will return
 	// the updated node, otherwise we will return the failure metric
-	if (!connectedNodes) { currentNode.parentNodeId = NULL; }
+	if (!connectedNodes) { currentNode.parentNodeId = 0; }
 	else { currentNode.parentNodeId = parentNode.id; }
 	currentNode.id = newNode.id;
 	return currentNode;
@@ -699,13 +712,26 @@ ConfigspaceNode* WorkspaceGraph::checkSafety(ConfigspaceNode newNode, Configspac
 		tempSafeNeighbors = (ConfigspaceNode*)calloc(safeNeighborCount + 1, sizeof(ConfigspaceNode));
 		memcpy(tempSafeNeighbors, safeNeighbors, (safeNeighborCount + 1) * sizeof(ConfigspaceNode));
 		free(safeNeighbors);
-		tempSafeNeighbors[safeNeighborCount].id = NULL;
+		tempSafeNeighbors[safeNeighborCount].id = 0;
 		return tempSafeNeighbors;
 	}
 	else
 	{
-		safeNeighbors[numNeighbors].id = NULL;
+		safeNeighbors[numNeighbors].id = 0;
 		return safeNeighbors;
+	}
+}
+
+bool WorkspaceGraph::obstacleInFreespace(double xObs, double yObs, double radiusObs)
+{
+	if ((xObs - radiusObs < maxX && xObs + radiusObs > minX) &&
+		(yObs - radiusObs < maxY && yObs + radiusObs > minY))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
 	}
 }
 
@@ -737,10 +763,93 @@ bool WorkspaceGraph::checkAtGoal(ConfigspaceNode node)
 	return false;
 }
 
+void WorkspaceGraph::addObstacle(double xObs, double yObs, double radiusObs)
+{
+	// increase memory of node array for new entry
+	if (numObstacles > 0)
+	{
+		Obstacle* newObstacles = (Obstacle*)calloc(numObstacles + 1, sizeof(Obstacle));
+		memcpy(newObstacles, obstacles, numObstacles * sizeof(Obstacle));
+		free(obstacles);
+		obstacles = newObstacles;
+		newObstacles = NULL;
+	}
+	else
+	{
+		obstacles = (Obstacle*)calloc(1, sizeof(Obstacle));
+	}
 
+	obstacles[numObstacles].x = xObs;
+	obstacles[numObstacles].y = yObs;
+	obstacles[numObstacles].radius = radiusObs;
+	numObstacles++;
+}
 
+void WorkspaceGraph::addVehicle(double vehiclePointXPosition[4], double vehiclePointYPosition[4], int numVehiclePoints)
+{
+	double x = 0.0, y = 0.0;
+
+	// increment number of vehicles in graph (assuming one vehicle per file)
+	numVehicles++;
+
+	// allocate memory based on vehicle number
+	vehicles = (Vehicle*)calloc(numVehicles, sizeof(Vehicle));
+	vehicles[numVehicles - 1].numNodes = numVehiclePoints;
+	vehicles[numVehicles - 1].nodes = (WorkspaceNode*)calloc(vehicles[numVehicles - 1].numNodes, sizeof(WorkspaceNode));
+	vehicles[numVehicles - 1].offsetNodes = (WorkspaceNode*)calloc(vehicles[numVehicles - 1].numNodes, sizeof(WorkspaceNode));
+
+	// assign values
+	for (int i = 0; i < numVehiclePoints; i++)
+	{
+		vehicles[numVehicles - 1].offsetNodes[i].x = vehiclePointXPosition[i];
+		vehicles[numVehicles - 1].offsetNodes[i].y = vehiclePointYPosition[i];
+		vehicles[numVehicles - 1].offsetNodes[i].id = 0;
+		vehicles[numVehicles - 1].offsetNodes[i].parentNodeId = 0;
+
+		vehicles[numVehicles - 1].nodes[i].x = 0.0;
+		vehicles[numVehicles - 1].nodes[i].y = 0.0;
+		vehicles[numVehicles - 1].nodes[i].id = 0;
+		vehicles[numVehicles - 1].nodes[i].parentNodeId = 0;
+
+		vehicles[numVehicles - 1].centroid.x += vehiclePointXPosition[i];
+		vehicles[numVehicles - 1].centroid.y += vehiclePointYPosition[i];;
+	}
+
+	// calculate centriod
+	vehicles[numVehicles - 1].centroid.x /= numVehiclePoints;
+	vehicles[numVehicles - 1].centroid.y /= numVehiclePoints;
+
+	// set rotation default as zero
+	vehicles[numVehicles - 1].theta = 0.0;
+
+	// define radius of circle enscribing the vehicle
+	double maxTempRad;
+	double maxRad = hypot(
+		(vehicles[numVehicles - 1].offsetNodes[0].x - vehicles[numVehicles - 1].centroid.x),
+		(vehicles[numVehicles - 1].offsetNodes[0].y - vehicles[numVehicles - 1].centroid.y)
+	);
+
+	for (int i = 1; i < vehicles[numVehicles - 1].numNodes; i++)
+	{
+		maxTempRad = hypot(
+			(vehicles[numVehicles - 1].offsetNodes[i].x - vehicles[numVehicles - 1].centroid.x),
+			(vehicles[numVehicles - 1].offsetNodes[i].y - vehicles[numVehicles - 1].centroid.y)
+		);
+		if (maxTempRad > maxRad) { maxRad = maxTempRad; }
+	}
+
+	vehicles[numVehicles - 1].maxPointRadius = maxRad;
+	printf("Max Vehicle Radius: %f\n", vehicles[numVehicles - 1].maxPointRadius);
+
+}
+
+bool WorkspaceGraph::atGate(ConfigspaceNode node)
+{
+	double dist = hypot((node.x - goalRegion.x), (node.y - goalRegion.y));
+	if (dist > goalRegion.radius) { return false; }
+	else { return true; }
+}
 ///////////////////////////////////////////////////////////////
-
 
 
 ConfigspaceNode WorkspaceGraph::extendToNode_basic(ConfigspaceNode parentNode, ConfigspaceNode newNode, double epsilon)
@@ -804,20 +913,27 @@ bool WorkspaceGraph::checkAtGoal_basic(ConfigspaceNode node)
 
 	for (int i = 0; i < numVehicles; i++)
 	{
-		for (int j = 0; j < vehicles[i].numNodes; j++)
-		{
-			// calculate the euclidean distance from the node to the center
-			// of the obstacle for each node of each vehicle
-			nodeDistance = sqrt(pow((vehicles[i].nodes[j].x - goalRegion.x), 2) + pow((vehicles[i].nodes[j].y - goalRegion.y), 2));
+		nodeDistance = hypot((vehicles[i].centroid.x - goalRegion.x), (vehicles[i].centroid.y - goalRegion.y));
 
-			// if the distance bewteen the node and the center of the goal region
-			// is <= the radius of the obstacle, then the node collides with
-			// goal region
-			if (nodeDistance <= goalRegion.radius)
-			{
-				return true;
-			}
+		if (nodeDistance < (goalRegion.radius + vehicles[i].maxPointRadius))
+		{
+			return true;
 		}
+		// for (int j = 0; j < vehicles[i].numNodes; j++)
+		// {
+		// 	// calculate the euclidean distance from the node to the center
+		// 	// of the obstacle for each node of each vehicle
+			
+		// 	nodeDistance = sqrt(pow((vehicles[i].nodes[j].x - goalRegion.x), 2) + pow((vehicles[i].nodes[j].y - goalRegion.y), 2));
+
+		// 	// if the distance bewteen the node and the center of the goal region
+		// 	// is <= the radius of the obstacle, then the node collides with
+		// 	// goal region
+		// 	if (nodeDistance <= goalRegion.radius)
+		// 	{
+		// 		return true;
+		// 	}
+		// }
 	}
 
 	return false;

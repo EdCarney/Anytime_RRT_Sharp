@@ -159,7 +159,7 @@ int main()
 
 
 				remainingNodes = (ConfigspaceNode*)calloc(1, sizeof(ConfigspaceNode));
-				remainingNodes[0].id = NULL;
+				remainingNodes[0].id = 0;
 
 				// only continue with RRT* optimization if there are safe
 				// neighbors to try to extend to (at least one)
@@ -262,7 +262,6 @@ int main()
 					}
 					remainingCount++;
 				}
-
 
 				free(remainingNodes);
 				//free(safeNearestNeighbors);

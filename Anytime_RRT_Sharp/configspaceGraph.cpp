@@ -9,7 +9,7 @@
 
 void ConfigspaceGraph::buildGraph()
 {
-	printf("Constructing a default empty config space graph.\n");
+	printf("Constructing a default empty configspace graph.\n");
 	numNodes = 0;
 	numEdges = 0;
 	minX = 0;
@@ -33,13 +33,7 @@ void ConfigspaceGraph::buildGraph()
 
 void ConfigspaceGraph::deleteGraph()
 {
-	printf("Deleting a graph.\n");
-
-	// deallocate dynamically allocated memory
-	//if (nodes != NULL) { free(nodes); }
-	//if (edges != NULL) { free(edges); }
-	//if (obstacles != NULL) { free(obstacles); }
-	//if (goalRegion != NULL) { free(goalRegion); }
+	printf("Deleting a configspace graph.\n");
 
 	nodes = NULL;
 	edges = NULL;
@@ -137,7 +131,7 @@ ConfigspaceNode* ConfigspaceGraph::removeNode(ConfigspaceNode * nodeArray, Confi
 		}
 	}
 
-	newNodeArray[numNewNodes].id = NULL;
+	newNodeArray[numNewNodes].id = 0;
 	return newNodeArray;
 }
 
@@ -163,13 +157,13 @@ void ConfigspaceGraph::createNode(double x, double y, double theta, double v, do
 	nodes[numNodes].v = v;
 	nodes[numNodes].w = w;
 	nodes[numNodes].t = t;
-	nodes[numNodes].a = NULL;
-	nodes[numNodes].gamma = NULL;
-	nodes[numNodes].parentNodeId = NULL;
+	nodes[numNodes].a = 0.0;
+	nodes[numNodes].gamma = 0.0;
+	nodes[numNodes].parentNodeId = 0;
 	nodes[numNodes].iterationPoints = NULL;
 	nodes[numNodes].numIterationPoints = 0;
 	nodes[numNodes].id = numNodes + 1;
-	nodes[numNodes].cost = NULL;
+	nodes[numNodes].cost = 0.0;
 	numNodes++;
 }
 
@@ -204,7 +198,7 @@ ConfigspaceNode ConfigspaceGraph::addNode(ConfigspaceNode addedNode)
 	nodes[numNodes].parentNodeId = addedNode.parentNodeId;
 	nodes[numNodes].iterationPoints = addedNode.iterationPoints;
 	nodes[numNodes].numIterationPoints = addedNode.numIterationPoints;
-	nodes[numNodes].cost = parentNode.cost + computeCost(addedNode, parentNode);
+	nodes[numNodes].cost = numNodes > 0 ? parentNode.cost + computeCost(addedNode, parentNode) : 0.0;
 	nodes[numNodes].id = numNodes + 1;
 
 	return nodes[numNodes++]; // IMPORTANT: postfix increment (accesses last node THEN increments)
@@ -268,20 +262,20 @@ ConfigspaceNode ConfigspaceGraph::generateRandomNode()
 {
 	double randX, randY, randV, randW;
 
-	randX = (minX + static_cast <double> (rand())) / (static_cast <double> (RAND_MAX / (maxX - minX)));
-	randY = (minY + static_cast <double> (rand())) / (static_cast <double> (RAND_MAX / (maxY - minY)));
+	randX = minX + (minX + static_cast <double> (rand())) / (static_cast <double> (RAND_MAX / (maxX - minX)));
+	randY = minY + (minY + static_cast <double> (rand())) / (static_cast <double> (RAND_MAX / (maxY - minY)));
 	randV = minV + ((minV + static_cast <double> (rand())) / (static_cast <double> (RAND_MAX / (maxV - minV))));
 	randW = minW * 0.25 + ((minW + static_cast <double> (rand())) / (static_cast <double> (RAND_MAX / ((maxW - minW) * 0.25))));
 
 	ConfigspaceNode randNode;
 	randNode.x = randX;
 	randNode.y = randY;
-	randNode.theta = NULL;
+	randNode.theta = 0.0;
 	randNode.v = randV;
 	randNode.w = randW;
-	randNode.parentNodeId = NULL;
-	randNode.t = NULL;
-	randNode.cost = NULL;
+	randNode.parentNodeId = 0.0;
+	randNode.t = 0.0;
+	randNode.cost = 0.0;
 	randNode.id = 0;
 
 	return randNode;
@@ -297,13 +291,13 @@ ConfigspaceNode ConfigspaceGraph::generateBiasedNode(double biasedX, double bias
 	ConfigspaceNode biasedNode;
 	biasedNode.x = biasedX;
 	biasedNode.y = biasedY;
-	biasedNode.theta = NULL;
-	biasedNode.v = 0;
-	biasedNode.w = 0;
-	biasedNode.parentNodeId = NULL;
-	biasedNode.t = NULL;
-	biasedNode.cost = NULL;
-	biasedNode.id = NULL;
+	biasedNode.theta = 0.0;
+	biasedNode.v = 0.0;
+	biasedNode.w = 0.0;
+	biasedNode.parentNodeId = 0;
+	biasedNode.t = 0.0;
+	biasedNode.cost = 0.0;
+	biasedNode.id = 0;
 
 	return biasedNode;
 }
@@ -372,12 +366,12 @@ ConfigspaceNode* ConfigspaceGraph::findNeighbors(ConfigspaceNode centerNode, dou
 		tempNeighbors = (ConfigspaceNode*)calloc(n + 1, sizeof(ConfigspaceNode));
 		memcpy(tempNeighbors, neighbors, n * sizeof(ConfigspaceNode));
 		free(neighbors);
-		tempNeighbors[n].id = NULL;
+		tempNeighbors[n].id = 0;
 		return tempNeighbors;
 	}
 	else
 	{
-		neighbors[k].id = NULL;
+		neighbors[k].id = 0;
 		return neighbors;
 	}
 }
@@ -504,25 +498,25 @@ void ConfigspaceGraph::printData(int probNum, ConfigspaceNode finalNode)
 	outputPathFile << nodes[0].t << ", " << nodes[0].x << ", " << nodes[0].y << ", " << nodes[0].theta << ", "
 		<< nodes[0].v << ", " << nodes[0].w << ", " << tempLinAccel << ", " << tempRotAccel << "\n";
 
-	// print out high-fidelity path
-	currentNode = finalNode;
-	while (currentNode.parentNodeId)
-	{
-		for (int i = currentNode.numIterationPoints - 1; i >= 0; i--)
-		{
-			highFidelityPath << currentNode.iterationPoints[i].t << ", " << currentNode.iterationPoints[i].x << ", " <<
-				currentNode.iterationPoints[i].y << ", " << currentNode.iterationPoints[i].theta << ", " <<
-				currentNode.iterationPoints[i].v << ", " << currentNode.iterationPoints[i].w << ", " <<
-				currentNode.iterationPoints[i].a << ", " << currentNode.iterationPoints[i].gamma << "\n";
-		}
-		currentNode = findNodeId(currentNode.parentNodeId);
-	}
+	// // print out high-fidelity path
+	// currentNode = finalNode;
+	// while (currentNode.parentNodeId)
+	// {
+	// 	for (int i = currentNode.numIterationPoints - 1; i >= 0; i--)
+	// 	{
+	// 		highFidelityPath << currentNode.iterationPoints[i].t << ", " << currentNode.iterationPoints[i].x << ", " <<
+	// 			currentNode.iterationPoints[i].y << ", " << currentNode.iterationPoints[i].theta << ", " <<
+	// 			currentNode.iterationPoints[i].v << ", " << currentNode.iterationPoints[i].w << ", " <<
+	// 			currentNode.iterationPoints[i].a << ", " << currentNode.iterationPoints[i].gamma << "\n";
+	// 	}
+	// 	currentNode = findNodeId(currentNode.parentNodeId);
+	// }
 
 	printf("Printing nodes to nodes_%d.txt.\n", probNum);
 	printf("Printing edges to edges_%d.txt.\n", probNum);
 	printf("Printing search tree to search_tree_%d.txt.\n", probNum);
 	printf("Printing output path to output_path_%d.txt.\n", probNum);
-	printf("Printing high-fidelity output path to high_fidelity_path_%d.txt.\n", probNum);
+	//printf("Printing high-fidelity output path to high_fidelity_path_%d.txt.\n", probNum);
 
 	// close files
 	nodeFile.close();
@@ -596,12 +590,12 @@ ConfigspaceNode * ConfigspaceGraph::findNeighbors_basic(ConfigspaceNode centerNo
 		tempNeighbors = (ConfigspaceNode*)calloc(n + 1, sizeof(ConfigspaceNode));
 		memcpy(tempNeighbors, neighbors, n * sizeof(ConfigspaceNode));
 		free(neighbors);
-		tempNeighbors[n].id = NULL;
+		tempNeighbors[n].id = 0;
 		return tempNeighbors;
 	}
 	else
 	{
-		neighbors[k].id = NULL;
+		neighbors[k].id = 0;
 		return neighbors;
 	}
 }

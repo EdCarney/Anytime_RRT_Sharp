@@ -14,13 +14,13 @@ close all
 clc
 
 problemNum = 2;     %% CHANGE THIS
-nodeOffset = 5000;
+nodeOffset = 0;
 
 search_tree_raw = csvread(['search_tree_' num2str(problemNum + nodeOffset,'%d') '.txt']);
 path_raw = csvread(['output_path_' num2str(problemNum + nodeOffset,'%d') '.txt']);
 nodes_raw = csvread(['nodes_' num2str(problemNum + nodeOffset,'%d') '.txt']);
 edges_raw = csvread(['edges_' num2str(problemNum + nodeOffset,'%d') '.txt']);
-obstacles_raw = csvread('H3_obstacles.txt');
+obstacles_raw = csvread('obstacles.txt');
 vehicle_raw = csvread('robot.txt');
 
 % specify goal region [x, y, radius] and start point [x, y]
@@ -33,7 +33,7 @@ start_points = [
     ];
 goal_regions = [
     10, 10, 5;
-    100, 60, 5;
+    100, 60, 2.5;
     100, 90, 5;
     60, 10, 5;
     25, 10, 5
@@ -77,7 +77,7 @@ plot(start_points(problemNum,1), start_points(problemNum,2), 'or', 'MarkerSize',
     'MarkerFaceColor', 'r')
 plot(path_raw(:,2), path_raw(:,3), 'g:', 'LineWidth', 4);
 
-axis([0, 125, 0, 125])
+axis([-35.000000, 140.000000, 15.000000, 100.000000])
 
 
 % plot obstacles

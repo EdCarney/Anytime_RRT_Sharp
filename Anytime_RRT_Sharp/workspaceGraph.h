@@ -28,6 +28,7 @@ struct Obstacle
 	double x;		// x coordinate of obstacle center
 	double y;		// y coordinate of obstacle center
 	double radius;	// radius of disk obstacle
+
 };
 
 struct GoalRegion
@@ -85,6 +86,8 @@ public:
 	double minV, minW, maxV, maxW;	// limits of the angular and translational velocity
 	double maxAbsA, maxAbsGamma;	// absolute limits of the angular and translational acceleration
 
+	bool goalRegionReached;	// boolean value to indicate if the goal region has been reached
+
 private:
 	void buildWorkspaceGraph();
 	void deleteWorkspaceGraph();
@@ -121,6 +124,15 @@ public:
 	// its neighbors; will return an array of safe nodes
 	ConfigspaceNode* checkSafety(ConfigspaceNode newNode, ConfigspaceNode* neighbors);
 
+	// checks if an obsatcle (defined by position and radius) lies within the current freespace
+	bool obstacleInFreespace(double xObs, double yObs, double radiusObs);
+
+	// adds an obstacle to the freespace given the obstacle position and radius
+	void addObstacle(double xObs, double yObs, double radiusObs);
+
+	// adds a vehicle to the graph (currently hard-coded to four points)
+	void addVehicle(double vehiclePointXPosition[4], double vehiclePointYPosition[4], int numVehiclePoints);
+
 	// read in obstacles from a specified file
 	bool readObstaclesFromFile(const char* obstacleFile);
 
@@ -130,12 +142,14 @@ public:
 	// compute the volume of the obstacles defined in the graph
 	double computeObsVol();
 
+	// checks if the vehicle goal region intersects the gate
+	bool atGate(ConfigspaceNode node);
+
 	// default constructor
 	WorkspaceGraph() { buildWorkspaceGraph(); }
 
 	// default destructor
 	~WorkspaceGraph() { deleteWorkspaceGraph(); }
-
 
 	///////////////////////////////////////////////////////////////////
 
@@ -145,4 +159,4 @@ public:
 	bool checkAtGoal_basic(ConfigspaceNode node);
 };
 
-#endif WORKSPACE_H
+#endif // WORKSPACE_H
