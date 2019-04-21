@@ -840,7 +840,6 @@ void WorkspaceGraph::addVehicle(double vehiclePointXPosition[4], double vehicleP
 
 	vehicles[numVehicles - 1].maxPointRadius = maxRad;
 	printf("Max Vehicle Radius: %f\n", vehicles[numVehicles - 1].maxPointRadius);
-
 }
 
 bool WorkspaceGraph::atGate(ConfigspaceNode node)

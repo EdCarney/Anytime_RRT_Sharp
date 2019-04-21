@@ -76,6 +76,9 @@ public:
 	// as a pointer array
 	ConfigspaceNode* removeNode(ConfigspaceNode* nodeArray, ConfigspaceNode nodeToRemove);
 
+	// removes a set of nodes from the graph (i.e. the nodes array)
+	void removeGraphNodes(ConfigspaceNode *nodesToRemove);
+
 	// function to replace a node in the current graph node array
 	void replaceNode(ConfigspaceNode oldNode, ConfigspaceNode newNode);
 
@@ -124,8 +127,12 @@ public:
 	// connect to for RRT*
 	ConfigspaceNode findBestNeighbor(ConfigspaceNode newNode, ConfigspaceNode* safeNeighbors);
 
-	// propagate cost udates to a node to all of its children
+	// propagate cost updates to a node to all of its children
 	void propagateCost(ConfigspaceNode* updatedNode);
+
+	// recursively deletes a given set of nodes from the graph, starting
+	// with the nodes' children first
+	void trimTree(ConfigspaceNode *removeNodes);
 
 	// default constructor
 	ConfigspaceGraph() { buildGraph(); }

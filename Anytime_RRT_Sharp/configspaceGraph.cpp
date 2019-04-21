@@ -109,7 +109,7 @@ void ConfigspaceGraph::removeEdge(ConfigspaceNode parentToRemove, ConfigspaceNod
 	numEdges--;
 }
 
-ConfigspaceNode* ConfigspaceGraph::removeNode(ConfigspaceNode * nodeArray, ConfigspaceNode nodeToRemove)
+ConfigspaceNode* ConfigspaceGraph::removeNode(ConfigspaceNode *nodeArray, ConfigspaceNode nodeToRemove)
 {
 	// define variables and get number of
 	// new and old nodes
@@ -133,6 +133,73 @@ ConfigspaceNode* ConfigspaceGraph::removeNode(ConfigspaceNode * nodeArray, Confi
 
 	newNodeArray[numNewNodes].id = 0;
 	return newNodeArray;
+}
+
+void ConfigspaceGraph::removeGraphNodes(ConfigspaceNode *nodesToRemove)
+{
+	ConfigspaceNode *newNodes;
+	Edge *newEdges, *tempNewEdges;
+	int numRemoveNodes = 0, newNodeArrayInd = 0, newEdgeArrayInd = 0;
+	bool keepFlag = true;
+
+	// get number of nodes to be removed
+	while (nodesToRemove[numRemoveNodes].id) { numRemoveNodes++; }
+
+	// use sizes to set the size of the new node array
+	newNodes = (ConfigspaceNode*)calloc(numNodes - numRemoveNodes, sizeof(ConfigspaceNode));
+	newEdges = (Edge*)calloc(numEdges, sizeof(Edge));
+
+	for (int i = 0; i < numNodes; i++)
+	{
+		keepFlag = true;
+
+		// check if the current node is one of the nodes to be deleted,
+		// if it is, toggle the keepFlag flag
+		for (int j = 0; j < numRemoveNodes; j++)
+		{
+			if (nodes[i].id == nodesToRemove[j].id) { keepFlag = false; }
+		}
+
+		// if the keepFlag flag is still good, then add the node to the
+		// new array of nodes
+		if (keepFlag)
+		{
+			newNodes[newNodeArrayInd] = nodes[i];
+			newNodeArrayInd++;
+		}
+	}
+
+	for (int i = 0; i < numEdges; i++)
+		{
+			keepFlag = true;
+
+			// check if the current edge has a start node that is one of the
+			// nodes to be removed, if it is, toggle the flag
+			for (int j = 0; j < numRemoveNodes; j++)
+			{
+				if (edges[i].endNode.id == nodesToRemove[j].id) { keepFlag = false; }
+			}
+
+			// if the keepFlag flag is still good, then add the node to the
+			// new array of nodes
+			if (keepFlag)
+			{
+				tempNewEdges = (Edge*)calloc(newEdgeArrayInd + 1, sizeof(Edge));
+				memcpy(tempNewEdges, newEdges, newEdgeArrayInd * sizeof(Edge));
+				free(newEdges);
+				newEdges = tempNewEdges;
+				newEdges[newEdgeArrayInd] = edges[i];
+				newEdgeArrayInd++;
+			}
+		}
+
+	// now set the nodes array equal to the new node array
+	free(nodes);
+	free(edges);
+	nodes = newNodes;
+	edges = newEdges;
+	numNodes = newNodeArrayInd;
+	numEdges = newEdgeArrayInd;
 }
 
 void ConfigspaceGraph::createNode(double x, double y, double theta, double v, double w, double t)
@@ -376,7 +443,7 @@ ConfigspaceNode* ConfigspaceGraph::findNeighbors(ConfigspaceNode centerNode, dou
 	}
 }
 
-ConfigspaceNode ConfigspaceGraph::findBestNeighbor(ConfigspaceNode newNode, ConfigspaceNode * safeNeighbors)
+ConfigspaceNode ConfigspaceGraph::findBestNeighbor(ConfigspaceNode newNode, ConfigspaceNode *safeNeighbors)
 {
 	ConfigspaceNode bestNeighbor;
 	int numSafeNeighbors = 1;
@@ -400,7 +467,7 @@ ConfigspaceNode ConfigspaceGraph::findBestNeighbor(ConfigspaceNode newNode, Conf
 	return bestNeighbor;
 }
 
-void ConfigspaceGraph::propagateCost(ConfigspaceNode * updatedNodes)
+void ConfigspaceGraph::propagateCost(ConfigspaceNode *updatedNodes)
 {
 	int updateNodesCount = 0;
 	while (updatedNodes[updateNodesCount].id) { updateNodesCount++; }
@@ -437,7 +504,52 @@ void ConfigspaceGraph::propagateCost(ConfigspaceNode * updatedNodes)
 	{
 		propagateCost(nodesToUpdate);
 	}
-	//free(nodesToUpdate);
+}
+
+void ConfigspaceGraph::trimTree(ConfigspaceNode *removeNodes)
+{
+	int removeNodesCount = 0;
+	while (removeNodes[removeNodesCount].id) { removeNodesCount++; }
+
+	ConfigspaceNode* nodesToRemove = (ConfigspaceNode*)calloc(1, sizeof(ConfigspaceNode));
+	nodesToRemove[0].id = 0;
+	int nodeCount = 0;
+
+	// get all nodes that have the removeNodes as a parent node
+	for (int i = 0; i < removeNodesCount; i++)
+	{
+		for (int j = 0; j < numNodes; j++)
+		{
+			if (removeNodes[i].id == nodes[j].parentNodeId)
+			{
+				ConfigspaceNode *tempNodesToRemove = (ConfigspaceNode*)calloc(nodeCount + 1, sizeof(ConfigspaceNode));
+				memcpy(tempNodesToRemove, nodesToRemove, (nodeCount) * sizeof(ConfigspaceNode));
+				free(nodesToRemove);
+				nodesToRemove = tempNodesToRemove;
+				nodesToRemove[nodeCount] = nodes[j];
+				nodeCount++;
+			}
+		}
+	}
+
+	// add a node to the end of the nodesToRemove with a null id to identify the
+	// end of the array
+	ConfigspaceNode *tempNodesToRemove = (ConfigspaceNode*)calloc(nodeCount + 1, sizeof(ConfigspaceNode));
+	memcpy(tempNodesToRemove, nodesToRemove, (nodeCount) * sizeof(ConfigspaceNode));
+	free(nodesToRemove);
+	nodesToRemove = tempNodesToRemove;
+	nodesToRemove[nodeCount].id = 0;
+
+	// if there are any nodes that have any of the remove nodes as a parent node,
+	// then continue until there are no more children
+	if (nodeCount > 0)
+	{
+		trimTree(nodesToRemove);
+	}
+
+	// after all children are obtained, start deleting them in the order of the
+	// youngest children first
+	removeGraphNodes(removeNodes);
 }
 
 void ConfigspaceGraph::printData(int probNum, ConfigspaceNode finalNode)
@@ -456,11 +568,11 @@ void ConfigspaceGraph::printData(int probNum, ConfigspaceNode finalNode)
 	for (int i = 0; i < numNodes - 1; i++)
 	{
 		nodeFile << nodes[i].t << ", " << nodes[i].x << ", " << nodes[i].y << ", " << nodes[i].theta << ", "
-			<< nodes[i].v << ", " << nodes[i].w << ", " << nodes[i + 1].a << ", " << nodes[i + 1].gamma << "\n";
+			<< nodes[i].v << ", " << nodes[i].w << ", " << nodes[i + 1].a << ", " << nodes[i + 1].gamma << ", " << nodes[i].id << "\n";
 	}
 
 	nodeFile << nodes[numNodes - 1].t << ", " << nodes[numNodes - 1].x << ", " << nodes[numNodes - 1].y << ", " << nodes[numNodes - 1].theta << ", "
-		<< nodes[numNodes - 1].v << ", " << nodes[numNodes - 1].w << ", " << "0.0" << ", " << "0.0" << "\n";
+		<< nodes[numNodes - 1].v << ", " << nodes[numNodes - 1].w << ", " << "0.0" << ", " << "0.0" << ", " << nodes[numNodes - 1].id << "\n";
 
 	// print out edge file
 	edgeFile << numEdges << "\n";
@@ -525,7 +637,6 @@ void ConfigspaceGraph::printData(int probNum, ConfigspaceNode finalNode)
 	outputPathFile.close();
 	highFidelityPath.close();
 }
-
 
 
 /////////////////////////////////////////////////////////////
@@ -600,7 +711,7 @@ ConfigspaceNode * ConfigspaceGraph::findNeighbors_basic(ConfigspaceNode centerNo
 	}
 }
 
-ConfigspaceNode ConfigspaceGraph::findBestNeighbor_basic(ConfigspaceNode newNode, ConfigspaceNode * safeNeighbors)
+ConfigspaceNode ConfigspaceGraph::findBestNeighbor_basic(ConfigspaceNode newNode, ConfigspaceNode *safeNeighbors)
 {
 	ConfigspaceNode bestNeighbor;
 	int numSafeNeighbors = 1;

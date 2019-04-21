@@ -83,7 +83,7 @@ int main()
 	int goalBiasCount = 100;
 
 	ConfigspaceNode tempNode, parentNode, newNode, bestNeighbor, remainingNodeParent;
-	ConfigspaceNode *nearestNeighbors, *safeNearestNeighbors, *remainingNodes;
+	ConfigspaceNode *nearestNeighbors, *safeNearestNeighbors, *remainingNodes, *removeNodes;
 	bool goalCheck;
 	int remainingCount = 0, k = 10, count = 0;
 	double circleRadius = 0.0, epsilon = 5.0;
@@ -275,9 +275,13 @@ int main()
 			// // ingested by the simulation
 			// G_configspace.printNodes(lastNodes);
 
-			// // trim the tree to remove those nodes and all nodes with a cost
-			// // greater than the (n-m)th node (for a graph with n nodes)
-			// G_configspace.trimTree(lastNodes[0]);
+			// trim the tree to remove those nodes and all nodes with a cost
+			// greater than the (n-m)th node (for a graph with n nodes)
+			removeNodes = (ConfigspaceNode*)calloc(2, sizeof(ConfigspaceNode));
+			removeNodes[0] = G_configspace.nodes[10];
+			removeNodes[1].id = 0;
+			G_configspace.trimTree(removeNodes);
+			G_configspace.printData(3, G_configspace.nodes[9]);
 
 			// // update goal region in the workspace graph to the new
 			// // current last node in the tree (the (n-m)th node)
