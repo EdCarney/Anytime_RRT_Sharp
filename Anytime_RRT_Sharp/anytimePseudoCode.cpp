@@ -83,9 +83,9 @@ int main()
 	int goalBiasCount = 100;
 
 	ConfigspaceNode tempNode, parentNode, newNode, bestNeighbor, remainingNodeParent;
-	ConfigspaceNode *nearestNeighbors, *safeNearestNeighbors, *remainingNodes, *removeNodes;
+	ConfigspaceNode *nearestNeighbors, *safeNearestNeighbors, *remainingNodes, *removeNodes, *lastNodes, *costThresholdNodes;
 	bool goalCheck;
-	int remainingCount = 0, k = 10, count = 0;
+	int remainingCount = 0, k = 10, m = 4, count = 0;
 	double circleRadius = 0.0, epsilon = 5.0;
 	//------------------------------------------------------------------------//
 	//------------------------------------------------------------------------//
@@ -268,8 +268,8 @@ int main()
 			printf("Final node at: (%f, %f)\n", finalNode.x, finalNode.y);
 			G_configspace.printData(2, finalNode);
 
-			// // get the last n nodes in the tree
-			// lastNodes = G_configspace.getLastNodes();
+			// get the last m nodes in the tree
+			lastNodes = G_configspace.getLastNodes(finalNode, m);
 
 			// // print the last m nodes to a file format that can be
 			// // ingested by the simulation
@@ -278,11 +278,15 @@ int main()
 			// trim the tree to remove those nodes and all nodes with a cost
 			// greater than the (n-m)th node (for a graph with n nodes)
 			removeNodes = (ConfigspaceNode*)calloc(2, sizeof(ConfigspaceNode));
-			removeNodes[0] = G_configspace.nodes[10];
+			removeNodes[0] = lastNodes[0];
 			removeNodes[1].id = 0;
-			G_configspace.trimTree(removeNodes);
-			G_configspace.printData(3, G_configspace.nodes[9]);
+			G_configspace.trimTreeChildren(removeNodes, lastNodes[0].id);
 
+			costThresholdNodes = G_configspace.getCostThresholdNodes(lastNodes[0]);
+
+			G_configspace.trimTreeChildren(costThresholdNodes, 0);
+
+			G_configspace.printData(3, lastNodes[0]);
 			// // update goal region in the workspace graph to the new
 			// // current last node in the tree (the (n-m)th node)
 			// G_workspace.updateGoalRegion(lastNodes[0]);
@@ -293,3 +297,4 @@ int main()
 return 0;
 
 }
+
