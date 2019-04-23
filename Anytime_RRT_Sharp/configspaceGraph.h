@@ -43,7 +43,8 @@ class ConfigspaceGraph
 {
 public:
 
-	int numNodes;					// total number of nodes in the graph
+	int numNodes;					// total number of nodes in the graph; is modified based on pruning 
+	int numNodeInd;					// used to set the node id; is NOT modified by pruning
 	int numEdges;					// total number of edges in the graph
 
 	ConfigspaceNode* nodes;			// an array containing all nodes

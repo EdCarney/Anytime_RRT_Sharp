@@ -11,6 +11,7 @@ void ConfigspaceGraph::buildGraph()
 {
 	printf("Constructing a default empty configspace graph.\n");
 	numNodes = 0;
+	numNodeInd = 0;
 	numEdges = 0;
 	minX = 0;
 	minY = 0;
@@ -266,8 +267,9 @@ ConfigspaceNode ConfigspaceGraph::addNode(ConfigspaceNode addedNode)
 	nodes[numNodes].iterationPoints = addedNode.iterationPoints;
 	nodes[numNodes].numIterationPoints = addedNode.numIterationPoints;
 	nodes[numNodes].cost = numNodes > 0 ? parentNode.cost + computeCost(addedNode, parentNode) : 0.0;
-	nodes[numNodes].id = numNodes + 1;
+	nodes[numNodes].id = numNodeInd + 1;
 
+	numNodeInd++;
 	return nodes[numNodes++]; // IMPORTANT: postfix increment (accesses last node THEN increments)
 }
 
@@ -580,7 +582,7 @@ ConfigspaceNode* ConfigspaceGraph::getCostThresholdNodes(ConfigspaceNode finalNo
 
 		if (parentCheckNode.id)
 		{
-			if (nodes[i].cost > finalNode.cost && parentCheckNode.cost < finalNode.cost && nodes[i].id != finalNode.id)
+			if ((nodes[i].cost > finalNode.cost && parentCheckNode.cost < finalNode.cost) || nodes[i].id == finalNode.id)
 			{
 				ConfigspaceNode *tempNodesToRemove = (ConfigspaceNode*)calloc(nodeCount + 1, sizeof(ConfigspaceNode));
 				memcpy(tempNodesToRemove, nodesToRemove, nodeCount * sizeof(ConfigspaceNode));
@@ -818,8 +820,9 @@ ConfigspaceNode ConfigspaceGraph::addNode_basic(ConfigspaceNode addedNode)
 	nodes[numNodes].iterationPoints = addedNode.iterationPoints;
 	nodes[numNodes].numIterationPoints = addedNode.numIterationPoints;
 	nodes[numNodes].cost = parentNode.cost + computeCost_basic(addedNode, parentNode);
-	nodes[numNodes].id = numNodes + 1;
+	nodes[numNodes].id = numNodeInd + 1;
 
+	numNodeInd++;
 	return nodes[numNodes++]; // IMPORTANT: postfix increment (accesses last node THEN increments)
 }
 
@@ -849,13 +852,11 @@ void ConfigspaceGraph::propagateCost_basic(ConfigspaceNode * updatedNodes)
 			}
 		}
 	}
-
 	ConfigspaceNode* tempNodesToUpdate = (ConfigspaceNode*)calloc(nodeCount + 1, sizeof(ConfigspaceNode));
 	memcpy(tempNodesToUpdate, nodesToUpdate, (nodeCount) * sizeof(ConfigspaceNode));
 	free(nodesToUpdate);
 	nodesToUpdate = tempNodesToUpdate;
 	nodesToUpdate[nodeCount].id = 0;
-
 	if (nodeCount > 0)
 	{
 		propagateCost_basic(nodesToUpdate);

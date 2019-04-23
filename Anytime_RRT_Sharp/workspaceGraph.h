@@ -98,6 +98,9 @@ public:
 	// this is treated similar to an obstacle
 	void addGoalRegion(double x, double y, double theta, double v, double w, double radius);
 
+	// updates the position and configuration of the graph goal region
+	void updateGoalRegion(double x, double y, double theta, double v, double w, double radius);
+
 	// defines freespace for problem
 	// used when extending to a new node
 	void defineFreespace(double minX, double minY, double minTheta, double minV, double minW,

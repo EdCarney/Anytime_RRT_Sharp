@@ -252,6 +252,16 @@ void WorkspaceGraph::addGoalRegion(double x, double y, double theta, double v, d
 	goalRegion.radius = radius;
 }
 
+void WorkspaceGraph::updateGoalRegion(double x, double y, double theta, double v, double w, double radius)
+{
+	goalRegion.x = x;
+	goalRegion.y = y;
+	goalRegion.theta = theta;
+	goalRegion.v = v;
+	goalRegion.w = w;
+	goalRegion.radius = radius;
+}
+
 void WorkspaceGraph::defineFreespace(double newMinX, double newMinY, double newMinTheta, double newMinV, double newMinW,
 	double newMaxX, double newMaxY, double newMaxTheta, double newMaxV, double newMaxW, double newMaxAbsA, double newMaxAbsGamma)
 {

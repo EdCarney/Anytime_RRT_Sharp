@@ -83,7 +83,7 @@ int main()
 	int goalBiasCount = 100;
 
 	ConfigspaceNode tempNode, parentNode, newNode, bestNeighbor, remainingNodeParent;
-	ConfigspaceNode *nearestNeighbors, *safeNearestNeighbors, *remainingNodes, *removeNodes, *lastNodes, *costThresholdNodes;
+	ConfigspaceNode *nearestNeighbors = NULL, *safeNearestNeighbors = NULL, *remainingNodes = NULL, *removeNodes = NULL, *lastNodes = NULL, *costThresholdNodes = NULL;
 	bool goalCheck;
 	int remainingCount = 0, k = 10, m = 4, count = 0;
 	double circleRadius = 0.0, epsilon = 5.0;
@@ -166,17 +166,23 @@ int main()
 
 		// start the anytime RRT# iterations
 		iterationRuntime = 0.0;
-		maxIterationRuntime = 5000.0;
+		maxIterationRuntime = 500.0;
 		count = 0;
-
-		while(!G_workspace.atGate(gateNode) && count < maxIterationRuntime)
+		int tempItr = 0;
+		while(!G_workspace.atGate(gateNode))// && count < maxIterationRuntime)
 		{
+			iterationRuntime = 0.0;
+			free(nearestNeighbors); free(safeNearestNeighbors); free(remainingNodes);
+			free(removeNodes); free(lastNodes); free(costThresholdNodes);
+			nearestNeighbors = NULL; safeNearestNeighbors = NULL; remainingNodes = NULL;
+			removeNodes = NULL; lastNodes = NULL; costThresholdNodes = NULL;
+			// do the RRT# thing
 			while(iterationRuntime < maxIterationRuntime || !G_workspace.goalRegionReached)
-			{
-				// do the RRT# thing
+			{				
 				tempNode = (count % goalBiasCount != 0) ? G_configspace.generateRandomNode() : G_configspace.generateBiasedNode(G_workspace.goalRegion.x, G_workspace.goalRegion.y);
 				parentNode = G_configspace.findClosestNode_basic(tempNode);
-
+				free(remainingNodes);
+				remainingNodes = NULL;
 				if (!G_workspace.checkAtGoal_basic(parentNode))
 				{
 					newNode = G_workspace.extendToNode_basic(parentNode, tempNode, epsilon);
@@ -243,7 +249,7 @@ int main()
 							}
 							remainingCount++;
 						}
-						free(remainingNodes);
+						//free(remainingNodes);
 					}
 				}
 				count++;
@@ -252,6 +258,7 @@ int main()
 
 			double tempCost = 0, finalCost = 100000;
 			ConfigspaceNode finalNode;
+
 			for (int i = 0; i < G_configspace.numNodes; i++)
 			{
 				if (G_workspace.checkAtGoal_basic(G_configspace.nodes[i]))
@@ -266,7 +273,7 @@ int main()
 			}
 			printf("Total number of points: %d\n", G_configspace.numNodes);
 			printf("Final node at: (%f, %f)\n", finalNode.x, finalNode.y);
-			G_configspace.printData(2, finalNode);
+			G_configspace.printData(1  + tempItr++, finalNode);
 
 			// get the last m nodes in the tree
 			lastNodes = G_configspace.getLastNodes(finalNode, m);
@@ -277,19 +284,19 @@ int main()
 
 			// trim the tree to remove those nodes and all nodes with a cost
 			// greater than the (n-m)th node (for a graph with n nodes)
-			removeNodes = (ConfigspaceNode*)calloc(2, sizeof(ConfigspaceNode));
-			removeNodes[0] = lastNodes[0];
-			removeNodes[1].id = 0;
-			G_configspace.trimTreeChildren(removeNodes, lastNodes[0].id);
+			//removeNodes = (ConfigspaceNode*)calloc(2, sizeof(ConfigspaceNode));
+			//removeNodes[0] = lastNodes[0];
+			//removeNodes[1].id = 0;
+			//G_configspace.trimTreeChildren(removeNodes, lastNodes[0].id);
 
 			costThresholdNodes = G_configspace.getCostThresholdNodes(lastNodes[0]);
 
-			G_configspace.trimTreeChildren(costThresholdNodes, 0);
+			G_configspace.trimTreeChildren(costThresholdNodes, lastNodes[0].id);
 
-			G_configspace.printData(3, lastNodes[0]);
-			// // update goal region in the workspace graph to the new
-			// // current last node in the tree (the (n-m)th node)
-			// G_workspace.updateGoalRegion(lastNodes[0]);
+			//G_configspace.printData(3 + tempItr++, lastNodes[0]);
+			// update goal region in the workspace graph to the new
+			// current last node in the tree (the (n-m)th node)
+			G_workspace.updateGoalRegion(lastNodes[0].x, lastNodes[0].y, 0.0, 0.0, 0.0, 2.5);
 		}
 	}
 #pragma endregion Primary code for the Anytime RRT# implementaion
