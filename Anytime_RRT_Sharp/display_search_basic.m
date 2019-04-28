@@ -13,7 +13,7 @@ clear all
 close all
 clc
 
-problemNum = 5     %% CHANGE THIS
+problemNum = 5    %% CHANGE THIS
 nodeOffset = 0;
 
 search_tree_raw = csvread(['search_tree_' num2str(problemNum + nodeOffset,'%d') '.txt']);
@@ -25,19 +25,35 @@ vehicle_raw = csvread('robot.txt');
 
 % specify goal region [x, y, radius] and start point [x, y]
 start_points = [
-    5, 60;
-    5, 60;
-    5, 60;
-    5, 60;
-    5, 60;
+    5, 65;
+    5, 65;
+    5, 65;
+    5, 65;
+    5, 65;
+    5, 65;
+    5, 65;
+    5, 65;
+    5, 65;
+    5, 65;
+    5, 65;
+    5, 65;
     ];
 goal_regions = [
     100, 60, 2.5;
-    83.2, 58.8, 2.5;
-    72.1, 68.7, 2.5;
-    65, 81, 2.5;
-    56.9, 87.5, 2.5
+    113.7, 68.2, 2.5;
+    117.4, 79.3, 2.5;
+    107.6, 91.5, 2.5;
+    91.8, 92, 2.5
+    82.25, 90.3, 2.5;
+    70.3, 91, 2.5;
+    53.749515, 90.058330, 2.5;
+    41.748312, 92.299849, 2.5
+    29.412292, 90.071815, 2.5;
+    18.527725, 83.437182, 2.5;
+    12.174539, 70.981114, 2.5
     ];
+
+gate_region = [5, 60, 5];
 
 % a bit of data processing for faster plotting
 search_tree = nan(3*size(search_tree_raw, 1), 2);
@@ -77,16 +93,14 @@ pos = [
     goal_regions(problemNum,3) * 2
     ]; 
 rectangle('Position',pos,'Curvature',[1 1], 'FaceColor',[0 .5 .5],...
-    'EdgeColor','b', 'LineWidth',3)
+    'EdgeColor','b', 'LineWidth',2)
 
 hold on
 
 plot(nodes(:,1), nodes(:,2), '.k')
 plot(edges(:,1), edges(:,2), 'k')
 plot(search_tree(:, 1), search_tree(:, 2), 'm', 'LineWidth', 0.5);
-plot(start_points(problemNum,1), start_points(problemNum,2), 'or', 'MarkerSize', 10,...
-    'MarkerFaceColor', 'r')
-plot(path_raw(:,2), path_raw(:,3), 'g:', 'LineWidth', 4);
+
 
 axis([-35.000000, 140.000000, 15.000000, 100.000000])
 
@@ -95,6 +109,21 @@ axis([-35.000000, 140.000000, 15.000000, 100.000000])
 for i = 1:length(obstacles_raw(:,1))
     circle(obstacles_raw(i,1), obstacles_raw(i,2), obstacles_raw(i,3))
 end
+
+
+% plot the gate region
+pos = [
+    (gate_region(1) - gate_region(3)),...
+    (gate_region(2) - gate_region(3)),...
+    gate_region(3) * 2,...
+    gate_region(3) * 2
+    ]; 
+rectangle('Position',pos,'Curvature',[1 1], 'FaceColor','r',...
+    'EdgeColor','k', 'LineWidth',3)
+
+plot(start_points(problemNum,1), start_points(problemNum,2), 'or', 'MarkerSize', 10,...
+    'MarkerFaceColor', 'r')
+plot(path_raw(:,2), path_raw(:,3), 'g:', 'LineWidth', 4);
 
 title('Path Search Tree')
 xlabel('X-Coordinate (m)')

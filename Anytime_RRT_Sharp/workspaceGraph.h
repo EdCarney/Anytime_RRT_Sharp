@@ -123,6 +123,9 @@ public:
 	// returns zero if successful and one otherwise
 	ConfigspaceNode connectNodes(ConfigspaceNode parentNode, ConfigspaceNode newNode, int numIterations);
 
+	// attempt to connect two nodes via a cubic bezier curve
+	ConfigspaceNode connectNodesCubicBezier(ConfigspaceNode parentNode, ConfigspaceNode newNode, double timestep, double dt);
+
 	// will check if an obstacle is within the vicinity of the new node and any of
 	// its neighbors; will return an array of safe nodes
 	ConfigspaceNode* checkSafety(ConfigspaceNode newNode, ConfigspaceNode* neighbors);

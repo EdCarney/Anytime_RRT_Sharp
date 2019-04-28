@@ -329,28 +329,31 @@ int ConfigspaceGraph::findNodePlacement(int nodeId)
 
 ConfigspaceNode ConfigspaceGraph::generateRandomNode()
 {
-	double randX, randY, randV, randW;
+	double randX, randY, randTheta, randV, randW;
 
 	randX = minX + (minX + static_cast <double> (rand())) / (static_cast <double> (RAND_MAX / (maxX - minX)));
 	randY = minY + (minY + static_cast <double> (rand())) / (static_cast <double> (RAND_MAX / (maxY - minY)));
+	randTheta = minTheta + (minTheta + static_cast <double> (rand())) / (static_cast <double> (RAND_MAX / (maxTheta - minTheta)));
 	randV = minV + ((minV + static_cast <double> (rand())) / (static_cast <double> (RAND_MAX / (maxV - minV))));
 	randW = minW * 0.25 + ((minW + static_cast <double> (rand())) / (static_cast <double> (RAND_MAX / ((maxW - minW) * 0.25))));
 
 	ConfigspaceNode randNode;
 	randNode.x = randX;
 	randNode.y = randY;
-	randNode.theta = 0.0;
+	randNode.theta = randTheta;
 	randNode.v = randV;
 	randNode.w = randW;
 	randNode.parentNodeId = 0.0;
 	randNode.t = 0.0;
 	randNode.cost = 0.0;
 	randNode.id = 0;
+	randNode.iterationPoints = NULL;
+	randNode.numIterationPoints = 0;
 
 	return randNode;
 }
 
-ConfigspaceNode ConfigspaceGraph::generateBiasedNode(double biasedX, double biasedY)
+ConfigspaceNode ConfigspaceGraph::generateBiasedNode(double biasedX, double biasedY, double biasedTheta)
 {
 	double randV, randW;
 
@@ -360,13 +363,15 @@ ConfigspaceNode ConfigspaceGraph::generateBiasedNode(double biasedX, double bias
 	ConfigspaceNode biasedNode;
 	biasedNode.x = biasedX;
 	biasedNode.y = biasedY;
-	biasedNode.theta = 0.0;
+	biasedNode.theta = biasedTheta;
 	biasedNode.v = 0.0;
 	biasedNode.w = 0.0;
 	biasedNode.parentNodeId = 0;
 	biasedNode.t = 0.0;
 	biasedNode.cost = 0.0;
 	biasedNode.id = 0;
+	biasedNode.iterationPoints = NULL;
+	biasedNode.numIterationPoints = 0;
 
 	return biasedNode;
 }
@@ -663,19 +668,19 @@ void ConfigspaceGraph::printData(int probNum, ConfigspaceNode finalNode)
 	outputPathFile << nodes[0].t << ", " << nodes[0].x << ", " << nodes[0].y << ", " << nodes[0].theta << ", "
 		<< nodes[0].v << ", " << nodes[0].w << ", " << tempLinAccel << ", " << tempRotAccel << "\n";
 
-	// // print out high-fidelity path
-	// currentNode = finalNode;
-	// while (currentNode.parentNodeId)
-	// {
-	// 	for (int i = currentNode.numIterationPoints - 1; i >= 0; i--)
-	// 	{
-	// 		highFidelityPath << currentNode.iterationPoints[i].t << ", " << currentNode.iterationPoints[i].x << ", " <<
-	// 			currentNode.iterationPoints[i].y << ", " << currentNode.iterationPoints[i].theta << ", " <<
-	// 			currentNode.iterationPoints[i].v << ", " << currentNode.iterationPoints[i].w << ", " <<
-	// 			currentNode.iterationPoints[i].a << ", " << currentNode.iterationPoints[i].gamma << "\n";
-	// 	}
-	// 	currentNode = findNodeId(currentNode.parentNodeId);
-	// }
+	// print out high-fidelity path
+	currentNode = finalNode;
+	while (currentNode.parentNodeId)
+	{
+		for (int i = currentNode.numIterationPoints - 1; i >= 0; i--)
+		{
+			highFidelityPath << currentNode.iterationPoints[i].t << ", " << currentNode.iterationPoints[i].x << ", " <<
+				currentNode.iterationPoints[i].y << "\n";//", " << currentNode.iterationPoints[i].theta << ", " <<
+				//currentNode.iterationPoints[i].v << ", " << currentNode.iterationPoints[i].w << ", " <<
+				//currentNode.iterationPoints[i].a << ", " << currentNode.iterationPoints[i].gamma << "\n";
+		}
+		currentNode = findNodeId(currentNode.parentNodeId);
+	}
 
 	printf("Printing nodes to nodes_%d.txt.\n", probNum);
 	printf("Printing edges to edges_%d.txt.\n", probNum);

@@ -112,7 +112,7 @@ public:
 	ConfigspaceNode generateRandomNode();
 
 	// generates a random node in the graph freespace
-	ConfigspaceNode generateBiasedNode(double biasedX, double biasedY);
+	ConfigspaceNode generateBiasedNode(double biasedX, double biasedY, double biasedTheta);
 
 	// calculate the cost between two nodes
 	double computeCost(ConfigspaceNode node_1, ConfigspaceNode node_2);

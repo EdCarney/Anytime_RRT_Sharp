@@ -675,6 +675,63 @@ ConfigspaceNode WorkspaceGraph::connectNodes(ConfigspaceNode parentNode, Configs
 	return currentNode;
 }
 
+ConfigspaceNode WorkspaceGraph::connectNodesCubicBezier(ConfigspaceNode parentNode, ConfigspaceNode newNode, double timestep, double dt)
+{
+	WorkspaceNode p0, p1, p2, p3;
+	int numIterations = 0;
+	bool connectedNodes = false;
+
+	// define control points
+	// p0 and p3 correspond to the parent and new nodes, respectively
+	// p1 and p2 correspond to the control points for the polynomial curves for p1 and p2, respectively
+	p0.id = 0; p1.id = 0; p2.id = 0; p3.id = 0;
+	p0.parentNodeId = 0; p1.parentNodeId = 0; p2.parentNodeId = 0; p3.parentNodeId = 0;
+
+	p0.x = parentNode.x;
+	p0.y = parentNode.y;
+
+	p3.x = newNode.x;
+	p3.y = newNode.y;
+
+	p1.x = p0.x + (1.0 / 3.0) * timestep * parentNode.v * cos(parentNode.theta);
+	p1.y = p0.y + (1.0 / 3.0) * timestep * parentNode.v * sin(parentNode.theta);
+	p2.x = p3.x - (1.0 / 3.0) * timestep * newNode.v * cos(newNode.theta);
+	p2.y = p3.y - (1.0 / 3.0) * timestep * newNode.v * sin(newNode.theta);
+
+	// set number of iterations based on the timestep and dt values provided
+	numIterations = (int) timestep / dt;
+
+	// create and populate array of dt values for computing path
+	double timeArr[numIterations] = { 0 };
+	for (int i = 0; i < numIterations; i++)
+	{
+		timeArr[i] = i * dt;
+	}
+
+	// update array for iteration points going to the new node
+	newNode.iterationPoints = (ConfigspaceNode*)calloc(numIterations, sizeof(ConfigspaceNode));
+	newNode.numIterationPoints = numIterations;
+
+	for (int i = 0; i < numIterations; i++)
+	{
+
+		newNode.iterationPoints[i].x = pow((1.0 - (timeArr[i] / timestep)), 3) * p0.x + 3.0 * pow((1.0 - (timeArr[i] / timestep)), 2) * (timeArr[i] / timestep) * p1.x +
+		3.0 * (1.0 - (timeArr[i] / timestep)) * pow((timeArr[i] / timestep), 2) * p2.x + pow((timeArr[i] / timestep), 3) * p3.x;
+
+		newNode.iterationPoints[i].y = pow((1.0 - (timeArr[i] / timestep)), 3) * p0.y + 3.0 * pow((1.0 - (timeArr[i] / timestep)), 2) * (timeArr[i] / timestep) * p1.y +
+		3.0 * (1.0 - (timeArr[i] / timestep)) * pow((timeArr[i] / timestep), 2) * p2.y + pow((timeArr[i] / timestep), 3) * p3.y;
+
+		// check velocity and acceleration constraints
+
+		// check for collision
+
+	}
+
+	//if (connectedNodes) { newNode.parentNodeId = parentNode.id; }
+	//else { newNode.parentNodeId = 0; }
+	return newNode;
+}
+
 ConfigspaceNode* WorkspaceGraph::checkSafety(ConfigspaceNode newNode, ConfigspaceNode * neighbors)
 {
 	// determine number of nodes in neighbors and set the

@@ -37,7 +37,11 @@ int main()
 	// define arrays for the gate and obstacle information
 	double approxGateXPosition[numGates] = { 5.0 };
 	double approxGateYPosition[numGates] = { 60.0 };
-	double approxGateApproach[numGates] = { M_PI / 2 };
+	double approxGateApproach[numGates] = { 3 * M_PI / 2 };
+
+	//double exactGateXPosition[numGates] = { 4.5 };
+	//double exactGateYPosition[numGates] = { 59.7 };
+	//double exactGateApproach[numGates] = { 0.95 * (3 * M_PI / 2) };
 
 	double obstacleXPosition[numObstacles] = { 80, 73, 63, 53, 43, 33, 28, 25, 25, 25, 25, 35, 40, 45, 80, 85, 90, 95, 100, 100, 100, 100, 60 };
 	double obstacleYPosition[numObstacles] = { 40, 30, 25, 25, 26, 25, 35, 47, 57, 67, 77, 80, 80, 80, 80, 80, 80, 80, 80, 0, 5, 10, 100 };
@@ -47,7 +51,7 @@ int main()
 	double standOffRange = 5.0;
 
 	// initial UAV orientation
-	double uavStartX = 100.0, uavStartY = 60.0, uavStartTheta = 0.0;
+	double uavStartX = 100.0, uavStartY = 60.0, uavStartTheta = 0.75 * M_PI;
 	double uavStartV = 0.0, uavStartW = 0.0;
 
 	// goal region (UAV position) radius
@@ -68,6 +72,9 @@ int main()
 	// define a buffer region and the side length to use when
 	// defining the square freespace
 	double buffer = 40.0;
+
+	// define the timestep and delta time (dt) values used for connecting and rewiring nodes
+	double timestep = 10.0, dt = 0.05;
 	//------------------------------------------------------------------------//
 	//------------------------------------------------------------------------//
 
@@ -86,7 +93,7 @@ int main()
 	ConfigspaceNode *nearestNeighbors = NULL, *safeNearestNeighbors = NULL, *remainingNodes = NULL, *removeNodes = NULL, *lastNodes = NULL, *costThresholdNodes = NULL;
 	bool goalCheck;
 	int remainingCount = 0, k = 10, m = 4, count = 0;
-	double circleRadius = 0.0, epsilon = 5.0;
+	double circleRadius = 0.0, epsilon = 2.0;
 	//------------------------------------------------------------------------//
 	//------------------------------------------------------------------------//
 #pragma endregion Initializes all necessary variables (should be read-in for real function)
@@ -124,9 +131,6 @@ int main()
 
 		if (gateNode.y < G_workspace.goalRegion.y) { yMin = gateNode.y - buffer; yMax = G_workspace.goalRegion.y + buffer; }
 		else { yMin = G_workspace.goalRegion.y - buffer; yMax = gateNode.y + buffer; }
-
-		//yMin = yMin < 0 ? 0.0 : yMin;
-		//xMin = xMin < 0 ? 0.0 : xMin;
 
 		// set freespace of graphs based on the graph limits; some values will always
 		// be the same (theta, v, w, a, gamma), while others will vary (x and y)
@@ -179,14 +183,20 @@ int main()
 			// do the RRT# thing
 			while(iterationRuntime < maxIterationRuntime || !G_workspace.goalRegionReached)
 			{				
-				tempNode = (count % goalBiasCount != 0) ? G_configspace.generateRandomNode() : G_configspace.generateBiasedNode(G_workspace.goalRegion.x, G_workspace.goalRegion.y);
+				tempNode = (count % goalBiasCount != 0) ? G_configspace.generateRandomNode() : G_configspace.generateBiasedNode(G_workspace.goalRegion.x, G_workspace.goalRegion.y, G_workspace.goalRegion.theta);
 				parentNode = G_configspace.findClosestNode_basic(tempNode);
 				free(remainingNodes);
 				remainingNodes = NULL;
 				if (!G_workspace.checkAtGoal_basic(parentNode))
 				{
 					newNode = G_workspace.extendToNode_basic(parentNode, tempNode, epsilon);
+					newNode = G_workspace.connectNodesCubicBezier(parentNode, newNode, timestep, dt);
 					newNode.cost = parentNode.cost + G_configspace.computeCost_basic(parentNode, newNode);
+
+					//for (int test = 0; test < newNode.numIterationPoints; test++)
+					//{
+					//	printf("x: %f, y: %f\n", newNode.iterationPoints[test].x, newNode.iterationPoints[test].y);
+					//}
 
 					// if there is a collision, newNode id will be set to its parent's id
 					if (newNode.id != parentNode.id)
@@ -249,7 +259,6 @@ int main()
 							}
 							remainingCount++;
 						}
-						//free(remainingNodes);
 					}
 				}
 				count++;
@@ -296,7 +305,7 @@ int main()
 			//G_configspace.printData(3 + tempItr++, lastNodes[0]);
 			// update goal region in the workspace graph to the new
 			// current last node in the tree (the (n-m)th node)
-			G_workspace.updateGoalRegion(lastNodes[0].x, lastNodes[0].y, 0.0, 0.0, 0.0, 2.5);
+			G_workspace.updateGoalRegion(lastNodes[0].x, lastNodes[0].y, lastNodes[0].theta, 0.0, 0.0, 2.5);
 		}
 	}
 #pragma endregion Primary code for the Anytime RRT# implementaion
