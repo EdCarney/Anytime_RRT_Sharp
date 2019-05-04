@@ -47,6 +47,8 @@ void Vehicle::buildVehicle()
 void Vehicle::updateState(ConfigspaceNode newConfigNode)
 {
 	// update body nodes based on deltas
+	free(nodes);
+	nodes = (WorkspaceNode*)calloc(numNodes, sizeof(WorkspaceNode));
 	for (int i = 0; i < numNodes; i++)
 	{
 		nodes[i].x = newConfigNode.x + cos(newConfigNode.theta) * offsetNodes[i].x - sin(newConfigNode.theta) * offsetNodes[i].y;
@@ -296,15 +298,18 @@ bool WorkspaceGraph::checkCollision(ConfigspaceNode node)
 				pow((vehicles[i].centroid.x - obstacles[j].x), 2) +
 				pow((vehicles[i].centroid.y - obstacles[j].y), 2)
 			);
+			//printf("CentDist: %f, ObsRad: %f, VehRad: %f\n", centroidDist, obstacles[j].radius, vehicles[i].maxPointRadius);
 
 			// only iterate over all points if obstacle intersects the ball circumscribing the vehicle
 			// or if the same ball extends beyond the freespace
-			if ((centroidDist < obstacles[j].radius + vehicles[i].maxPointRadius) ||
-				(vehicles[i].centroid.x - vehicles[i].maxPointRadius < minX) ||
-				(vehicles[i].centroid.x + vehicles[i].maxPointRadius > maxX) ||
-				(vehicles[i].centroid.y - vehicles[i].maxPointRadius < minY) ||
-				(vehicles[i].centroid.y + vehicles[i].maxPointRadius > maxY))
+			if (centroidDist < obstacles[j].radius + vehicles[i].maxPointRadius) //||
+				//(vehicles[i].centroid.x - vehicles[i].maxPointRadius < minX) ||
+				//(vehicles[i].centroid.x + vehicles[i].maxPointRadius > maxX) ||
+				//(vehicles[i].centroid.y - vehicles[i].maxPointRadius < minY) ||
+				//(vehicles[i].centroid.y + vehicles[i].maxPointRadius > maxY))
 			{
+				return true;
+				/*
 				for (int k = 0; k < vehicles[i].numNodes; k++)
 				{
 					// check if node is outside of freespace
@@ -322,6 +327,7 @@ bool WorkspaceGraph::checkCollision(ConfigspaceNode node)
 						return true;
 					}
 				}
+				*/
 			}
 		}
 	}
@@ -678,8 +684,10 @@ ConfigspaceNode WorkspaceGraph::connectNodes(ConfigspaceNode parentNode, Configs
 ConfigspaceNode WorkspaceGraph::connectNodesCubicBezier(ConfigspaceNode parentNode, ConfigspaceNode newNode, double timestep, double dt)
 {
 	WorkspaceNode p0, p1, p2, p3;
+	ConfigspaceNode checkNode;
 	int numIterations = 0;
-	bool connectedNodes = false;
+	bool connectedNodes = true;
+	double tempDist = 0.0;
 
 	// define control points
 	// p0 and p3 correspond to the parent and new nodes, respectively
@@ -705,14 +713,16 @@ ConfigspaceNode WorkspaceGraph::connectNodesCubicBezier(ConfigspaceNode parentNo
 	double timeArr[numIterations] = { 0 };
 	for (int i = 0; i < numIterations; i++)
 	{
-		timeArr[i] = i * dt;
+		timeArr[i] = (double) i * dt;
 	}
 
 	// update array for iteration points going to the new node
 	newNode.iterationPoints = (ConfigspaceNode*)calloc(numIterations, sizeof(ConfigspaceNode));
 	newNode.numIterationPoints = numIterations;
+	newNode.iterationPoints[0] = parentNode;
+	newNode.dist = 0.0;
 
-	for (int i = 0; i < numIterations; i++)
+	for (int i = 1; i < numIterations; i++)
 	{
 
 		newNode.iterationPoints[i].x = pow((1.0 - (timeArr[i] / timestep)), 3) * p0.x + 3.0 * pow((1.0 - (timeArr[i] / timestep)), 2) * (timeArr[i] / timestep) * p1.x +
@@ -721,14 +731,53 @@ ConfigspaceNode WorkspaceGraph::connectNodesCubicBezier(ConfigspaceNode parentNo
 		newNode.iterationPoints[i].y = pow((1.0 - (timeArr[i] / timestep)), 3) * p0.y + 3.0 * pow((1.0 - (timeArr[i] / timestep)), 2) * (timeArr[i] / timestep) * p1.y +
 		3.0 * (1.0 - (timeArr[i] / timestep)) * pow((timeArr[i] / timestep), 2) * p2.y + pow((timeArr[i] / timestep), 3) * p3.y;
 
-		// check velocity and acceleration constraints
+		newNode.iterationPoints[i].dx = 3.0 * pow((1.0 - (timeArr[i] / timestep)), 2) * (p1.x - p0.x) + 6.0 * (1.0 - (timeArr[i] / timestep)) * (timeArr[i] / timestep) * (p2.x - p1.x) +
+		3.0 * pow((timeArr[i] / timestep), 2) * (p3.x - p2.x);
 
-		// check for collision
+		newNode.iterationPoints[i].dy = 3.0 * pow((1.0 - (timeArr[i] / timestep)), 2) * (p1.y - p0.y) + 6.0 * (1.0 - (timeArr[i] / timestep)) * (timeArr[i] / timestep) * (p2.y - p1.y) +
+		3.0 * pow((timeArr[i] / timestep), 2) * (p3.y - p2.y);
 
+		newNode.iterationPoints[i].ddx = 6.0 * (1.0 - (timeArr[i] / timestep)) * (p2.x - 2.0 * p1.x + p0.x) + 6.0 * (timeArr[i] / timestep) * (p3.x - 2 * p2.x * p1.x);
+
+		newNode.iterationPoints[i].ddy = 6.0 * (1.0 - (timeArr[i] / timestep)) * (p2.y - 2.0 * p1.y + p0.y) + 6.0 * (timeArr[i] / timestep) * (p3.y - 2 * p2.y * p1.y);
+
+		//printf("dx: %f, dy: %f, ddx: %f, ddy: %f\n", newNode.iterationPoints[i].dx, newNode.iterationPoints[i].dy, newNode.iterationPoints[i].ddx, newNode.iterationPoints[i].ddy);
+
+		// check velocity and acceleration constraints; compute total distance to reach node
+		tempDist = hypot(newNode.iterationPoints[i].x - newNode.iterationPoints[i - 1].x, newNode.iterationPoints[i].y - newNode.iterationPoints[i - 1].y);
+		newNode.dist += tempDist;
+		newNode.iterationPoints[i].v = tempDist / dt;
+		newNode.iterationPoints[i].a = (newNode.iterationPoints[i].v - newNode.iterationPoints[i - 1].v) / dt;
+		newNode.iterationPoints[i].theta = atan2(newNode.iterationPoints[i].y - newNode.iterationPoints[i - 1].y, newNode.iterationPoints[i].x - newNode.iterationPoints[i - 1].x);
+		//printf("Vel: %f, Acc: %f\n", newNode.iterationPoints[i].v, newNode.iterationPoints[i].a);
+		if (abs(newNode.iterationPoints[i].a) > maxAbsA || newNode.iterationPoints[i].v < minV || newNode.iterationPoints[i].v > maxV)
+		/*if (abs(newNode.iterationPoints[i].ddx) > maxAbsA || abs(newNode.iterationPoints[i].ddy) > maxAbsA ||
+			abs(newNode.iterationPoints[i].dx) < minV || abs(newNode.iterationPoints[i].dx) > maxV ||
+			abs(newNode.iterationPoints[i].dy) < minV || abs(newNode.iterationPoints[i].dy) > maxV)*/
+		{
+			connectedNodes = false;
+			break;
+		}
+
+		// check for collision; if there is a collision, break the loop
+		checkNode.x = newNode.iterationPoints[i].x;
+		checkNode.y = newNode.iterationPoints[i].y;
+		if (checkCollision(checkNode))
+		{
+			connectedNodes = false;
+			break;
+		}
 	}
 
-	//if (connectedNodes) { newNode.parentNodeId = parentNode.id; }
-	//else { newNode.parentNodeId = 0; }
+	if (connectedNodes)
+	{
+		newNode.dx = newNode.iterationPoints[numIterations - 1].dx;
+		newNode.dy = newNode.iterationPoints[numIterations - 1].dy;
+		newNode.ddx = newNode.iterationPoints[numIterations - 1].ddx;
+		newNode.ddy = newNode.iterationPoints[numIterations - 1].ddy;
+		newNode.parentNodeId = parentNode.id;
+	}
+	else { newNode.parentNodeId = 0; }
 	return newNode;
 }
 
@@ -937,9 +986,56 @@ ConfigspaceNode WorkspaceGraph::extendToNode_basic(ConfigspaceNode parentNode, C
 		currentNode.y = newNode.y;
 	}
 
-	if (checkForCollision_basic(currentNode)) { currentNode.id = parentNode.id; }
+	// if node does not collide with an obstacle, then set its parentNodeId to the parent node
+	// else set it to zero
+	if (!checkForCollision_basic(currentNode)) {currentNode.parentNodeId = parentNode.id; }
+	else { currentNode.parentNodeId = 0; }
 
 	return currentNode;
+}
+
+ConfigspaceNode WorkspaceGraph::findBestNeighbor_basic(ConfigspaceNode newNode, ConfigspaceNode *safeNeighbors, double timestep, double dt)
+{
+	ConfigspaceNode bestNeighbor;
+	int numSafeNeighbors = 0;
+	double bestCost = 0, tempBestCost = 0;
+
+	// initialize the best neighbor as the first safe neighbor
+	// bestNeighbor = safeNeighbors[0];
+	bestCost = 1000000.0;
+
+	while (safeNeighbors[numSafeNeighbors].id)
+	{
+		newNode = connectNodesCubicBezier(safeNeighbors[numSafeNeighbors], newNode, timestep, dt);
+		tempBestCost = safeNeighbors[numSafeNeighbors].cost + computeCost_basic(safeNeighbors[numSafeNeighbors], newNode);
+		if (newNode.parentNodeId && tempBestCost < bestCost)
+		{
+			bestCost = tempBestCost;
+			bestNeighbor = safeNeighbors[numSafeNeighbors];
+		}
+		numSafeNeighbors++;
+	}
+
+	if (bestCost < 1000000.0)
+	{
+		return bestNeighbor;	
+	}
+	else
+	{
+		return safeNeighbors[0];
+	}
+}
+
+double WorkspaceGraph::computeCost_basic(ConfigspaceNode node_1, ConfigspaceNode node_2)
+{
+	/*
+	double cost = 0.0;
+	cost += hypot((node_1.x - node_2.x), (node_1.y - node_2.y));
+	return cost;
+	*/
+
+	double cost = node_2.dist;
+	return cost;
 }
 
 bool WorkspaceGraph::checkForCollision_basic(ConfigspaceNode node)
@@ -981,8 +1077,10 @@ bool WorkspaceGraph::checkAtGoal_basic(ConfigspaceNode node)
 	{
 		nodeDistance = hypot((vehicles[i].centroid.x - goalRegion.x), (vehicles[i].centroid.y - goalRegion.y));
 
-		if (nodeDistance < (goalRegion.radius + vehicles[i].maxPointRadius))
+		if (nodeDistance < (goalRegion.radius + vehicles[i].maxPointRadius) && 
+			(node.theta < goalRegion.theta + (M_PI * 15 / 180) && node.theta > goalRegion.theta - (M_PI * 15 / 180)))
 		{
+			//printf("Angle: %f, MinAngle: %f, MaxAngle: %f\n", node.theta, goalRegion.theta - (M_PI * 15 / 180), goalRegion.theta + (M_PI * 15 / 180));
 			return true;
 		}
 		// for (int j = 0; j < vehicles[i].numNodes; j++)

@@ -5,6 +5,7 @@
 #include <fstream>
 #include <iostream>
 #include "configspaceGraph.h"
+#include "workspaceGraph.h"
 
 
 void ConfigspaceGraph::buildGraph()
@@ -81,7 +82,6 @@ void ConfigspaceGraph::addEdge(ConfigspaceNode parentNode, ConfigspaceNode newNo
 	}
 	else
 	{
-		free(edges);
 		edges = (Edge*)calloc(1, sizeof(Edge));;
 	}
 
@@ -105,6 +105,7 @@ void ConfigspaceGraph::removeEdge(ConfigspaceNode parentToRemove, ConfigspaceNod
 			newEdgesCount++;
 		}
 	}
+
 	free(edges);
 	edges = newEdges;
 	numEdges--;
@@ -257,6 +258,10 @@ ConfigspaceNode ConfigspaceGraph::addNode(ConfigspaceNode addedNode)
 
 	nodes[numNodes].x = addedNode.x;
 	nodes[numNodes].y = addedNode.y;
+	nodes[numNodes].dx = addedNode.dx;
+	nodes[numNodes].dy = addedNode.dy;
+	nodes[numNodes].ddx = addedNode.ddx;
+	nodes[numNodes].ddy = addedNode.ddy;
 	nodes[numNodes].theta = addedNode.theta;
 	nodes[numNodes].v = addedNode.v;
 	nodes[numNodes].w = addedNode.w;
@@ -266,7 +271,8 @@ ConfigspaceNode ConfigspaceGraph::addNode(ConfigspaceNode addedNode)
 	nodes[numNodes].parentNodeId = addedNode.parentNodeId;
 	nodes[numNodes].iterationPoints = addedNode.iterationPoints;
 	nodes[numNodes].numIterationPoints = addedNode.numIterationPoints;
-	nodes[numNodes].cost = numNodes > 0 ? parentNode.cost + computeCost(addedNode, parentNode) : 0.0;
+	nodes[numNodes].dist = addedNode.dist;
+	nodes[numNodes].cost = numNodes > 0 ? parentNode.cost + computeCost(parentNode, addedNode) : 0.0;
 	nodes[numNodes].id = numNodeInd + 1;
 
 	numNodeInd++;
@@ -280,6 +286,8 @@ void ConfigspaceGraph::replaceNode(ConfigspaceNode oldNode, ConfigspaceNode newN
 	nodes[oldNodePlace] = newNode;
 	nodes[oldNodePlace].iterationPoints = (ConfigspaceNode*)calloc(newNode.numIterationPoints, sizeof(ConfigspaceNode));
 	memcpy(nodes[oldNodePlace].iterationPoints, newNode.iterationPoints, newNode.numIterationPoints * sizeof(ConfigspaceNode));
+
+	//printf("Replace Node Dist: %f\n", nodes[oldNodePlace].dist);
 }
 
 ConfigspaceNode ConfigspaceGraph::findClosestNode(ConfigspaceNode node)
@@ -289,12 +297,12 @@ ConfigspaceNode ConfigspaceGraph::findClosestNode(ConfigspaceNode node)
 	double shortestDist, dist;
 	int closestEntry = 0;
 	shortestDist = 0.5 * (hypot(nodes[0].x - node.x, nodes[0].y - node.y)) +
-		(abs(nodes[0].w - node.w)) + 0.25 * (abs(atan2((nodes[0].y - node.y), (nodes[0].x - node.x)) - nodes[0].theta));
+		abs(nodes[0].theta - node.theta)  + abs(nodes[0].v - node.v);//(abs(atan2((nodes[0].y - node.y), (nodes[0].x - node.x)) - nodes[0].theta));
 
 	for (int i = 1; i < numNodes; i++)
 	{
 		dist = 0.5 * (hypot(nodes[i].x - node.x, nodes[i].y - node.y)) +
-			(abs(nodes[i].w - node.w)) + 0.25 * (abs(atan2((nodes[i].y - node.y), (nodes[i].x - node.x)) - nodes[i].theta));
+			abs(nodes[i].theta - node.theta) + + abs(nodes[i].v - node.v);//(abs(atan2((nodes[i].y - node.y), (nodes[i].x - node.x)) - nodes[i].theta));
 		if (dist < shortestDist)
 		{
 			shortestDist = dist;
@@ -346,6 +354,7 @@ ConfigspaceNode ConfigspaceGraph::generateRandomNode()
 	randNode.parentNodeId = 0.0;
 	randNode.t = 0.0;
 	randNode.cost = 0.0;
+	randNode.dist = 0.0;
 	randNode.id = 0;
 	randNode.iterationPoints = NULL;
 	randNode.numIterationPoints = 0;
@@ -369,6 +378,7 @@ ConfigspaceNode ConfigspaceGraph::generateBiasedNode(double biasedX, double bias
 	biasedNode.parentNodeId = 0;
 	biasedNode.t = 0.0;
 	biasedNode.cost = 0.0;
+	biasedNode.dist = 0.0;
 	biasedNode.id = 0;
 	biasedNode.iterationPoints = NULL;
 	biasedNode.numIterationPoints = 0;
@@ -394,7 +404,7 @@ double ConfigspaceGraph::computeRadius(double epsilon)
 	// calculate distance based on percollation theory
 
 	double temp1, temp2, temp3;
-	temp1 = log(numNodes) / numNodes;
+	temp1 = log(numNodes * 0.5) / numNodes;
 	temp2 = 1 / float(dim);
 	temp3 = pow(temp1, temp2);
 
@@ -407,7 +417,7 @@ double ConfigspaceGraph::computeRadius(double epsilon)
 	return circleRadius;
 }
 
-ConfigspaceNode* ConfigspaceGraph::findNeighbors(ConfigspaceNode centerNode, double radius, int k, double goalX, double goalY, double goalRadius)
+ConfigspaceNode* ConfigspaceGraph::findNeighbors(ConfigspaceNode centerNode, double radius, int k)
 {
 	int n = 0;					// variable to count number of neighbors found
 	double dist;				// distance between the nodes
@@ -421,7 +431,7 @@ ConfigspaceNode* ConfigspaceGraph::findNeighbors(ConfigspaceNode centerNode, dou
 	{
 		dist = hypot((centerNode.x - nodes[i].x), (centerNode.y - nodes[i].y));
 		if (dist < radius && centerNode.parentNodeId != nodes[i].id// && (hypot((goalX - nodes[i].x),(goalY - nodes[i].y)) > goalRadius)
-			&& abs(centerNode.theta - nodes[i].theta) < 3.14159)
+			)//&& abs(centerNode.theta - nodes[i].theta) < 3.14159)
 		{
 			neighbors[n] = nodes[i];
 			n++;
@@ -495,7 +505,7 @@ void ConfigspaceGraph::propagateCost(ConfigspaceNode *updatedNodes)
 				free(nodesToUpdate);
 				nodesToUpdate = tempNodesToUpdate;
 				nodesToUpdate[nodeCount] = nodes[j];
-				nodes[j].cost = updatedNodes[i].cost + computeCost(nodes[j], updatedNodes[i]);
+				nodes[j].cost = updatedNodes[i].cost + computeCost(updatedNodes[i], nodes[j]);
 				nodeCount++;
 			}
 		}
@@ -610,6 +620,26 @@ ConfigspaceNode* ConfigspaceGraph::getCostThresholdNodes(ConfigspaceNode finalNo
 	return nodesToRemove;
 }
 
+double* ConfigspaceGraph::getBranchBounds(ConfigspaceNode node)
+{
+	// the branch bounds are equivalent to [xMin, xMax, yMin, yMax]
+	double *branchBounds = (double*)calloc(4, sizeof(double));
+	branchBounds[0] = node.x; branchBounds[1] = node.x;
+	branchBounds[2] = node.y; branchBounds[3] = node.y;
+
+	while (node.parentNodeId)
+	{
+		node = findNodeId(node.parentNodeId);
+		if (node.x < branchBounds[0]) { branchBounds[0] = node.x; }
+		if (node.x > branchBounds[1]) { branchBounds[1] = node.x; }
+		if (node.y < branchBounds[2]) { branchBounds[2] = node.y; }
+		if (node.y > branchBounds[3]) { branchBounds[3] = node.y; }
+	}
+
+	return branchBounds;
+
+}
+
 void ConfigspaceGraph::printData(int probNum, ConfigspaceNode finalNode)
 {
 	std::ofstream nodeFile, edgeFile, searchTreeFile, outputPathFile, highFidelityPath;
@@ -670,14 +700,18 @@ void ConfigspaceGraph::printData(int probNum, ConfigspaceNode finalNode)
 
 	// print out high-fidelity path
 	currentNode = finalNode;
+	double currentTime = 0.0;
 	while (currentNode.parentNodeId)
 	{
 		for (int i = currentNode.numIterationPoints - 1; i >= 0; i--)
 		{
-			highFidelityPath << currentNode.iterationPoints[i].t << ", " << currentNode.iterationPoints[i].x << ", " <<
-				currentNode.iterationPoints[i].y << "\n";//", " << currentNode.iterationPoints[i].theta << ", " <<
-				//currentNode.iterationPoints[i].v << ", " << currentNode.iterationPoints[i].w << ", " <<
-				//currentNode.iterationPoints[i].a << ", " << currentNode.iterationPoints[i].gamma << "\n";
+			highFidelityPath << currentTime << ", " << currentNode.iterationPoints[i].x << ", " <<
+				currentNode.iterationPoints[i].y << ", " << currentNode.iterationPoints[i].theta << ", " <<
+				currentNode.iterationPoints[i].dx << ", " << currentNode.iterationPoints[i].dy << ", " <<
+				currentNode.iterationPoints[i].ddx << ", " << currentNode.iterationPoints[i].ddy << ", " <<
+				currentNode.iterationPoints[i].v << ", " << currentNode.iterationPoints[i].a << "\n";
+
+			currentTime += 0.1;
 		}
 		currentNode = findNodeId(currentNode.parentNodeId);
 	}
@@ -722,8 +756,11 @@ ConfigspaceNode ConfigspaceGraph::findClosestNode_basic(ConfigspaceNode node)
 
 double ConfigspaceGraph::computeCost_basic(ConfigspaceNode node_1, ConfigspaceNode node_2)
 {
-	double cost = 0.0;
-	cost += hypot((node_1.x - node_2.x), (node_1.y - node_2.y));
+	//double cost = node_2.dist;
+	//double cost = node_2.numIterationPoints;
+	double cost = node_2.dist * node_2.dist / hypot((node_1.x - node_2.x), (node_1.y - node_2.y));
+	//double cost = (double) node_2.numIterationPoints / node_2.dist;
+	//double cost = node_2.dist - hypot((node_1.x - node_2.x), (node_1.y - node_2.y));
 	return cost;
 }
 
@@ -769,30 +806,6 @@ ConfigspaceNode * ConfigspaceGraph::findNeighbors_basic(ConfigspaceNode centerNo
 	}
 }
 
-ConfigspaceNode ConfigspaceGraph::findBestNeighbor_basic(ConfigspaceNode newNode, ConfigspaceNode *safeNeighbors)
-{
-	ConfigspaceNode bestNeighbor;
-	int numSafeNeighbors = 1;
-	double bestCost = 0, tempBestCost = 0;
-
-	// initialize the best neighbor as the first safe neighbor
-	bestNeighbor = safeNeighbors[0];
-	bestCost = bestNeighbor.cost + computeCost_basic(newNode, bestNeighbor);
-
-	while (safeNeighbors[numSafeNeighbors].id)
-	{
-		tempBestCost = safeNeighbors[numSafeNeighbors].cost + computeCost_basic(newNode, safeNeighbors[numSafeNeighbors]);
-		if (tempBestCost < bestCost)
-		{
-			bestCost = tempBestCost;
-			bestNeighbor = safeNeighbors[numSafeNeighbors];
-		}
-		numSafeNeighbors++;
-	}
-
-	return bestNeighbor;
-}
-
 ConfigspaceNode ConfigspaceGraph::addNode_basic(ConfigspaceNode addedNode)
 {
 	// increase memory of node array for new entry
@@ -815,6 +828,10 @@ ConfigspaceNode ConfigspaceGraph::addNode_basic(ConfigspaceNode addedNode)
 
 	nodes[numNodes].x = addedNode.x;
 	nodes[numNodes].y = addedNode.y;
+	nodes[numNodes].dx = addedNode.dx;
+	nodes[numNodes].dy = addedNode.dy;
+	nodes[numNodes].ddx = addedNode.ddx;
+	nodes[numNodes].ddy = addedNode.ddy;
 	nodes[numNodes].theta = addedNode.theta;
 	nodes[numNodes].v = addedNode.v;
 	nodes[numNodes].w = addedNode.w;
@@ -824,7 +841,8 @@ ConfigspaceNode ConfigspaceGraph::addNode_basic(ConfigspaceNode addedNode)
 	nodes[numNodes].parentNodeId = addedNode.parentNodeId;
 	nodes[numNodes].iterationPoints = addedNode.iterationPoints;
 	nodes[numNodes].numIterationPoints = addedNode.numIterationPoints;
-	nodes[numNodes].cost = parentNode.cost + computeCost_basic(addedNode, parentNode);
+	nodes[numNodes].dist = addedNode.dist;
+	nodes[numNodes].cost = parentNode.cost + computeCost_basic(parentNode, addedNode);
 	nodes[numNodes].id = numNodeInd + 1;
 
 	numNodeInd++;
@@ -852,7 +870,8 @@ void ConfigspaceGraph::propagateCost_basic(ConfigspaceNode * updatedNodes)
 				free(nodesToUpdate);
 				nodesToUpdate = tempNodesToUpdate;
 				nodesToUpdate[nodeCount] = nodes[j];
-				nodes[j].cost = updatedNodes[i].cost + computeCost_basic(nodes[j], updatedNodes[i]);
+				//printf("DEBUG5, j = %d, i = %d, Cost: %f\n", j, i, nodes[j].cost);
+				nodes[j].cost = updatedNodes[i].cost + computeCost_basic(updatedNodes[i], nodes[j]);
 				nodeCount++;
 			}
 		}

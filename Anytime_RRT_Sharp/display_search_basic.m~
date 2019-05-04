@@ -13,7 +13,7 @@ clear all
 close all
 clc
 
-problemNum = 2%% CHANGE THIS
+problemNum = 5%% CHANGE THIS
 nodeOffset = 0;
 
 search_tree_raw = csvread(['search_tree_' num2str(problemNum + nodeOffset,'%d') '.txt']);
@@ -173,15 +173,17 @@ hold off
 % plot the graphs of velocity and accel
 figure()
 hold on
-plot(high_fidelity_path(:,1), high_fidelity_path(:,9) .* cos(high_fidelity_path(:,4)), '-r',...
-    high_fidelity_path(:,1), high_fidelity_path(:,9) .* sin(high_fidelity_path(:,4)), '-b')
+plot(high_fidelity_path(:,1), 0.05 * high_fidelity_path(:,5), '-r',...
+    high_fidelity_path(:,1), 0.05 * high_fidelity_path(:,6), '-b')
 title('Velocity Components vs. Time')
 
 figure()
 hold on
-plot(high_fidelity_path(:,1), high_fidelity_path(:,10) .* cos(high_fidelity_path(:,4)), '-r',...
-    high_fidelity_path(:,1), high_fidelity_path(:,10) .* sin(high_fidelity_path(:,4)), '-b')
-title('Acceleration Components vs. Time')
+plot(high_fidelity_path(:,1), high_fidelity_path(:,7) * high, '-r',...
+    
+% plot(high_fidelity_path(:,1), 0.05^2 * high_fidelity_path(:,7), '-r',...
+%     high_fidelity_path(:,1), 0.05^2 * high_fidelity_path(:,8), '-b')
+% title('Acceleration Components vs. Time')
 
 figure()
 hold on

@@ -160,6 +160,8 @@ public:
 	///////////////////////////////////////////////////////////////////
 
 	ConfigspaceNode extendToNode_basic(ConfigspaceNode parentNode, ConfigspaceNode newNode, double epsilon);
+	ConfigspaceNode findBestNeighbor_basic(ConfigspaceNode newNode, ConfigspaceNode *safeNeighbors, double timestep, double dt);
+	double computeCost_basic(ConfigspaceNode node_1, ConfigspaceNode node_2);
 	bool checkForCollision_basic(ConfigspaceNode node);
 	ConfigspaceNode connectNodes_basic(ConfigspaceNode parentNode, ConfigspaceNode newNode);
 	bool checkAtGoal_basic(ConfigspaceNode node);

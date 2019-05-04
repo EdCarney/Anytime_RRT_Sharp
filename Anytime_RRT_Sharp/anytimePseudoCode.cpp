@@ -16,10 +16,13 @@ ConfigspaceNode calcGateNode(double xPosition, double yPosition, double gateOrie
 
 	gateNode.x = xPosition + standOffRange * cos(gateOrientation - M_PI);
 	gateNode.y = yPosition + standOffRange * sin(gateOrientation - M_PI);
-	gateNode.theta = gateOrientation;
+	gateNode.theta = gateOrientation - M_PI;
 
 	gateNode.v = 0.0; gateNode.w = 0.0; gateNode.t = 0.0;
-	gateNode.a = 0.0; gateNode.gamma = 0.0; gateNode.cost = 0.0;
+	gateNode.dx = 0.0; gateNode.dy = 0.0;
+	gateNode.ddx = 0.0; gateNode.ddy = 0.0;
+	gateNode.a = 0.0; gateNode.gamma = 0.0;
+	gateNode.cost = 0.0; gateNode.dist = 0.0;
 	gateNode.parentNodeId = 0;
 
 	return gateNode;
@@ -34,7 +37,7 @@ int main()
 	//------------------------------------------------------------------------//
 	int numGates = 1, numObstacles = 23;
 
-	// define arrays for the gate and obstacle information
+	// define arrays for the gate and obstacle information (INCLUDE GATE REGION AS OBSTACLE)
 	double approxGateXPosition[numGates] = { 5.0 };
 	double approxGateYPosition[numGates] = { 60.0 };
 	double approxGateApproach[numGates] = { 3 * M_PI / 2 };
@@ -43,15 +46,18 @@ int main()
 	//double exactGateYPosition[numGates] = { 59.7 };
 	//double exactGateApproach[numGates] = { 0.95 * (3 * M_PI / 2) };
 
-	double obstacleXPosition[numObstacles] = { 80, 73, 63, 53, 43, 33, 28, 25, 25, 25, 25, 35, 40, 45, 80, 85, 90, 95, 100, 100, 100, 100, 60 };
-	double obstacleYPosition[numObstacles] = { 40, 30, 25, 25, 26, 25, 35, 47, 57, 67, 77, 80, 80, 80, 80, 80, 80, 80, 80, 0, 5, 10, 100 };
-	double obstacleRadius[numObstacles] = { 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8 };
-
 	// define additional input parameters for the goal node calculation
 	double standOffRange = 5.0;
 
+	double obstacleXPosition[numObstacles + numGates] = { 80, 73, 63, 53, 43, 33, 28, 25, 25, 25, 25, 35, 40, 45, 80, 85, 90, 95, 100, 100, 100, 100, 60, approxGateXPosition[0] };
+	double obstacleYPosition[numObstacles + numGates] = { 40, 30, 25, 25, 26, 25, 35, 47, 57, 67, 77, 80, 80, 80, 80, 80, 80, 80, 80, 0, 5, 10, 100, approxGateYPosition[0] };
+	double obstacleRadius[numObstacles + numGates] = { 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, standOffRange - 1.0 };
+
 	// initial UAV orientation
-	double uavStartX = 100.0, uavStartY = 60.0, uavStartTheta = 0.75 * M_PI;
+	//double uavStartX = 100.0, uavStartY = 60.0, uavStartTheta = 0.75 * M_PI;
+	//double uavStartX = 100.0, uavStartY = 20.0, uavStartTheta = 0.75 * M_PI;
+	double uavStartX = 120.0, uavStartY = 80.0, uavStartTheta = 1.75 * M_PI;
+	//double uavStartX = 50.0, uavStartY = 50.0, uavStartTheta = 0.25 * M_PI;
 	double uavStartV = 0.0, uavStartW = 0.0;
 
 	// goal region (UAV position) radius
@@ -66,15 +72,15 @@ int main()
 	// change with each gate iteration)
 	double xMin = 0.0, yMin = 0.0, xMax = 0.0, yMax = 0.0;
 	double thetaMin = 0.0, thetaMax = 2 * M_PI;
-	double vMin = 0.0, vMax = 1.0, wMin = -M_PI / 8, wMax = M_PI / 8;
-	double linAccelMax = 1.0, rotAccelMax = M_PI / 4;
+	double vMin = 0.0, vMax = 2.0, wMin = -M_PI / 8, wMax = M_PI / 8;
+	double linAccelMax = 0.5, rotAccelMax = M_PI / 4;
 
 	// define a buffer region and the side length to use when
 	// defining the square freespace
 	double buffer = 40.0;
 
 	// define the timestep and delta time (dt) values used for connecting and rewiring nodes
-	double timestep = 10.0, dt = 0.05;
+	double timestep = 5.0, dt = 0.1;
 	//------------------------------------------------------------------------//
 	//------------------------------------------------------------------------//
 
@@ -92,13 +98,14 @@ int main()
 	ConfigspaceNode tempNode, parentNode, newNode, bestNeighbor, remainingNodeParent;
 	ConfigspaceNode *nearestNeighbors = NULL, *safeNearestNeighbors = NULL, *remainingNodes = NULL, *removeNodes = NULL, *lastNodes = NULL, *costThresholdNodes = NULL;
 	bool goalCheck;
-	int remainingCount = 0, k = 10, m = 4, count = 0;
-	double circleRadius = 0.0, epsilon = 2.0;
+	int remainingCount = 0, k = 15, m = 4, count = 0;
+	double circleRadius = 0.0, epsilon = 20.0;
+	double *branchBounds = (double*)calloc(4, sizeof(double));
 	//------------------------------------------------------------------------//
 	//------------------------------------------------------------------------//
 #pragma endregion Initializes all necessary variables (should be read-in for real function)
 
-#pragma region Primary Function
+#pragma region Primary Function Definition
 	for (int gate = 0; gate < numGates; gate++)
 	{
 		// build workspace and configspace graphs
@@ -110,7 +117,7 @@ int main()
 			// set the goal region (i.e. the UAV starting location)
 			// if it's not the first iteration, then the goal region will be set based
 			// on the last known position of the UAV
-			G_workspace.addGoalRegion(uavStartX, uavStartY, uavStartTheta, uavStartV, uavStartW, uavGoalRadius);
+			G_workspace.addGoalRegion(uavStartX, uavStartY, uavStartTheta - M_PI, uavStartV, uavStartW, uavGoalRadius);
 		}
 		/*
 		else
@@ -123,6 +130,8 @@ int main()
 
 		// function to determine goal node based on approximate gate information
 		gateNode = calcGateNode(approxGateXPosition[gate], approxGateYPosition[gate], approxGateApproach[gate], standOffRange);
+		gateNode.v = 2.0;
+		printf("Theta: %f\n", gateNode.theta);
 
 		// define the limits of the graph based on position of the gate
 		// and the robot
@@ -158,7 +167,7 @@ int main()
 		obsVol = G_workspace.computeObsVol();
 
 		// add gateNode to the graph
-		G_configspace.addNode(gateNode);
+		G_configspace.addNode_basic(gateNode);
 
 		// add vehicle to the graph
 		G_workspace.addVehicle(vehiclePointXPosition, vehiclePointYPosition, numVehiclePoints);
@@ -167,49 +176,65 @@ int main()
 		printf("GoalRegion: %f, %f, %f\n", G_workspace.goalRegion.x, G_workspace.goalRegion.y, G_workspace.goalRegion.radius);
 		printf("GateNode: %f, %f, %f\n", G_configspace.nodes[0].x, G_configspace.nodes[0].y, G_configspace.nodes[0].theta);
 		///////////////////////////////////////////////////////////////////////////////////////////
+#pragma endregion Define graph freespace, goal region, and root node.
 
+#pragma region RRT# Main Code
 		// start the anytime RRT# iterations
 		iterationRuntime = 0.0;
-		maxIterationRuntime = 500.0;
+		maxIterationRuntime = 7500.0;
 		count = 0;
 		int tempItr = 0;
-		while(!G_workspace.atGate(gateNode))// && count < maxIterationRuntime)
+		while(!G_workspace.atGate(gateNode))
 		{
 			iterationRuntime = 0.0;
 			free(nearestNeighbors); free(safeNearestNeighbors); free(remainingNodes);
 			free(removeNodes); free(lastNodes); free(costThresholdNodes);
 			nearestNeighbors = NULL; safeNearestNeighbors = NULL; remainingNodes = NULL;
 			removeNodes = NULL; lastNodes = NULL; costThresholdNodes = NULL;
+
 			// do the RRT# thing
 			while(iterationRuntime < maxIterationRuntime || !G_workspace.goalRegionReached)
 			{				
-				tempNode = (count % goalBiasCount != 0) ? G_configspace.generateRandomNode() : G_configspace.generateBiasedNode(G_workspace.goalRegion.x, G_workspace.goalRegion.y, G_workspace.goalRegion.theta);
-				parentNode = G_configspace.findClosestNode_basic(tempNode);
 				free(remainingNodes);
 				remainingNodes = NULL;
+
+				tempNode = (count % goalBiasCount != 0) ? G_configspace.generateRandomNode() : G_configspace.generateBiasedNode(G_workspace.goalRegion.x, G_workspace.goalRegion.y, G_workspace.goalRegion.theta);
+				parentNode = G_configspace.findClosestNode(tempNode);
+				
 				if (!G_workspace.checkAtGoal_basic(parentNode))
 				{
 					newNode = G_workspace.extendToNode_basic(parentNode, tempNode, epsilon);
-					newNode = G_workspace.connectNodesCubicBezier(parentNode, newNode, timestep, dt);
-					newNode.cost = parentNode.cost + G_configspace.computeCost_basic(parentNode, newNode);
 
-					//for (int test = 0; test < newNode.numIterationPoints; test++)
-					//{
-					//	printf("x: %f, y: %f\n", newNode.iterationPoints[test].x, newNode.iterationPoints[test].y);
-					//}
-
-					// if there is a collision, newNode id will be set to its parent's id
-					if (newNode.id != parentNode.id)
+					// CUBIC BEZIER PATH
+					if (newNode.parentNodeId)
 					{
+						newNode.v = tempNode.v;
+						newNode.theta = tempNode.theta;
+						newNode = G_workspace.connectNodesCubicBezier(parentNode, newNode, timestep, dt);
+					}
+
+					// if there is a collision, newNode parent id will be zero
+					if (newNode.parentNodeId)
+					{
+						newNode.cost = parentNode.cost + G_configspace.computeCost_basic(parentNode, newNode);
+
 						circleRadius = G_configspace.computeRadius(epsilon);
-						safeNearestNeighbors = G_configspace.findNeighbors_basic(newNode, circleRadius, k);
+						safeNearestNeighbors = G_configspace.findNeighbors(newNode, circleRadius, k);
 						remainingNodes = (ConfigspaceNode*)calloc(1, sizeof(ConfigspaceNode));
 						remainingNodes[0].id = 0;
 
 						if (safeNearestNeighbors[0].id)
 						{
-							bestNeighbor = G_configspace.findBestNeighbor_basic(newNode, safeNearestNeighbors);
+							bestNeighbor = G_workspace.findBestNeighbor_basic(newNode, safeNearestNeighbors, timestep, dt);
 							tempNode = G_workspace.connectNodes_basic(bestNeighbor, newNode);
+
+							// CUBIC BEZIER PATH
+							if (tempNode.parentNodeId)
+							{
+								tempNode.v = newNode.v;
+								tempNode.theta = newNode.theta;
+								tempNode = G_workspace.connectNodesCubicBezier(bestNeighbor, tempNode, timestep, dt);
+							}
 
 							if (tempNode.parentNodeId)
 							{
@@ -239,23 +264,33 @@ int main()
 						remainingCount = 0;
 						while (remainingNodes[remainingCount].id)
 						{
-							if (remainingNodes[remainingCount].cost > (tempNode.cost + G_configspace.computeCost_basic(remainingNodes[remainingCount], tempNode)))
+							//newNode.parentNodeId = tempNode.id;
+							newNode = G_workspace.connectNodes_basic(tempNode, remainingNodes[remainingCount]);
+							
+							// CUBIC BEZIER PATH
+							if (newNode.parentNodeId)
 							{
-								newNode = G_workspace.connectNodes_basic(tempNode, remainingNodes[remainingCount]);
-								if (newNode.parentNodeId)
-								{
-									newNode.cost = tempNode.cost + G_configspace.computeCost_basic(remainingNodes[remainingCount], tempNode);
-									newNode.parentNodeId = tempNode.id;
-									remainingNodeParent = G_configspace.findNodeId(remainingNodes[remainingCount].parentNodeId);
-									G_configspace.removeEdge(remainingNodeParent, remainingNodes[remainingCount]);
-									G_configspace.addEdge(tempNode, newNode);
-									G_configspace.replaceNode_basic(remainingNodes[remainingCount], newNode);
+								newNode.v = remainingNodes[remainingCount].v;
+								newNode.theta = remainingNodes[remainingCount].theta;
+								newNode = G_workspace.connectNodesCubicBezier(tempNode, newNode, timestep, dt);
+							}
 
-									ConfigspaceNode* updatedNode = (ConfigspaceNode*)calloc(2, sizeof(ConfigspaceNode));
-									updatedNode[0] = newNode;
-									updatedNode[1].id = 0;
-									G_configspace.propagateCost_basic(updatedNode);
-								}
+							//printf("RemainingNodeCost: %f, PotentialRewireCost: %f\n", remainingNodes[remainingCount].cost, tempNode.cost + G_configspace.computeCost_basic(tempNode, newNode));
+							
+							if (newNode.parentNodeId && (remainingNodes[remainingCount].cost > (tempNode.cost + G_configspace.computeCost_basic(tempNode, newNode))))
+							{
+								remainingNodeParent = G_configspace.findNodeId(remainingNodes[remainingCount].parentNodeId);
+								newNode.cost = tempNode.cost + G_configspace.computeCost_basic(tempNode, newNode);
+								//printf("----------------------------DEBUG3 - START; Cost: %f----------------------------\n", newNode.cost);
+								G_configspace.removeEdge(remainingNodeParent, remainingNodes[remainingCount]);
+								G_configspace.addEdge(tempNode, newNode);
+								G_configspace.replaceNode(remainingNodes[remainingCount], newNode);
+
+								ConfigspaceNode* updatedNode = (ConfigspaceNode*)calloc(2, sizeof(ConfigspaceNode));
+								updatedNode[0] = newNode;
+								updatedNode[1].id = 0;
+								G_configspace.propagateCost_basic(updatedNode);
+								//printf("----------------------------DEBUG3 - STOP; Cost: %f-----------------------------\n", newNode.cost);
 							}
 							remainingCount++;
 						}
@@ -287,25 +322,31 @@ int main()
 			// get the last m nodes in the tree
 			lastNodes = G_configspace.getLastNodes(finalNode, m);
 
-			// // print the last m nodes to a file format that can be
-			// // ingested by the simulation
-			// G_configspace.printNodes(lastNodes);
-
-			// trim the tree to remove those nodes and all nodes with a cost
-			// greater than the (n-m)th node (for a graph with n nodes)
-			//removeNodes = (ConfigspaceNode*)calloc(2, sizeof(ConfigspaceNode));
-			//removeNodes[0] = lastNodes[0];
-			//removeNodes[1].id = 0;
-			//G_configspace.trimTreeChildren(removeNodes, lastNodes[0].id);
-
+			// get a list of nodes across which the cost exceeds the current
+			// final node's cost
 			costThresholdNodes = G_configspace.getCostThresholdNodes(lastNodes[0]);
 
+			// trim these threshold nodes and all children
 			G_configspace.trimTreeChildren(costThresholdNodes, lastNodes[0].id);
 
-			//G_configspace.printData(3 + tempItr++, lastNodes[0]);
 			// update goal region in the workspace graph to the new
 			// current last node in the tree (the (n-m)th node)
 			G_workspace.updateGoalRegion(lastNodes[0].x, lastNodes[0].y, lastNodes[0].theta, 0.0, 0.0, 2.5);
+
+			// update the freespace of the graph to limit x, y search to within the current branch
+			branchBounds = G_configspace.getBranchBounds(lastNodes[0]);
+			
+			G_workspace.defineFreespace(
+				branchBounds[0], branchBounds[2], thetaMin, vMin, wMin,
+				branchBounds[1], branchBounds[3], thetaMax, vMax, wMax,
+				linAccelMax, rotAccelMax);
+			G_configspace.defineFreespace(
+				branchBounds[0], branchBounds[2], thetaMin, vMin, wMin,
+				branchBounds[1], branchBounds[3], thetaMax, vMax, wMax,
+				linAccelMax, rotAccelMax,
+				dimension, obsVol);
+			
+
 		}
 	}
 #pragma endregion Primary code for the Anytime RRT# implementaion

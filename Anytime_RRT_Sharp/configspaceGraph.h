@@ -21,10 +21,15 @@ struct ConfigspaceNode
 	double theta;		// rotation of the vehicle
 	double v;			// linear velocity of the vehicle
 	double w;			// rotational velocity of the vehicle
+	double dx;			// velocity in the x-axis (for iteration nodes)
+	double dy;			// velocity in the y-axis (for iteration nodes)
+	double ddx;			// accel in the x-axis (for iteration nodes)
+	double ddy;			// accel in the y-axis (for iteration nodes)
 	double t;			// time of the node
 	double a;			// translational acceleration control input applied 
 	double gamma;		// rotational acceleration control input applied
 	int parentNodeId;	// the id of the parent node for this node
+	double dist;		// the total traverse distance to get from the parent node to this node
 	double cost;		// cost-to-go for this node
 
 	// iteration point parameters
@@ -122,7 +127,7 @@ public:
 
 	// get the k-nearest neighbors from the current node
 	// will not return the centerNode's parent node in the array
-	ConfigspaceNode* findNeighbors(ConfigspaceNode centerNode, double radius, int k, double goalX, double goalY, double goalRadius);
+	ConfigspaceNode* findNeighbors(ConfigspaceNode centerNode, double radius, int k);
 
 	// find the best node of the provided list of safe nodes to attempt to
 	// connect to for RRT*
@@ -141,6 +146,10 @@ public:
 	// returns an array of nodes that are the cost threshold of the graph given a node
 	// (i.e. the nodes before which the cost is less expensive)
 	ConfigspaceNode* getCostThresholdNodes(ConfigspaceNode finalNode);
+
+	// returns a 4 element array with the x,y limits of the branch defined by the
+	// end node given to the function
+	double* getBranchBounds(ConfigspaceNode node);
 
 	// default constructor
 	ConfigspaceGraph() { buildGraph(); }
