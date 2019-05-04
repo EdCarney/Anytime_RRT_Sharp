@@ -35,33 +35,36 @@ int main()
 	//------------------------------------------------------------------------//
 	//-------this info should be ingested from the intialization script-------//
 	//------------------------------------------------------------------------//
-	int numGates = 1, numObstacles = 23;
+	int numGates = 1, numObstacles = 3;
 
 	// define arrays for the gate and obstacle information (INCLUDE GATE REGION AS OBSTACLE)
-	double approxGateXPosition[numGates] = { 5.0 };
-	double approxGateYPosition[numGates] = { 60.0 };
-	double approxGateApproach[numGates] = { 3 * M_PI / 2 };
+	double approxGateXPosition[numGates] = { 10.0 };
+	double approxGateYPosition[numGates] = { 10.0 };
+	double approxGateApproach[numGates] = { 1 * M_PI / 4 };
 
 	//double exactGateXPosition[numGates] = { 4.5 };
 	//double exactGateYPosition[numGates] = { 59.7 };
 	//double exactGateApproach[numGates] = { 0.95 * (3 * M_PI / 2) };
 
 	// define additional input parameters for the goal node calculation
-	double standOffRange = 5.0;
+	double standOffRange = 1.0;
 
-	double obstacleXPosition[numObstacles + numGates] = { 80, 73, 63, 53, 43, 33, 28, 25, 25, 25, 25, 35, 40, 45, 80, 85, 90, 95, 100, 100, 100, 100, 60, approxGateXPosition[0] };
-	double obstacleYPosition[numObstacles + numGates] = { 40, 30, 25, 25, 26, 25, 35, 47, 57, 67, 77, 80, 80, 80, 80, 80, 80, 80, 80, 0, 5, 10, 100, approxGateYPosition[0] };
-	double obstacleRadius[numObstacles + numGates] = { 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, standOffRange - 1.0 };
+	//double obstacleXPosition[numObstacles + numGates] = { 80, 73, 63, 53, 43, 33, 28, 25, 25, 25, 25, 35, 40, 45, 80, 85, 90, 95, 100, 100, 100, 100, 60, approxGateXPosition[0] };
+	double obstacleXPosition[numObstacles + numGates] = { 2, 5, 9, approxGateXPosition[0] };
+	//double obstacleYPosition[numObstacles + numGates] = { 40, 30, 25, 25, 26, 25, 35, 47, 57, 67, 77, 80, 80, 80, 80, 80, 80, 80, 80, 0, 5, 10, 100, approxGateYPosition[0] };
+	double obstacleYPosition[numObstacles + numGates] = { 5, 7, 6, approxGateYPosition[0] };
+	//double obstacleRadius[numObstacles + numGates] = { 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, standOffRange - 0.2 * standOffRange };
+	double obstacleRadius[numObstacles + numGates] = { 1.0, 1.0, 1.0, 0.1 * standOffRange };
 
 	// initial UAV orientation
 	//double uavStartX = 100.0, uavStartY = 60.0, uavStartTheta = 0.75 * M_PI;
 	//double uavStartX = 100.0, uavStartY = 20.0, uavStartTheta = 0.75 * M_PI;
-	double uavStartX = 120.0, uavStartY = 80.0, uavStartTheta = 1.75 * M_PI;
+	double uavStartX = 0.0, uavStartY = 0.0, uavStartTheta = 0.5 * M_PI;
 	//double uavStartX = 50.0, uavStartY = 50.0, uavStartTheta = 0.25 * M_PI;
 	double uavStartV = 0.0, uavStartW = 0.0;
 
 	// goal region (UAV position) radius
-	double uavGoalRadius = 2.5;
+	double uavGoalRadius = 0.5;
 
 	// vehicle rigid body information
 	int numVehiclePoints = 4;
@@ -73,11 +76,11 @@ int main()
 	double xMin = 0.0, yMin = 0.0, xMax = 0.0, yMax = 0.0;
 	double thetaMin = 0.0, thetaMax = 2 * M_PI;
 	double vMin = 0.0, vMax = 2.0, wMin = -M_PI / 8, wMax = M_PI / 8;
-	double linAccelMax = 0.5, rotAccelMax = M_PI / 4;
+	double linAccelMax = 1.0, rotAccelMax = M_PI / 4;
 
 	// define a buffer region and the side length to use when
 	// defining the square freespace
-	double buffer = 40.0;
+	double buffer = 2.5;
 
 	// define the timestep and delta time (dt) values used for connecting and rewiring nodes
 	double timestep = 5.0, dt = 0.1;
@@ -98,8 +101,8 @@ int main()
 	ConfigspaceNode tempNode, parentNode, newNode, bestNeighbor, remainingNodeParent;
 	ConfigspaceNode *nearestNeighbors = NULL, *safeNearestNeighbors = NULL, *remainingNodes = NULL, *removeNodes = NULL, *lastNodes = NULL, *costThresholdNodes = NULL;
 	bool goalCheck;
-	int remainingCount = 0, k = 15, m = 4, count = 0;
-	double circleRadius = 0.0, epsilon = 20.0;
+	int remainingCount = 0, k = 10, m = 2, count = 0;
+	double circleRadius = 0.0, epsilon = 4.0;
 	double *branchBounds = (double*)calloc(4, sizeof(double));
 	//------------------------------------------------------------------------//
 	//------------------------------------------------------------------------//
@@ -130,7 +133,7 @@ int main()
 
 		// function to determine goal node based on approximate gate information
 		gateNode = calcGateNode(approxGateXPosition[gate], approxGateYPosition[gate], approxGateApproach[gate], standOffRange);
-		gateNode.v = 2.0;
+		gateNode.v = 1.0;
 		printf("Theta: %f\n", gateNode.theta);
 
 		// define the limits of the graph based on position of the gate
@@ -181,7 +184,7 @@ int main()
 #pragma region RRT# Main Code
 		// start the anytime RRT# iterations
 		iterationRuntime = 0.0;
-		maxIterationRuntime = 7500.0;
+		maxIterationRuntime = 50000.0;
 		count = 0;
 		int tempItr = 0;
 		while(!G_workspace.atGate(gateNode))

@@ -54,7 +54,7 @@ goal_regions = [
     12.174539, 70.981114, 2.5
     ];
 
-gate_region = [5, 60, 5];
+gate_region = [10, 10, 1];
 
 % a bit of data processing for faster plotting
 search_tree = nan(3*size(search_tree_raw, 1), 2);
@@ -87,14 +87,14 @@ edges(2:3:end-1, 2) = nodes(edges_raw(:, 2),2);
 figure('Renderer', 'painters', 'Position', [50 50 600 600])
 
 % plot the goal region
-pos = [
-    (goal_regions(problemNum,1) - goal_regions(problemNum,3)),...
-    (goal_regions(problemNum,2) - goal_regions(problemNum,3)),...
-    goal_regions(problemNum,3) * 2,...
-    goal_regions(problemNum,3) * 2
-    ]; 
-rectangle('Position',pos,'Curvature',[1 1], 'FaceColor',[0 .5 .5],...
-    'EdgeColor','b', 'LineWidth',2)
+% pos = [
+%     (goal_regions(problemNum,1) - goal_regions(problemNum,3)),...
+%     (goal_regions(problemNum,2) - goal_regions(problemNum,3)),...
+%     goal_regions(problemNum,3) * 2,...
+%     goal_regions(problemNum,3) * 2
+%     ]; 
+% rectangle('Position',pos,'Curvature',[1 1], 'FaceColor',[0 .5 .5],...
+%     'EdgeColor','b', 'LineWidth',2)
 
 hold on
 
@@ -122,9 +122,9 @@ pos = [
 rectangle('Position',pos,'Curvature',[1 1], 'FaceColor','r',...
     'EdgeColor','k', 'LineWidth',3)
 
-plot(start_points(problemNum,1), start_points(problemNum,2), 'or', 'MarkerSize', 10,...
-    'MarkerFaceColor', 'r')
-plot(path_raw(:,2), path_raw(:,3), 'g:', 'LineWidth', 4);
+%plot(start_points(problemNum,1), start_points(problemNum,2), 'or', 'MarkerSize', 10,...
+%    'MarkerFaceColor', 'r')
+%plot(path_raw(:,2), path_raw(:,3), 'g:', 'LineWidth', 4);
 
 title('Path Search Tree')
 xlabel('X-Coordinate (m)')
@@ -147,7 +147,7 @@ pos = [
 rectangle('Position',pos,'Curvature',[1 1], 'FaceColor','r',...
     'EdgeColor','k', 'LineWidth',3)
 plot(high_fidelity_path(:,2), high_fidelity_path(:,3), '.');
-axis([-35.000000, 140.000000, 15.000000, 100.000000]);
+%axis([-35.000000, 140.000000, 15.000000, 100.000000]);
 
 % plot the vehicle outline
 for i=1:10:length(high_fidelity_path(:, 2))

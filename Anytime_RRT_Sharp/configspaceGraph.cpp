@@ -756,9 +756,9 @@ ConfigspaceNode ConfigspaceGraph::findClosestNode_basic(ConfigspaceNode node)
 
 double ConfigspaceGraph::computeCost_basic(ConfigspaceNode node_1, ConfigspaceNode node_2)
 {
-	//double cost = node_2.dist;
+	double cost = node_2.dist;
 	//double cost = node_2.numIterationPoints;
-	double cost = node_2.dist * node_2.dist / hypot((node_1.x - node_2.x), (node_1.y - node_2.y));
+	//double cost = node_2.dist * node_2.dist / hypot((node_1.x - node_2.x), (node_1.y - node_2.y));
 	//double cost = (double) node_2.numIterationPoints / node_2.dist;
 	//double cost = node_2.dist - hypot((node_1.x - node_2.x), (node_1.y - node_2.y));
 	return cost;

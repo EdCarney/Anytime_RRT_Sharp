@@ -755,6 +755,7 @@ ConfigspaceNode WorkspaceGraph::connectNodesCubicBezier(ConfigspaceNode parentNo
 			abs(newNode.iterationPoints[i].dx) < minV || abs(newNode.iterationPoints[i].dx) > maxV ||
 			abs(newNode.iterationPoints[i].dy) < minV || abs(newNode.iterationPoints[i].dy) > maxV)*/
 		{
+			//printf("Accel %f, Vel: %f\n",newNode.iterationPoints[i].a, newNode.iterationPoints[i].v);
 			connectedNodes = false;
 			break;
 		}
@@ -764,6 +765,7 @@ ConfigspaceNode WorkspaceGraph::connectNodesCubicBezier(ConfigspaceNode parentNo
 		checkNode.y = newNode.iterationPoints[i].y;
 		if (checkCollision(checkNode))
 		{
+			//printf("BOO2\n");
 			connectedNodes = false;
 			break;
 		}
@@ -771,6 +773,7 @@ ConfigspaceNode WorkspaceGraph::connectNodesCubicBezier(ConfigspaceNode parentNo
 
 	if (connectedNodes)
 	{
+		//printf("WOO\n");
 		newNode.dx = newNode.iterationPoints[numIterations - 1].dx;
 		newNode.dy = newNode.iterationPoints[numIterations - 1].dy;
 		newNode.ddx = newNode.iterationPoints[numIterations - 1].ddx;
