@@ -1,11 +1,13 @@
-#include <string.h>
+#include <string>
+#include <sstream>
+//#include <string.h>
 #include <math.h>
 #include <memory>
 #include <stdlib.h>
 #include <fstream>
 #include <iostream>
+#include <cstring>
 #include "configspaceGraph.h"
-
 
 void ConfigspaceGraph::buildGraph()
 {
@@ -75,7 +77,7 @@ void ConfigspaceGraph::addEdge(ConfigspaceNode parentNode, ConfigspaceNode newNo
 	if (numEdges > 0)
 	{
 		Edge* newEdges = (Edge*)calloc(numEdges + 1, sizeof(Edge));
-		memcpy(newEdges, edges, numEdges * sizeof(Edge));
+		std::memcpy(newEdges, edges, numEdges * sizeof(Edge));
 		free(edges);
 		edges = newEdges;
 	}
@@ -186,7 +188,7 @@ void ConfigspaceGraph::removeGraphNodes(ConfigspaceNode *nodesToRemove)
 			if (keepFlag)
 			{
 				tempNewEdges = (Edge*)calloc(newEdgeArrayInd + 1, sizeof(Edge));
-				memcpy(tempNewEdges, newEdges, newEdgeArrayInd * sizeof(Edge));
+				std::memcpy(tempNewEdges, newEdges, newEdgeArrayInd * sizeof(Edge));
 				free(newEdges);
 				newEdges = tempNewEdges;
 				newEdges[newEdgeArrayInd] = edges[i];
@@ -209,7 +211,7 @@ void ConfigspaceGraph::createNode(double x, double y, double theta, double v, do
 	if (numNodes > 0)
 	{
 		ConfigspaceNode* newNodes = (ConfigspaceNode*)calloc(numNodes + 1, sizeof(ConfigspaceNode));
-		memcpy(newNodes, nodes, numNodes * sizeof(ConfigspaceNode));
+		std::memcpy(newNodes, nodes, numNodes * sizeof(ConfigspaceNode));
 		free(nodes);
 		nodes = newNodes;
 	}
@@ -241,7 +243,7 @@ ConfigspaceNode ConfigspaceGraph::addNode(ConfigspaceNode addedNode)
 	if (numNodes > 0)
 	{
 		ConfigspaceNode* newNodes = (ConfigspaceNode*)calloc(numNodes + 1, sizeof(ConfigspaceNode));
-		memcpy(newNodes, nodes, numNodes * sizeof(ConfigspaceNode));
+		std::memcpy(newNodes, nodes, numNodes * sizeof(ConfigspaceNode));
 		free(nodes);
 		nodes = newNodes;
 
@@ -279,7 +281,7 @@ void ConfigspaceGraph::replaceNode(ConfigspaceNode oldNode, ConfigspaceNode newN
 	free(nodes[oldNodePlace].iterationPoints);
 	nodes[oldNodePlace] = newNode;
 	nodes[oldNodePlace].iterationPoints = (ConfigspaceNode*)calloc(newNode.numIterationPoints, sizeof(ConfigspaceNode));
-	memcpy(nodes[oldNodePlace].iterationPoints, newNode.iterationPoints, newNode.numIterationPoints * sizeof(ConfigspaceNode));
+	std::memcpy(nodes[oldNodePlace].iterationPoints, newNode.iterationPoints, newNode.numIterationPoints * sizeof(ConfigspaceNode));
 }
 
 ConfigspaceNode ConfigspaceGraph::findClosestNode(ConfigspaceNode node)
@@ -433,7 +435,7 @@ ConfigspaceNode* ConfigspaceGraph::findNeighbors(ConfigspaceNode centerNode, dou
 	{
 		ConfigspaceNode* tempNeighbors;
 		tempNeighbors = (ConfigspaceNode*)calloc(n + 1, sizeof(ConfigspaceNode));
-		memcpy(tempNeighbors, neighbors, n * sizeof(ConfigspaceNode));
+		std::memcpy(tempNeighbors, neighbors, n * sizeof(ConfigspaceNode));
 		free(neighbors);
 		tempNeighbors[n].id = 0;
 		return tempNeighbors;
@@ -486,7 +488,7 @@ void ConfigspaceGraph::propagateCost(ConfigspaceNode *updatedNodes)
 			if (updatedNodes[i].id == nodes[j].parentNodeId)
 			{
 				ConfigspaceNode* tempNodesToUpdate = (ConfigspaceNode*)calloc(nodeCount + 1, sizeof(ConfigspaceNode));
-				memcpy(tempNodesToUpdate, nodesToUpdate, (nodeCount) * sizeof(ConfigspaceNode));
+				std::memcpy(tempNodesToUpdate, nodesToUpdate, (nodeCount) * sizeof(ConfigspaceNode));
 				free(nodesToUpdate);
 				nodesToUpdate = tempNodesToUpdate;
 				nodesToUpdate[nodeCount] = nodes[j];
@@ -497,7 +499,7 @@ void ConfigspaceGraph::propagateCost(ConfigspaceNode *updatedNodes)
 	}
 
 	ConfigspaceNode* tempNodesToUpdate = (ConfigspaceNode*)calloc(nodeCount + 1, sizeof(ConfigspaceNode));
-	memcpy(tempNodesToUpdate, nodesToUpdate, (nodeCount) * sizeof(ConfigspaceNode));
+	std::memcpy(tempNodesToUpdate, nodesToUpdate, (nodeCount) * sizeof(ConfigspaceNode));
 	free(nodesToUpdate);
 	nodesToUpdate = tempNodesToUpdate;
 	nodesToUpdate[nodeCount].id = 0;
@@ -525,7 +527,7 @@ void ConfigspaceGraph::trimTreeChildren(ConfigspaceNode *removeNodes, int saveNo
 			if (removeNodes[i].id == nodes[j].parentNodeId)
 			{
 				ConfigspaceNode *tempNodesToRemove = (ConfigspaceNode*)calloc(nodeCount + 1, sizeof(ConfigspaceNode));
-				memcpy(tempNodesToRemove, nodesToRemove, (nodeCount) * sizeof(ConfigspaceNode));
+				std::memcpy(tempNodesToRemove, nodesToRemove, (nodeCount) * sizeof(ConfigspaceNode));
 				free(nodesToRemove);
 				nodesToRemove = tempNodesToRemove;
 				nodesToRemove[nodeCount] = nodes[j];
@@ -537,7 +539,7 @@ void ConfigspaceGraph::trimTreeChildren(ConfigspaceNode *removeNodes, int saveNo
 	// add a node to the end of the nodesToRemove with a null id to identify the
 	// end of the array
 	ConfigspaceNode *tempNodesToRemove = (ConfigspaceNode*)calloc(nodeCount + 1, sizeof(ConfigspaceNode));
-	memcpy(tempNodesToRemove, nodesToRemove, (nodeCount) * sizeof(ConfigspaceNode));
+	std::memcpy(tempNodesToRemove, nodesToRemove, (nodeCount) * sizeof(ConfigspaceNode));
 	free(nodesToRemove);
 	nodesToRemove = tempNodesToRemove;
 	nodesToRemove[nodeCount].id = 0;
@@ -585,7 +587,7 @@ ConfigspaceNode* ConfigspaceGraph::getCostThresholdNodes(ConfigspaceNode finalNo
 			if ((nodes[i].cost > finalNode.cost && parentCheckNode.cost < finalNode.cost) || nodes[i].id == finalNode.id)
 			{
 				ConfigspaceNode *tempNodesToRemove = (ConfigspaceNode*)calloc(nodeCount + 1, sizeof(ConfigspaceNode));
-				memcpy(tempNodesToRemove, nodesToRemove, nodeCount * sizeof(ConfigspaceNode));
+				std::memcpy(tempNodesToRemove, nodesToRemove, nodeCount * sizeof(ConfigspaceNode));
 				free(nodesToRemove);
 				nodesToRemove = tempNodesToRemove;
 				nodesToRemove[nodeCount] = nodes[i];
@@ -597,7 +599,7 @@ ConfigspaceNode* ConfigspaceGraph::getCostThresholdNodes(ConfigspaceNode finalNo
 	// add a node to the end of the nodesToRemove with a null id to identify the
 	// end of the array
 	ConfigspaceNode *tempNodesToRemove = (ConfigspaceNode*)calloc(nodeCount + 1, sizeof(ConfigspaceNode));
-	memcpy(tempNodesToRemove, nodesToRemove, (nodeCount) * sizeof(ConfigspaceNode));
+	std::memcpy(tempNodesToRemove, nodesToRemove, (nodeCount) * sizeof(ConfigspaceNode));
 	free(nodesToRemove);
 	nodesToRemove = tempNodesToRemove;
 	nodesToRemove[nodeCount].id = 0;
@@ -752,7 +754,7 @@ ConfigspaceNode * ConfigspaceGraph::findNeighbors_basic(ConfigspaceNode centerNo
 	{
 		ConfigspaceNode* tempNeighbors;
 		tempNeighbors = (ConfigspaceNode*)calloc(n + 1, sizeof(ConfigspaceNode));
-		memcpy(tempNeighbors, neighbors, n * sizeof(ConfigspaceNode));
+		std::memcpy(tempNeighbors, neighbors, n * sizeof(ConfigspaceNode));
 		free(neighbors);
 		tempNeighbors[n].id = 0;
 		return tempNeighbors;
@@ -794,7 +796,7 @@ ConfigspaceNode ConfigspaceGraph::addNode_basic(ConfigspaceNode addedNode)
 	if (numNodes > 0)
 	{
 		ConfigspaceNode* newNodes = (ConfigspaceNode*)calloc(numNodes + 1, sizeof(ConfigspaceNode));
-		memcpy(newNodes, nodes, numNodes * sizeof(ConfigspaceNode));
+		std::memcpy(newNodes, nodes, numNodes * sizeof(ConfigspaceNode));
 		free(nodes);
 		nodes = newNodes;
 
@@ -843,7 +845,7 @@ void ConfigspaceGraph::propagateCost_basic(ConfigspaceNode * updatedNodes)
 			if (updatedNodes[i].id == nodes[j].parentNodeId)
 			{
 				ConfigspaceNode* tempNodesToUpdate = (ConfigspaceNode*)calloc(nodeCount + 1, sizeof(ConfigspaceNode));
-				memcpy(tempNodesToUpdate, nodesToUpdate, (nodeCount) * sizeof(ConfigspaceNode));
+				std::memcpy(tempNodesToUpdate, nodesToUpdate, (nodeCount) * sizeof(ConfigspaceNode));
 				free(nodesToUpdate);
 				nodesToUpdate = tempNodesToUpdate;
 				nodesToUpdate[nodeCount] = nodes[j];
@@ -853,7 +855,7 @@ void ConfigspaceGraph::propagateCost_basic(ConfigspaceNode * updatedNodes)
 		}
 	}
 	ConfigspaceNode* tempNodesToUpdate = (ConfigspaceNode*)calloc(nodeCount + 1, sizeof(ConfigspaceNode));
-	memcpy(tempNodesToUpdate, nodesToUpdate, (nodeCount) * sizeof(ConfigspaceNode));
+	std::memcpy(tempNodesToUpdate, nodesToUpdate, (nodeCount) * sizeof(ConfigspaceNode));
 	free(nodesToUpdate);
 	nodesToUpdate = tempNodesToUpdate;
 	nodesToUpdate[nodeCount].id = 0;
