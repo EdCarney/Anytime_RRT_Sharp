@@ -2,4 +2,5 @@ edges*.txt
 nodes*.txt
 output_path*.txt
 search_tree*.txt
+*.out
 high_fidelity_path*.csv
