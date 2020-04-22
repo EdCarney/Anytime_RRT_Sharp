@@ -85,7 +85,7 @@ int main()
 	ConfigspaceNode tempNode, parentNode, newNode, bestNeighbor, remainingNodeParent;
 	ConfigspaceNode *nearestNeighbors = NULL, *safeNearestNeighbors = NULL, *remainingNodes = NULL, *removeNodes = NULL, *lastNodes = NULL, *costThresholdNodes = NULL;
 	bool goalCheck;
-	int remainingCount = 0, k = 10, m = 4, count = 0;
+	int remainingCount = 0, k = 10, m = 40, count = 0;
 	double circleRadius = 0.0, epsilon = 5.0;
 	//------------------------------------------------------------------------//
 	//------------------------------------------------------------------------//
@@ -98,21 +98,8 @@ int main()
 		WorkspaceGraph G_workspace;
 		ConfigspaceGraph G_configspace;
 
-		if (gate == 0)
-		{
-			// set the goal region (i.e. the UAV starting location)
-			// if it's not the first iteration, then the goal region will be set based
-			// on the last known position of the UAV
-			G_workspace.addGoalRegion(uavStartX, uavStartY, uavStartTheta, uavStartV, uavStartW, uavGoalRadius);
-		}
-		/*
-		else
-		{
-			// add the goal region based on the exit node of the
-			// last run
-			G_workspace.addGoalRegion(<PREVIOUS_START_NODE>);
-		}
-		*/
+		// set the goal region (i.e. the UAV starting location)
+		G_workspace.addGoalRegion(uavStartX, uavStartY, uavStartTheta, uavStartV, uavStartW, uavGoalRadius);
 
 		// function to determine goal node based on approximate gate information
 		gateNode = calcGateNode(approxGateXPosition[gate], approxGateYPosition[gate], approxGateApproach[gate], standOffRange);
@@ -124,9 +111,6 @@ int main()
 
 		if (gateNode.y < G_workspace.goalRegion.y) { yMin = gateNode.y - buffer; yMax = G_workspace.goalRegion.y + buffer; }
 		else { yMin = G_workspace.goalRegion.y - buffer; yMax = gateNode.y + buffer; }
-
-		//yMin = yMin < 0 ? 0.0 : yMin;
-		//xMin = xMin < 0 ? 0.0 : xMin;
 
 		// set freespace of graphs based on the graph limits; some values will always
 		// be the same (theta, v, w, a, gamma), while others will vary (x and y)
@@ -166,10 +150,11 @@ int main()
 
 		// start the anytime RRT# iterations
 		iterationRuntime = 0.0;
-		maxIterationRuntime = 500.0;
+		maxIterationRuntime = 10000.0;
 		count = 0;
 		int tempItr = 0;
-		while(!G_workspace.atGate(gateNode))// && count < maxIterationRuntime)
+		//while(!G_workspace.atGate(gateNode))// && count < maxIterationRuntime)
+		while(!G_workspace.checkAtGoal_basic(gateNode))// && count < maxIterationRuntime)
 		{
 			iterationRuntime = 0.0;
 			free(nearestNeighbors); free(safeNearestNeighbors); free(remainingNodes);
@@ -273,6 +258,7 @@ int main()
 			}
 			printf("Total number of points: %d\n", G_configspace.numNodes);
 			printf("Final node at: (%f, %f)\n", finalNode.x, finalNode.y);
+			printf("Final cost is: %f\n", finalCost);
 			G_configspace.printData(1  + tempItr++, finalNode);
 
 			// get the last m nodes in the tree
@@ -289,14 +275,14 @@ int main()
 			//removeNodes[1].id = 0;
 			//G_configspace.trimTreeChildren(removeNodes, lastNodes[0].id);
 
-			costThresholdNodes = G_configspace.getCostThresholdNodes(lastNodes[0]);
+			//costThresholdNodes = G_configspace.getCostThresholdNodes(lastNodes[0]);
 
-			G_configspace.trimTreeChildren(costThresholdNodes, lastNodes[0].id);
+			//G_configspace.trimTreeChildren(costThresholdNodes, lastNodes[0].id);
 
 			//G_configspace.printData(3 + tempItr++, lastNodes[0]);
 			// update goal region in the workspace graph to the new
 			// current last node in the tree (the (n-m)th node)
-			G_workspace.updateGoalRegion(lastNodes[0].x, lastNodes[0].y, 0.0, 0.0, 0.0, 2.5);
+			G_workspace.updateGoalRegion(lastNodes[0].x, lastNodes[0].y, 0.0, 0.0, 0.0, standOffRange);
 		}
 	}
 #pragma endregion Primary code for the Anytime RRT# implementaion

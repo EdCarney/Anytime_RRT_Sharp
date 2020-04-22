@@ -13,7 +13,7 @@ clear all
 close all
 clc
 
-problemNum = 5     %% CHANGE THIS
+problemNum = 1     %% CHANGE THIS
 nodeOffset = 0;
 
 search_tree_raw = csvread(['search_tree_' num2str(problemNum + nodeOffset,'%d') '.txt']);
@@ -25,11 +25,11 @@ vehicle_raw = csvread('robot.txt');
 
 % specify goal region [x, y, radius] and start point [x, y]
 start_points = [
-    5, 60;
-    5, 60;
-    5, 60;
-    5, 60;
-    5, 60;
+    5, 55;
+    5, 55;
+    5, 55;
+    5, 55;
+    5, 55;
     ];
 goal_regions = [
     100, 60, 2.5;
