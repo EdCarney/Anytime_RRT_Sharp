@@ -2,6 +2,7 @@
 #include <time.h> 
 #include <math.h>
 #include <cmath>
+#include <typeinfo>
 
 #include "configspaceGraph.h"
 #include "workspaceGraph.h"
@@ -32,16 +33,16 @@ int main()
 	//------------------------------------------------------------------------//
 	//-------this info should be ingested from the intialization script-------//
 	//------------------------------------------------------------------------//
-	int numObstacles = 23;
 
 	// define arrays for the gate and obstacle information
 	double approxGateXPosition = 5.0;
 	double approxGateYPosition = 60.0;
 	double approxGateApproach = M_PI / 2.0;
 
-	double obstacleXPosition[numObstacles] = { 80, 73, 63, 53, 43, 33, 28, 25, 25, 25, 25, 35, 40, 45, 80, 85, 90, 95, 100, 100, 100, 100, 60 };
-	double obstacleYPosition[numObstacles] = { 40, 30, 25, 25, 26, 25, 35, 47, 57, 67, 77, 80, 80, 80, 80, 80, 80, 80, 80, 0, 5, 10, 100 };
-	double obstacleRadius[numObstacles] = { 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8 };
+	double obstacleXPosition[] = { 80, 73, 63, 53, 43, 33, 28, 25, 25, 25, 25, 35, 40, 45, 80, 85, 90, 95, 100, 100, 100, 100, 60 };
+	double obstacleYPosition[] = { 40, 30, 25, 25, 26, 25, 35, 47, 57, 67, 77, 80, 80, 80, 80, 80, 80, 80, 80, 0, 5, 10, 100 };
+	double obstacleRadius[]    = { 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8 };
+	int numObstacles = sizeof(obstacleRadius) / sizeof(double);
 
 	// define additional input parameters for the goal node calculation
 	double standOffRange = 5.0;
@@ -68,6 +69,7 @@ int main()
 	// defining the square freespace
 	double buffer = 40.0;
 
+	// seed for random node generation
 	srand (time(NULL));
 	//------------------------------------------------------------------------//
 	//------------------------------------------------------------------------//
@@ -75,13 +77,13 @@ int main()
 	//------------------------------------------------------------------------//
 	//------------------this info must be declared regardless-----------------//
 	//------------------------------------------------------------------------//
-	ConfigspaceNode gateNode;
 	double obsVol = 0.0;
 	int dimension = 2;
-
 	int goalBiasCount = 100;
+	int maxCount = 5000;
+	int tempItr = 0;
 
-	ConfigspaceNode tempNode, parentNode, newNode, bestNeighbor, remainingNodeParent;
+	ConfigspaceNode gateNode, tempNode, parentNode, newNode, bestNeighbor, remainingNodeParent;
 	ConfigspaceNode *nearestNeighbors = NULL, *safeNearestNeighbors = NULL, *remainingNodes = NULL, *removeNodes = NULL, *lastNodes = NULL, *costThresholdNodes = NULL;
 	bool goalCheck;
 	int remainingCount = 0, k = 10, m = 40, count = 0;
@@ -124,18 +126,14 @@ int main()
 	// set the obstacles for this iteration (we don't need to consider all obstacles
 	// for every iteration); use the above defined freespace limits
 	for (int i = 0; i < numObstacles; i++)
-	{
 		if (G_workspace.obstacleInFreespace(obstacleXPosition[i], obstacleYPosition[i], obstacleRadius[i]))
-		{
 			G_workspace.addObstacle(obstacleXPosition[i], obstacleYPosition[i], obstacleRadius[i]);
-		}
-	}
 
 	// compute the volume of the obstacles
 	obsVol = G_workspace.computeObsVol();
 
 	// add gateNode to the graph
-	G_configspace.addNode(gateNode);
+	G_configspace.addNode_basic(gateNode);
 
 	// add vehicle to the graph
 	G_workspace.addVehicle(vehiclePointXPosition, vehiclePointYPosition, numVehiclePoints);
@@ -146,17 +144,24 @@ int main()
 	///////////////////////////////////////////////////////////////////////////////////////////
 
 	// start the anytime RRT# iterations
-	count = 0;
-	int tempItr = 0;
-	puts("HERE");
-	free(nearestNeighbors); free(safeNearestNeighbors); free(remainingNodes);
-	free(removeNodes); free(lastNodes); free(costThresholdNodes);
-	nearestNeighbors = NULL; safeNearestNeighbors = NULL; remainingNodes = NULL;
-	removeNodes = NULL; lastNodes = NULL; costThresholdNodes = NULL;
+
+	free(safeNearestNeighbors);
+	free(costThresholdNodes);
+	free(nearestNeighbors);
+	free(remainingNodes);
+	free(removeNodes);
+	free(lastNodes);
+
+	safeNearestNeighbors = NULL;
+	costThresholdNodes   = NULL;
+	nearestNeighbors     = NULL;
+	remainingNodes       = NULL;
+	removeNodes          = NULL;
+	lastNodes            = NULL;
+
 	// do the RRT# thing
-	while(!G_workspace.goalRegionReached)
+	while(!G_workspace.goalRegionReached || count < maxCount)
 	{				
-		puts("ALSO HERE");
 		tempNode = (count % goalBiasCount != 0) ? G_configspace.generateRandomNode() : G_configspace.generateBiasedNode(G_workspace.goalRegion.x, G_workspace.goalRegion.y);
 		parentNode = G_configspace.findClosestNode_basic(tempNode);
 		free(remainingNodes);
@@ -178,17 +183,14 @@ int main()
 				{
 					bestNeighbor = G_configspace.findBestNeighbor_basic(newNode, safeNearestNeighbors);
 					tempNode = G_workspace.connectNodes_basic(bestNeighbor, newNode);
+					tempNode.cost = bestNeighbor.cost + G_configspace.computeCost_basic(bestNeighbor, tempNode);
 
-					if (tempNode.parentNodeId)
+					if (tempNode.cost < newNode.cost)
 					{
-						tempNode.cost = bestNeighbor.cost + G_configspace.computeCost_basic(bestNeighbor, tempNode);
-
-						if (tempNode.cost < newNode.cost)
-						{
-							newNode = tempNode;
-							parentNode = bestNeighbor;
-						}
+						newNode = tempNode;
+						parentNode = bestNeighbor;
 					}
+
 					free(remainingNodes);
 					remainingNodes = G_configspace.removeNode(safeNearestNeighbors, bestNeighbor);
 				}
@@ -196,14 +198,8 @@ int main()
 				G_configspace.addEdge(parentNode, tempNode);
 
 				if (!G_workspace.goalRegionReached)
-				{
 					if (G_workspace.checkAtGoal_basic(tempNode))
-					{
-						puts("GOT HERE");
-						//return 1;
 						G_workspace.goalRegionReached = true;
-					}
-				}
 
 				// start rewiring
 				remainingCount = 0;
@@ -212,26 +208,23 @@ int main()
 					if (remainingNodes[remainingCount].cost > (tempNode.cost + G_configspace.computeCost_basic(remainingNodes[remainingCount], tempNode)))
 					{
 						newNode = G_workspace.connectNodes_basic(tempNode, remainingNodes[remainingCount]);
-						if (newNode.parentNodeId)
-						{
-							newNode.cost = tempNode.cost + G_configspace.computeCost_basic(remainingNodes[remainingCount], tempNode);
-							newNode.parentNodeId = tempNode.id;
-							remainingNodeParent = G_configspace.findNodeId(remainingNodes[remainingCount].parentNodeId);
-							G_configspace.removeEdge(remainingNodeParent, remainingNodes[remainingCount]);
-							G_configspace.addEdge(tempNode, newNode);
-							G_configspace.replaceNode_basic(remainingNodes[remainingCount], newNode);
+						newNode.cost = tempNode.cost + G_configspace.computeCost_basic(remainingNodes[remainingCount], tempNode);
+						newNode.parentNodeId = tempNode.id;
+						remainingNodeParent = G_configspace.findNodeId(remainingNodes[remainingCount].parentNodeId);
+						G_configspace.removeEdge(remainingNodeParent, remainingNodes[remainingCount]);
+						G_configspace.addEdge(tempNode, newNode);
+						G_configspace.replaceNode_basic(remainingNodes[remainingCount], newNode);
 
-							ConfigspaceNode* updatedNode = (ConfigspaceNode*)calloc(2, sizeof(ConfigspaceNode));
-							updatedNode[0] = newNode;
-							updatedNode[1].id = 0;
-							G_configspace.propagateCost_basic(updatedNode);
-						}
+						ConfigspaceNode* updatedNode = (ConfigspaceNode*)calloc(2, sizeof(ConfigspaceNode));
+						updatedNode[0] = newNode;
+						updatedNode[1].id = 0;
+						G_configspace.propagateCost_basic(updatedNode);
 					}
-					remainingCount++;
+					++remainingCount;
 				}
 			}
 		}
-		count++;
+		++count;
 	}
 
 	double tempCost = 0, finalCost = 100000;

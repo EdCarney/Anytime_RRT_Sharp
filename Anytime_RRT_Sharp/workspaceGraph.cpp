@@ -329,169 +329,6 @@ bool WorkspaceGraph::checkCollision(ConfigspaceNode node)
 	return false;
 }
 
-ConfigspaceNode WorkspaceGraph::extendToNode(ConfigspaceNode parentNode, ConfigspaceNode newNode, double delta, double epsilon)
-{
-	ConfigspaceNode currentNode = parentNode;			// initialize a new node to mark current progress
-	ConfigspaceNode iterationNode = parentNode;			// initialize a new node to iterate on, starts at parent
-	iterationNode.x = parentNode.x;
-	iterationNode.y = parentNode.y;
-	iterationNode.theta = parentNode.theta;
-	iterationNode.v = parentNode.v;
-	iterationNode.w = parentNode.w;
-	iterationNode.t = parentNode.t;
-	iterationNode.parentNodeId = parentNode.id;			// set ID of iteration node to know what is returned from function
-	iterationNode.id = 0;
-	iterationNode.numIterationPoints = 1;
-	iterationNode.iterationPoints = (ConfigspaceNode*)calloc(1, sizeof(ConfigspaceNode));
-	iterationNode.iterationPoints[0].x = parentNode.x;
-	iterationNode.iterationPoints[0].y = parentNode.y;
-	iterationNode.iterationPoints[0].theta = parentNode.theta;
-	iterationNode.iterationPoints[0].v = parentNode.v;
-	iterationNode.iterationPoints[0].w = parentNode.w;
-	iterationNode.iterationPoints[0].t = parentNode.t;
-
-	int numIterations = floor(epsilon / delta);
-	double iterationV, iterationW, iterationTimestep, nodeDistance, iterationDelta, iterationLinAccel, iterationRotAccel;
-	double checkVal_1, checkVal_2;
-	double tol = 0.001;
-	double PI = 3.14159265358979323846;
-
-	// determine the acceleration required for the change to take place over 5 seconds
-	// we will prioritize speed, and set translationanl velocity to maximum
-	// set to max accel values if calculated accel is too high
-	double timeStep = 3 / double(numIterations);
-
-	double linAccel = abs(newNode.v - parentNode.v) / double(numIterations) > maxAbsA ? maxAbsA : abs(newNode.v - parentNode.v) / double(numIterations);
-	double rotAccel = abs(newNode.w - parentNode.w) / double(numIterations) > maxAbsGamma ? maxAbsGamma : abs(newNode.w - parentNode.w) / double(numIterations);
-
-	// check if new values of translational and rotational velocity require
-	// positive or negative acceleration
-	iterationLinAccel = (newNode.v < parentNode.v) ? linAccel * -1 : linAccel;
-	iterationRotAccel = (newNode.w < parentNode.w) ? rotAccel * -1 : rotAccel;
-
-	// set the control inputs being applied to get to the new node
-	iterationNode.a = iterationLinAccel;
-	iterationNode.gamma = iterationRotAccel;
-
-	// set the control inputs for the iteration points
-	iterationNode.iterationPoints[0].a = iterationLinAccel;
-	iterationNode.iterationPoints[0].gamma = iterationRotAccel;
-
-	// set the current node equal to the iteration node
-	// the current node will keep track of thelast known safe position
-	// the iteration node will be used to iterate forward in time and then checked for collision
-	currentNode = iterationNode;
-
-	for (int iteration = 0; iteration < numIterations; iteration++)
-	{
-		// if checkval is negative and accel is opposite sign of current
-		// node velocity, then we will hit zero velocity on this iteration
-		// thus update delta size for this iteration
-		checkVal_1 = pow(currentNode.v, 2) + 2 * iterationLinAccel * delta;
-		if (checkVal_1 < 0 && ((currentNode.v < 0 && iterationLinAccel > 0) || (currentNode.v > 0 && iterationLinAccel < 0)))
-		{
-			iterationDelta = pow(currentNode.v, 2) / (2 * abs(iterationLinAccel));
-		}
-		else
-		{
-			iterationDelta = delta;
-		}
-
-		// calculate required change in translational velocity, associated timestep, and
-		// corresponding rotational velocity; need to consider cases where translational velocity is negative
-		if (iterationLinAccel < 0)
-		{
-			checkVal_2 = pow(currentNode.v, 2) + 2 * iterationLinAccel * iterationDelta;
-			iterationV = checkVal_2 < 0 ? 0.0 : sqrt(checkVal_2);
-		}
-		else
-		{
-			iterationV = sqrt(pow(currentNode.v, 2) + 2 * iterationLinAccel * iterationDelta);
-		}
-		iterationTimestep = abs(iterationV - currentNode.v) / abs(iterationLinAccel);
-		iterationW = currentNode.w + iterationRotAccel * iterationTimestep;
-
-		// set iteration velocity to zero if it is within tolerance
-		if (abs(iterationV) <= tol) { iterationV = 0; }
-
-		// if limits are exceeded return node as is
-		if ((iterationV >= newNode.v && iterationLinAccel > 0) || (iterationV <= newNode.v && iterationLinAccel < 0))
-		{
-			// free node iterationPoints pointer memory
-			//free(iterationNode.iterationPoints);
-
-			if (iteration > 0)
-			{
-				return currentNode;
-			}
-			else
-			{
-				free(currentNode.iterationPoints);
-				return parentNode;
-			}
-		}
-
-		// set iteration node values, we will collision check this prior to
-		// making it the current node
-		iterationNode.x = currentNode.x + cos(currentNode.theta) * iterationDelta;
-		iterationNode.y = currentNode.y + sin(currentNode.theta) * iterationDelta;
-		iterationNode.theta = currentNode.theta + currentNode.w * iterationTimestep + 0.5 * rotAccel * iterationTimestep * iterationTimestep;
-		iterationNode.v = iterationV;
-		iterationNode.w = iterationW;
-		iterationNode.t = currentNode.t + iterationTimestep;
-
-		// correct theta value so that it is within valid range
-		while (iterationNode.theta > 2 * PI) { iterationNode.theta -= 2 * PI; }
-		while (iterationNode.theta < 0) { iterationNode.theta += 2 * PI; }
-
-		// add node iteration info
-		// NOTE: do NOT free old iteration points pointer here as the currentNode is still
-		// using that memory, only free if currentNode is updated to iterationNode
-		ConfigspaceNode* newIterationNodes = (ConfigspaceNode*)calloc(iterationNode.numIterationPoints + 1, sizeof(ConfigspaceNode));
-		memcpy(newIterationNodes, iterationNode.iterationPoints, (iterationNode.numIterationPoints) * sizeof(ConfigspaceNode));
-		iterationNode.iterationPoints = newIterationNodes;
-
-		iterationNode.iterationPoints[iterationNode.numIterationPoints].x = iterationNode.x;
-		iterationNode.iterationPoints[iterationNode.numIterationPoints].y = iterationNode.y;
-		iterationNode.iterationPoints[iterationNode.numIterationPoints].theta = iterationNode.theta;
-		iterationNode.iterationPoints[iterationNode.numIterationPoints].v = iterationNode.v;
-		iterationNode.iterationPoints[iterationNode.numIterationPoints].w = iterationNode.w;
-		iterationNode.iterationPoints[iterationNode.numIterationPoints].a = iterationLinAccel;
-		iterationNode.iterationPoints[iterationNode.numIterationPoints].gamma = iterationRotAccel;
-		iterationNode.iterationPoints[iterationNode.numIterationPoints].t = iterationNode.t;
-		iterationNode.numIterationPoints++;
-
-		// check if vehicle collides with any obstacle
-		// if so, return current node (last valid node) only if there was
-		// at least one successful iteration
-		if (checkCollision(iterationNode))
-		{
-			// free node iterationPoints pointer memory
-			//free(iterationNode.iterationPoints);
-
-			if (iteration > 0)
-			{
-				return currentNode;
-			}
-			else
-			{
-				free(currentNode.iterationPoints);
-				return parentNode;
-			}
-		}
-
-		// if extension is valid, update current node and repeat
-		// iteration node pointer now points to the same location
-		free(currentNode.iterationPoints);
-		currentNode = iterationNode;
-	}
-
-	// if we make it to the end then we extended a full epsilon!
-	// don't free iterationNode pointer values as they are the same
-	// for the current node
-	return currentNode;
-}
-
 ConfigspaceNode WorkspaceGraph::connectNodes(ConfigspaceNode parentNode, ConfigspaceNode newNode, int numIterations)
 {
 	ConfigspaceNode currentNode = parentNode;			// initialize a new node to mark current progress
@@ -745,34 +582,6 @@ bool WorkspaceGraph::obstacleInFreespace(double xObs, double yObs, double radius
 	}
 }
 
-bool WorkspaceGraph::checkAtGoal(ConfigspaceNode node)
-{
-	double nodeDistance;
-
-	// update vehicle state to temp node
-	vehicles[0].updateState(node);
-
-	for (int i = 0; i < numVehicles; i++)
-	{
-		for (int j = 0; j < vehicles[i].numNodes; j++)
-		{
-			// calculate the euclidean distance from the node to the center
-			// of the obstacle for each node of each vehicle
-			nodeDistance = sqrt(pow((vehicles[i].nodes[j].x - goalRegion.x), 2) + pow((vehicles[i].nodes[j].y - goalRegion.y), 2));
-
-			// if the distance bewteen the node and the center of the goal region
-			// is <= the radius of the obstacle, then the node collides with
-			// goal region
-			if (nodeDistance <= goalRegion.radius && (abs(goalRegion.v - node.v) < 0.5))
-			{
-				return true;
-			}
-		}
-	}
-
-	return false;
-}
-
 void WorkspaceGraph::addObstacle(double xObs, double yObs, double radiusObs)
 {
 	// increase memory of node array for new entry
@@ -880,7 +689,8 @@ ConfigspaceNode WorkspaceGraph::extendToNode_basic(ConfigspaceNode parentNode, C
 		currentNode.y = newNode.y;
 	}
 
-	if (checkForCollision_basic(currentNode)) { currentNode.id = parentNode.id; }
+	if (checkForCollision_basic(currentNode))
+		currentNode.id = parentNode.id;
 
 	return currentNode;
 }
@@ -919,9 +729,6 @@ bool WorkspaceGraph::checkAtGoal_basic(ConfigspaceNode node)
 
 	// update vehicle state to temp node
 	vehicles[0].updateState(node);
-
-	printf("Vehicle is at %f, %f\n", vehicles[0].centroid.x, vehicles[0].centroid.y);
-	printf("Goal region is at %f, %f\n", goalRegion.x, goalRegion.y);
 
 	for (int i = 0; i < numVehicles; i++)
 	{
