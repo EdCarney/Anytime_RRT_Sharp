@@ -1,6 +1,5 @@
 #include <string>
 #include <sstream>
-//#include <string.h>
 #include <math.h>
 #include <memory>
 #include <stdlib.h>
