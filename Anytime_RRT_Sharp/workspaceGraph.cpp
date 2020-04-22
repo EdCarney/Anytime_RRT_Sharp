@@ -920,29 +920,14 @@ bool WorkspaceGraph::checkAtGoal_basic(ConfigspaceNode node)
 	// update vehicle state to temp node
 	vehicles[0].updateState(node);
 
+	printf("Vehicle is at %f, %f\n", vehicles[0].centroid.x, vehicles[0].centroid.y);
+	printf("Goal region is at %f, %f\n", goalRegion.x, goalRegion.y);
+
 	for (int i = 0; i < numVehicles; i++)
 	{
 		nodeDistance = hypot((vehicles[i].centroid.x - goalRegion.x), (vehicles[i].centroid.y - goalRegion.y));
 
-		if (nodeDistance < (goalRegion.radius + vehicles[i].maxPointRadius))
-		{
-			return true;
-		}
-		// for (int j = 0; j < vehicles[i].numNodes; j++)
-		// {
-		// 	// calculate the euclidean distance from the node to the center
-		// 	// of the obstacle for each node of each vehicle
-			
-		// 	nodeDistance = sqrt(pow((vehicles[i].nodes[j].x - goalRegion.x), 2) + pow((vehicles[i].nodes[j].y - goalRegion.y), 2));
-
-		// 	// if the distance bewteen the node and the center of the goal region
-		// 	// is <= the radius of the obstacle, then the node collides with
-		// 	// goal region
-		// 	if (nodeDistance <= goalRegion.radius)
-		// 	{
-		// 		return true;
-		// 	}
-		// }
+		if (nodeDistance < (goalRegion.radius + vehicles[i].maxPointRadius)) return true;
 	}
 
 	return false;
