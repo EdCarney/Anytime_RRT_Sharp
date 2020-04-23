@@ -1,11 +1,3 @@
-#include <string>
-#include <sstream>
-#include <math.h>
-#include <memory>
-#include <stdlib.h>
-#include <fstream>
-#include <iostream>
-#include <cstring>
 #include "configspaceGraph.h"
 
 void ConfigspaceGraph::buildGraph()

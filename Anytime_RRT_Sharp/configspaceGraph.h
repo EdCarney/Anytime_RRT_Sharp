@@ -1,9 +1,6 @@
-/*
-This graph data structure is heavily based on the graph data structure provided
-by Dr. Michael Otte.
-*/
-#include <stdio.h>
-#include <stdlib.h>
+#include <math.h>
+#include <fstream>
+#include <cstring>
 
 #ifndef CONFIGSPACE_H
 #define CONFIGSPACE_H

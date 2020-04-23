@@ -1,12 +1,4 @@
-#include <string.h>
-#include <math.h>
-#include <cmath>
-#include <memory>
-#include <stdlib.h>
-#include <fstream>
-#include <iostream>
 #include "workspaceGraph.h"
-#include "configspaceGraph.h"
 
 void Vehicle::calculateCentroid()
 {

@@ -1,9 +1,3 @@
-#include <iostream>
-#include <time.h> 
-#include <math.h>
-#include <cmath>
-#include <typeinfo>
-
 #include "configspaceGraph.h"
 #include "workspaceGraph.h"
 
@@ -11,20 +5,7 @@ using namespace std;
 
 // computes the gate (root) node based on the approximate gate location
 // and orientation; outputs a ConfigspaceNode to add to the graph
-ConfigspaceNode calcGateNode(double xPosition, double yPosition, double gateOrientation, double standOffRange)
-{
-	ConfigspaceNode gateNode;
-
-	gateNode.x = xPosition + standOffRange * cos(gateOrientation - M_PI);
-	gateNode.y = yPosition + standOffRange * sin(gateOrientation - M_PI);
-	gateNode.theta = gateOrientation;
-
-	gateNode.v = 0.0; gateNode.w = 0.0; gateNode.t = 0.0;
-	gateNode.a = 0.0; gateNode.gamma = 0.0; gateNode.cost = 0.0;
-	gateNode.parentNodeId = 0;
-
-	return gateNode;
-}
+ConfigspaceNode calcGateNode(double xPosition, double yPosition, double gateOrientation, double standOffRange);
 
 int main()
 {
@@ -255,3 +236,18 @@ int main()
 
 }
 
+
+ConfigspaceNode calcGateNode(double xPosition, double yPosition, double gateOrientation, double standOffRange)
+{
+	ConfigspaceNode gateNode;
+
+	gateNode.x = xPosition + standOffRange * cos(gateOrientation - M_PI);
+	gateNode.y = yPosition + standOffRange * sin(gateOrientation - M_PI);
+	gateNode.theta = gateOrientation;
+
+	gateNode.v = 0.0; gateNode.w = 0.0; gateNode.t = 0.0;
+	gateNode.a = 0.0; gateNode.gamma = 0.0; gateNode.cost = 0.0;
+	gateNode.parentNodeId = 0;
+
+	return gateNode;
+}
