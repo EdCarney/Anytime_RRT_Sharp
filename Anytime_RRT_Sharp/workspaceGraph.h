@@ -112,16 +112,16 @@ public:
 
 	// checks if any vehicle collides with any obstacle at the provided configuration point
 	// returns true if there is a collision and false otherwise
-	bool checkCollision(ConfigspaceNode node);
+	bool checkForCollision(ConfigspaceNode node);
 
 	// attempts to buid a path from a parent configuratin node to a new configuration node
 	// uses interpolation with a step size of delta and a maximum extension of epsilon
-	ConfigspaceNode extendToNode(ConfigspaceNode parentNode, ConfigspaceNode newNode, double delta, double epsilon);
+	ConfigspaceNode extendToNode(ConfigspaceNode parentNode, ConfigspaceNode newNode, double epsilon);
 
 	// attempt to connect two nodes; used for rewiring the graph for RRT*
 	// will attempt to go from parent node to new node until the difference is less then some epsilon
 	// returns zero if successful and one otherwise
-	ConfigspaceNode connectNodes(ConfigspaceNode parentNode, ConfigspaceNode newNode, int numIterations);
+	ConfigspaceNode connectNodes(ConfigspaceNode parentNode, ConfigspaceNode newNode);
 
 	// will check if an obstacle is within the vicinity of the new node and any of
 	// its neighbors; will return an array of safe nodes
@@ -153,13 +153,6 @@ public:
 
 	// default destructor
 	~WorkspaceGraph() { deleteWorkspaceGraph(); }
-
-	///////////////////////////////////////////////////////////////////
-
-	ConfigspaceNode extendToNode_basic(ConfigspaceNode parentNode, ConfigspaceNode newNode, double epsilon);
-	bool checkForCollision_basic(ConfigspaceNode node);
-	ConfigspaceNode connectNodes_basic(ConfigspaceNode parentNode, ConfigspaceNode newNode);
-	bool checkAtGoal_basic(ConfigspaceNode node);
 };
 
 #endif // WORKSPACE_H

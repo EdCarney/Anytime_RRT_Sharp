@@ -474,7 +474,7 @@ void ConfigspaceGraph::printData(int probNum, ConfigspaceNode finalNode)
 	highFidelityPath.close();
 }
 
-ConfigspaceNode ConfigspaceGraph::findClosestNode_basic(ConfigspaceNode node)
+ConfigspaceNode ConfigspaceGraph::findClosestNode(ConfigspaceNode node)
 {
 	// initialize distance with first node
 	// use eucledian distance of given node from existing nodes
@@ -495,14 +495,14 @@ ConfigspaceNode ConfigspaceGraph::findClosestNode_basic(ConfigspaceNode node)
 	return nodes[closestEntry];
 }
 
-double ConfigspaceGraph::computeCost_basic(ConfigspaceNode node_1, ConfigspaceNode node_2)
+double ConfigspaceGraph::computeCost(ConfigspaceNode node_1, ConfigspaceNode node_2)
 {
 	double cost = 0.0;
 	cost += hypot((node_1.x - node_2.x), (node_1.y - node_2.y));
 	return cost;
 }
 
-ConfigspaceNode * ConfigspaceGraph::findNeighbors_basic(ConfigspaceNode centerNode, double radius, int k)
+ConfigspaceNode * ConfigspaceGraph::findNeighbors(ConfigspaceNode centerNode, double radius, int k)
 {
 	int n = 0;					// variable to count number of neighbors found
 	double dist;				// distance between the nodes
@@ -541,7 +541,7 @@ ConfigspaceNode * ConfigspaceGraph::findNeighbors_basic(ConfigspaceNode centerNo
 	}
 }
 
-ConfigspaceNode ConfigspaceGraph::findBestNeighbor_basic(ConfigspaceNode newNode, ConfigspaceNode *safeNeighbors)
+ConfigspaceNode ConfigspaceGraph::findBestNeighbor(ConfigspaceNode newNode, ConfigspaceNode *safeNeighbors)
 {
 	ConfigspaceNode bestNeighbor;
 	int numSafeNeighbors = 1;
@@ -549,11 +549,11 @@ ConfigspaceNode ConfigspaceGraph::findBestNeighbor_basic(ConfigspaceNode newNode
 
 	// initialize the best neighbor as the first safe neighbor
 	bestNeighbor = safeNeighbors[0];
-	bestCost = bestNeighbor.cost + computeCost_basic(newNode, bestNeighbor);
+	bestCost = bestNeighbor.cost + computeCost(newNode, bestNeighbor);
 
 	while (safeNeighbors[numSafeNeighbors].id)
 	{
-		tempBestCost = safeNeighbors[numSafeNeighbors].cost + computeCost_basic(newNode, safeNeighbors[numSafeNeighbors]);
+		tempBestCost = safeNeighbors[numSafeNeighbors].cost + computeCost(newNode, safeNeighbors[numSafeNeighbors]);
 		if (tempBestCost < bestCost)
 		{
 			bestCost = tempBestCost;
@@ -565,7 +565,7 @@ ConfigspaceNode ConfigspaceGraph::findBestNeighbor_basic(ConfigspaceNode newNode
 	return bestNeighbor;
 }
 
-ConfigspaceNode ConfigspaceGraph::addNode_basic(ConfigspaceNode addedNode)
+ConfigspaceNode ConfigspaceGraph::addNode(ConfigspaceNode addedNode)
 {
 	// increase memory of node array for new entry
 	if (numNodes > 0)
@@ -596,13 +596,13 @@ ConfigspaceNode ConfigspaceGraph::addNode_basic(ConfigspaceNode addedNode)
 	nodes[numNodes].parentNodeId = addedNode.parentNodeId;
 	nodes[numNodes].iterationPoints = addedNode.iterationPoints;
 	nodes[numNodes].numIterationPoints = addedNode.numIterationPoints;
-	nodes[numNodes].cost = parentNode.cost + computeCost_basic(addedNode, parentNode);
+	nodes[numNodes].cost = parentNode.cost + computeCost(addedNode, parentNode);
 	nodes[numNodes].id = ++numNodeInd;
 
 	return nodes[numNodes++];
 }
 
-void ConfigspaceGraph::propagateCost_basic(ConfigspaceNode * updatedNodes)
+void ConfigspaceGraph::propagateCost(ConfigspaceNode * updatedNodes)
 {
 	int updateNodesCount = 0;
 
@@ -625,7 +625,7 @@ void ConfigspaceGraph::propagateCost_basic(ConfigspaceNode * updatedNodes)
 				free(nodesToUpdate);
 				nodesToUpdate = tempNodesToUpdate;
 				nodesToUpdate[nodeCount] = nodes[j];
-				nodes[j].cost = updatedNodes[i].cost + computeCost_basic(nodes[j], updatedNodes[i]);
+				nodes[j].cost = updatedNodes[i].cost + computeCost(nodes[j], updatedNodes[i]);
 				nodeCount++;
 			}
 		}
@@ -637,10 +637,10 @@ void ConfigspaceGraph::propagateCost_basic(ConfigspaceNode * updatedNodes)
 	nodesToUpdate[nodeCount].id = 0;
 
 	if (nodeCount > 0)
-		propagateCost_basic(nodesToUpdate);
+		propagateCost(nodesToUpdate);
 }
 
-void ConfigspaceGraph::replaceNode_basic(ConfigspaceNode oldNode, ConfigspaceNode newNode)
+void ConfigspaceGraph::replaceNode(ConfigspaceNode oldNode, ConfigspaceNode newNode)
 {
 	int oldNodePlace = findNodePlacement(oldNode.id);
 	nodes[oldNodePlace] = newNode;

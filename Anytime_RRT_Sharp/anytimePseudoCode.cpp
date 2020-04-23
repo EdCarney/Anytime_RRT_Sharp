@@ -133,7 +133,7 @@ int main()
 	obsVol = G_workspace.computeObsVol();
 
 	// add gateNode to the graph
-	G_configspace.addNode_basic(gateNode);
+	G_configspace.addNode(gateNode);
 
 	// add vehicle to the graph
 	G_workspace.addVehicle(vehiclePointXPosition, vehiclePointYPosition, numVehiclePoints);
@@ -163,27 +163,27 @@ int main()
 	while(!G_workspace.goalRegionReached || count < maxCount)
 	{				
 		tempNode = (count % goalBiasCount != 0) ? G_configspace.generateRandomNode() : G_configspace.generateBiasedNode(G_workspace.goalRegion.x, G_workspace.goalRegion.y);
-		parentNode = G_configspace.findClosestNode_basic(tempNode);
+		parentNode = G_configspace.findClosestNode(tempNode);
 		free(remainingNodes);
 		remainingNodes = NULL;
-		if (!G_workspace.checkAtGoal_basic(parentNode))
+		if (!G_workspace.checkAtGoal(parentNode))
 		{
-			newNode = G_workspace.extendToNode_basic(parentNode, tempNode, epsilon);
-			newNode.cost = parentNode.cost + G_configspace.computeCost_basic(parentNode, newNode);
+			newNode = G_workspace.extendToNode(parentNode, tempNode, epsilon);
+			newNode.cost = parentNode.cost + G_configspace.computeCost(parentNode, newNode);
 
 			// if there is a collision, newNode id will be set to its parent's id
 			if (newNode.id != parentNode.id)
 			{
 				circleRadius = G_configspace.computeRadius(epsilon);
-				safeNearestNeighbors = G_configspace.findNeighbors_basic(newNode, circleRadius, k);
+				safeNearestNeighbors = G_configspace.findNeighbors(newNode, circleRadius, k);
 				remainingNodes = (ConfigspaceNode*)calloc(1, sizeof(ConfigspaceNode));
 				remainingNodes[0].id = 0;
 
 				if (safeNearestNeighbors[0].id)
 				{
-					bestNeighbor = G_configspace.findBestNeighbor_basic(newNode, safeNearestNeighbors);
-					tempNode = G_workspace.connectNodes_basic(bestNeighbor, newNode);
-					tempNode.cost = bestNeighbor.cost + G_configspace.computeCost_basic(bestNeighbor, tempNode);
+					bestNeighbor = G_configspace.findBestNeighbor(newNode, safeNearestNeighbors);
+					tempNode = G_workspace.connectNodes(bestNeighbor, newNode);
+					tempNode.cost = bestNeighbor.cost + G_configspace.computeCost(bestNeighbor, tempNode);
 
 					if (tempNode.cost < newNode.cost)
 					{
@@ -194,31 +194,31 @@ int main()
 					free(remainingNodes);
 					remainingNodes = G_configspace.removeNode(safeNearestNeighbors, bestNeighbor);
 				}
-				tempNode = G_configspace.addNode_basic(newNode);
+				tempNode = G_configspace.addNode(newNode);
 				G_configspace.addEdge(parentNode, tempNode);
 
 				if (!G_workspace.goalRegionReached)
-					if (G_workspace.checkAtGoal_basic(tempNode))
+					if (G_workspace.checkAtGoal(tempNode))
 						G_workspace.goalRegionReached = true;
 
 				// start rewiring
 				remainingCount = 0;
 				while (remainingNodes[remainingCount].id)
 				{
-					if (remainingNodes[remainingCount].cost > (tempNode.cost + G_configspace.computeCost_basic(remainingNodes[remainingCount], tempNode)))
+					if (remainingNodes[remainingCount].cost > (tempNode.cost + G_configspace.computeCost(remainingNodes[remainingCount], tempNode)))
 					{
-						newNode = G_workspace.connectNodes_basic(tempNode, remainingNodes[remainingCount]);
-						newNode.cost = tempNode.cost + G_configspace.computeCost_basic(remainingNodes[remainingCount], tempNode);
+						newNode = G_workspace.connectNodes(tempNode, remainingNodes[remainingCount]);
+						newNode.cost = tempNode.cost + G_configspace.computeCost(remainingNodes[remainingCount], tempNode);
 						newNode.parentNodeId = tempNode.id;
 						remainingNodeParent = G_configspace.findNodeId(remainingNodes[remainingCount].parentNodeId);
 						G_configspace.removeEdge(remainingNodeParent, remainingNodes[remainingCount]);
 						G_configspace.addEdge(tempNode, newNode);
-						G_configspace.replaceNode_basic(remainingNodes[remainingCount], newNode);
+						G_configspace.replaceNode(remainingNodes[remainingCount], newNode);
 
 						ConfigspaceNode* updatedNode = (ConfigspaceNode*)calloc(2, sizeof(ConfigspaceNode));
 						updatedNode[0] = newNode;
 						updatedNode[1].id = 0;
-						G_configspace.propagateCost_basic(updatedNode);
+						G_configspace.propagateCost(updatedNode);
 					}
 					++remainingCount;
 				}
@@ -232,7 +232,7 @@ int main()
 
 	for (int i = 0; i < G_configspace.numNodes; i++)
 	{
-		if (G_workspace.checkAtGoal_basic(G_configspace.nodes[i]))
+		if (G_workspace.checkAtGoal(G_configspace.nodes[i]))
 		{
 			tempCost = G_configspace.nodes[i].cost;
 			if (tempCost < finalCost)

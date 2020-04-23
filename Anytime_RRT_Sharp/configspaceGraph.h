@@ -122,7 +122,7 @@ public:
 
 	// get the k-nearest neighbors from the current node
 	// will not return the centerNode's parent node in the array
-	ConfigspaceNode* findNeighbors(ConfigspaceNode centerNode, double radius, int k, double goalX, double goalY, double goalRadius);
+	ConfigspaceNode* findNeighbors(ConfigspaceNode centerNode, double radius, int k);
 
 	// find the best node of the provided list of safe nodes to attempt to
 	// connect to for RRT*
@@ -147,16 +147,6 @@ public:
 
 	// default destructor
 	~ConfigspaceGraph() { deleteGraph(); }
-
-	////////////////////////////////////////////////////////
-
-	ConfigspaceNode findClosestNode_basic(ConfigspaceNode node);
-	double computeCost_basic(ConfigspaceNode node_1, ConfigspaceNode node_2);
-	ConfigspaceNode* findNeighbors_basic(ConfigspaceNode centerNode, double radius, int k);
-	ConfigspaceNode findBestNeighbor_basic(ConfigspaceNode newNode, ConfigspaceNode* safeNeighbors);
-	ConfigspaceNode addNode_basic(ConfigspaceNode addedNode);
-	void propagateCost_basic(ConfigspaceNode* updatedNodes);
-	void replaceNode_basic(ConfigspaceNode oldNode, ConfigspaceNode newNode);
 };
 
 #endif // CONFIGSPACE_H
