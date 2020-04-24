@@ -60,7 +60,7 @@ int main()
 	int dimension = 2;
 	int goalBiasCount = 100;
 	int maxCount = 7000;
-	int tempItr = 0;
+	int tempItr = 1;
 
 	ConfigspaceNode gateNode, tempNode, parentNode, newNode, bestNeighbor, remainingNodeParent, finalNode;
 	ConfigspaceNode *nearestNeighbors = NULL, *safeNearestNeighbors = NULL, *remainingNodes = NULL,
