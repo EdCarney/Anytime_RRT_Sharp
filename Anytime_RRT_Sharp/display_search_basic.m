@@ -24,20 +24,8 @@ obstacles_raw = csvread('obstacles.txt');
 vehicle_raw = csvread('robot.txt');
 
 % specify goal region [x, y, radius] and start point [x, y]
-start_points = [
-    5, 55;
-    5, 55;
-    5, 55;
-    5, 55;
-    5, 55;
-    ];
-goal_regions = [
-    100, 60, 2.5;
-    83.2, 58.8, 2.5;
-    72.1, 68.7, 2.5;
-    65, 81, 2.5;
-    56.9, 87.5, 2.5
-    ];
+start_points = [5, 55];
+goal_regions = [100, 60, 2.5];
 
 % a bit of data processing for faster plotting
 search_tree = nan(3*size(search_tree_raw, 1), 2);
@@ -47,13 +35,13 @@ search_tree(2:3:end-1, 1) = search_tree_raw(:, 5);
 search_tree(1:3:end-2, 2) = search_tree_raw(:, 3);
 search_tree(2:3:end-1, 2) = search_tree_raw(:, 6);
 
-nodes = nodes_raw(2:end,[2,3,9]);
+nodes = nodes_raw(2:end,:);
 edges_raw = edges_raw(2:end,:);
 edges = nan(3*size(edges_raw, 1), 2);
 
 for i = 1:length(edges_raw(:,1))
-    edges_raw(i, 1) = find(nodes(:,3) == edges_raw(i, 1));
-    edges_raw(i, 2) = find(nodes(:,3) == edges_raw(i, 2));
+    edges_raw(i, 1) = find(nodes(:,4) == edges_raw(i, 1));
+    edges_raw(i, 2) = find(nodes(:,4) == edges_raw(i, 2));
 end
 
 edges(1:3:end-2, 1) = nodes(edges_raw(:, 1),1);
@@ -61,20 +49,14 @@ edges(2:3:end-1, 1) = nodes(edges_raw(:, 2),1);
 edges(1:3:end-2, 2) = nodes(edges_raw(:, 1),2);
 edges(2:3:end-1, 2) = nodes(edges_raw(:, 2),2);
 
-% edges(1:3:end-2, 1) = nodes(edges_raw(:, 1),1);
-% edges(2:3:end-1, 1) = nodes(edges_raw(:, 2),1);
-% edges(1:3:end-2, 2) = nodes(edges_raw(:, 1),2);
-% edges(2:3:end-1, 2) = nodes(edges_raw(:, 2),2);
-
-
 figure('Renderer', 'painters', 'Position', [50 50 600 600])
 
-% plct the goal region
+% plot the goal region
 pos = [
-    (goal_regions(problemNum,1) - goal_regions(problemNum,3)),...
-    (goal_regions(problemNum,2) - goal_regions(problemNum,3)),...
-    goal_regions(problemNum,3) * 2,...
-    goal_regions(problemNum,3) * 2
+    (goal_regions(1) - goal_regions(3)),...
+    (goal_regions(2) - goal_regions(3)),...
+    goal_regions(3) * 2,...
+    goal_regions(3) * 2
     ]; 
 rectangle('Position',pos,'Curvature',[1 1], 'FaceColor',[0 .5 .5],...
     'EdgeColor','b', 'LineWidth',3)
@@ -84,7 +66,7 @@ hold on
 plot(nodes(:,1), nodes(:,2), '.k')
 plot(edges(:,1), edges(:,2), 'k')
 plot(search_tree(:, 1), search_tree(:, 2), 'm', 'LineWidth', 0.5);
-plot(start_points(problemNum,1), start_points(problemNum,2), 'or', 'MarkerSize', 10,...
+plot(start_points(1), start_points(2), 'or', 'MarkerSize', 10,...
     'MarkerFaceColor', 'r')
 plot(path_raw(:,2), path_raw(:,3), 'g:', 'LineWidth', 4);
 
