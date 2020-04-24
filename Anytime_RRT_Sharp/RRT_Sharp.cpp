@@ -10,48 +10,48 @@ ConfigspaceNode calcGateNode(double xPosition, double yPosition, double gateOrie
 int main()
 {
 
-	#pragma region Global Initialization 
+	#pragma region Initialization 
 	//------------------------------------------------------------------------//
 	//-------this info should be ingested from the intialization script-------//
 	//------------------------------------------------------------------------//
 
 	// define arrays for the gate and obstacle information
-	double approxGateXPosition = 5.0;
-	double approxGateYPosition = 60.0;
-	double approxGateApproach = M_PI / 2.0;
+	const double approxGateXPosition = 5.0;
+	const double approxGateYPosition = 60.0;
+	const double approxGateApproach = M_PI / 2.0;
 
-	double obstacleXPosition[] = { 80, 73, 63, 53, 43, 33, 28, 25, 25, 25, 25, 35, 40, 45, 80, 85, 90, 95, 100, 100, 100, 100, 60 };
-	double obstacleYPosition[] = { 40, 30, 25, 25, 26, 25, 35, 47, 57, 67, 77, 80, 80, 80, 80, 80, 80, 80, 80, 0, 5, 10, 100 };
-	double obstacleRadius[]    = { 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8 };
-	int numObstacles = sizeof(obstacleRadius) / sizeof(double);
+	const double obstacleXPosition[] = { 80, 73, 63, 53, 43, 33, 28, 25, 25, 25, 25, 35, 40, 45, 80, 85, 90, 95, 100, 100, 100, 100, 60 };
+	const double obstacleYPosition[] = { 40, 30, 25, 25, 26, 25, 35, 47, 57, 67, 77, 80, 80, 80, 80, 80, 80, 80, 80, 0, 5, 10, 100 };
+	const double obstacleRadius[]    = { 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8 };
+	const int numObstacles = sizeof(obstacleRadius) / sizeof(double);
 
 	// define additional input parameters for the goal node calculation
-	double standOffRange = 5.0;
+	const double standOffRange = 5.0;
 
 	// initial UAV orientation
-	double uavStartX = 100.0, uavStartY = 60.0, uavStartTheta = 0.0;
-	double uavStartV = 0.0, uavStartW = 0.0;
+	const double uavStartX = 100.0, uavStartY = 60.0, uavStartTheta = 0.0;
 
 	// goal region (UAV position) radius
-	double uavGoalRadius = 2.5;
+	const double uavGoalRadius = 2.5;
 
 	// vehicle rigid body information
-	int numVehiclePoints = 4;
-	double vehiclePointXPosition[numVehiclePoints] = { -0.5, 0.5, 0.5, -0.5 };
-	double vehiclePointYPosition[numVehiclePoints] = { -0.5, -0.5, 0.5, 0.5 };
+	double vehiclePointXPosition[] = { -0.5, 0.5, 0.5, -0.5 };
+	double vehiclePointYPosition[] = { -0.5, -0.5, 0.5, 0.5 };
+	int numVehiclePoints = sizeof(vehiclePointXPosition) / sizeof(double);
 
 	// initialize variables for the graph limits
 	double xMin = 0.0, yMin = 0.0, xMax = 0.0, yMax = 0.0;
-	double thetaMin = 0.0, thetaMax = 2 * M_PI;
+	const double thetaMin = 0.0, thetaMax = 2 * M_PI;
 
 	// define a buffer region and the side length to use when
 	// defining the square freespace
-	double buffer = 40.0;
+	const double buffer = 40.0;
+
+	// define values for cost computation
+	double tempCost = 0, finalCost = 100000;
 
 	// seed for random node generation
 	srand (time(NULL));
-	//------------------------------------------------------------------------//
-	//------------------------------------------------------------------------//
 
 	//------------------------------------------------------------------------//
 	//------------------this info must be declared regardless-----------------//
@@ -59,19 +59,20 @@ int main()
 	double obsVol = 0.0;
 	int dimension = 2;
 	int goalBiasCount = 100;
-	int maxCount = 5000;
+	int maxCount = 7000;
 	int tempItr = 0;
 
-	ConfigspaceNode gateNode, tempNode, parentNode, newNode, bestNeighbor, remainingNodeParent;
-	ConfigspaceNode *nearestNeighbors = NULL, *safeNearestNeighbors = NULL, *remainingNodes = NULL, *removeNodes = NULL, *lastNodes = NULL, *costThresholdNodes = NULL;
+	ConfigspaceNode gateNode, tempNode, parentNode, newNode, bestNeighbor, remainingNodeParent, finalNode;
+	ConfigspaceNode *nearestNeighbors = NULL, *safeNearestNeighbors = NULL, *remainingNodes = NULL,
+		*removeNodes = NULL, *lastNodes = NULL, *costThresholdNodes = NULL;
 	bool goalCheck;
 	int remainingCount = 0, k = 10, m = 40, count = 0;
 	double circleRadius = 0.0, epsilon = 5.0;
-	//------------------------------------------------------------------------//
-	//------------------------------------------------------------------------//
-	#pragma endregion Initializes all necessary variables (should be read-in for real function)
+
+	#pragma endregion Initializes all necessary variables (could be read-in from file)
 
 	#pragma region Primary Function
+
 	// build workspace and configspace graphs
 	WorkspaceGraph G_workspace;
 	ConfigspaceGraph G_configspace;
@@ -84,11 +85,27 @@ int main()
 
 	// define the limits of the graph based on position of the gate
 	// and the robot
-	if (gateNode.x < G_workspace.goalRegion.x) { xMin = gateNode.x - buffer; xMax = G_workspace.goalRegion.x + buffer; }
-	else { xMin = G_workspace.goalRegion.x - buffer; xMax = gateNode.x + buffer; }
+	if (gateNode.x < G_workspace.goalRegion.x)
+	{
+		xMin = gateNode.x - buffer;
+		xMax = G_workspace.goalRegion.x + buffer;
+	}
+	else
+	{
+		xMin = G_workspace.goalRegion.x - buffer;
+		xMax = gateNode.x + buffer;
+	}
 
-	if (gateNode.y < G_workspace.goalRegion.y) { yMin = gateNode.y - buffer; yMax = G_workspace.goalRegion.y + buffer; }
-	else { yMin = G_workspace.goalRegion.y - buffer; yMax = gateNode.y + buffer; }
+	if (gateNode.y < G_workspace.goalRegion.y)
+	{
+		yMin = gateNode.y - buffer;
+		yMax = G_workspace.goalRegion.y + buffer;
+	}
+	else
+	{
+		yMin = G_workspace.goalRegion.y - buffer;
+		yMax = gateNode.y + buffer;
+	}
 
 	// set freespace of graphs based on the graph limits; some values will always
 	// be the same (theta, v, w, a, gamma), while others will vary (x and y)
@@ -97,7 +114,7 @@ int main()
 
 	// set the obstacles for this iteration (we don't need to consider all obstacles
 	// for every iteration); use the above defined freespace limits
-	for (int i = 0; i < numObstacles; i++)
+	for (int i = 0; i < numObstacles; ++i)
 		if (G_workspace.obstacleInFreespace(obstacleXPosition[i], obstacleYPosition[i], obstacleRadius[i]))
 			G_workspace.addObstacle(obstacleXPosition[i], obstacleYPosition[i], obstacleRadius[i]);
 
@@ -113,9 +130,10 @@ int main()
 	printf("ObsVol: %f, NumObs: %d, NumVehicles: %d, Freespace: [%f, %f, %f, %f]\n", obsVol, G_workspace.numObstacles, G_workspace.numVehicles, xMin, xMax, yMin, yMax);
 	printf("GoalRegion: %f, %f, %f\n", G_workspace.goalRegion.x, G_workspace.goalRegion.y, G_workspace.goalRegion.radius);
 	printf("GateNode: %f, %f, %f\n", G_configspace.nodes[0].x, G_configspace.nodes[0].y, G_configspace.nodes[0].theta);
-	///////////////////////////////////////////////////////////////////////////////////////////
 
-	// start the anytime RRT# iterations
+	//------------------------------------------------------------------------//
+	//------------------------start the RRT# iterations-----------------------//
+	//------------------------------------------------------------------------//
 
 	free(safeNearestNeighbors);
 	free(costThresholdNodes);
@@ -133,60 +151,91 @@ int main()
 
 	// do the RRT# thing
 	while(!G_workspace.goalRegionReached || count < maxCount)
-	{				
+	{
+		// create a new node (not yet connected to the graph)
 		tempNode = (count % goalBiasCount != 0) ? G_configspace.generateRandomNode() : G_configspace.generateBiasedNode(G_workspace.goalRegion.x, G_workspace.goalRegion.y);
+
+		// find the closest graph node and set it as the parent
 		parentNode = G_configspace.findClosestNode(tempNode);
+
+		// free memory from previous iteration
 		free(remainingNodes);
 		remainingNodes = NULL;
+		remainingNodes = (ConfigspaceNode*)calloc(1, sizeof(ConfigspaceNode));
+		remainingNodes[0].id = 0;
+
+		// skip if the parent node is already in the goal region
 		if (!G_workspace.checkAtGoal(parentNode))
 		{
+			// create a new node by extending from the parent to the temp node
+			// (this includes a collision check); then compute cost
 			newNode = G_workspace.extendToNode(parentNode, tempNode, epsilon);
 			newNode.cost = parentNode.cost + G_configspace.computeCost(parentNode, newNode);
 
 			// if there is a collision, newNode id will be set to its parent's id
 			if (newNode.id != parentNode.id)
 			{
+				// compute ball radius and find k safe neighbor nodes (i.e. no collision)
+				// within that ball
 				circleRadius = G_configspace.computeRadius(epsilon);
 				safeNearestNeighbors = G_configspace.findNeighbors(newNode, circleRadius, k);
-				remainingNodes = (ConfigspaceNode*)calloc(1, sizeof(ConfigspaceNode));
-				remainingNodes[0].id = 0;
 
+				// if there were no safe neighbors then the first node id will be zero
 				if (safeNearestNeighbors[0].id)
 				{
+					// find the best safe neighbor and connect newNode and the bestNeighbor
+					// assign the resulting node to tempNode
 					bestNeighbor = G_configspace.findBestNeighbor(newNode, safeNearestNeighbors);
 					tempNode = G_workspace.connectNodes(bestNeighbor, newNode);
+
+					// compute the cost of tempNode using the best neighbor
 					tempNode.cost = bestNeighbor.cost + G_configspace.computeCost(bestNeighbor, tempNode);
 
+					// if the tempNode is cheaper than make that the newNode
 					if (tempNode.cost < newNode.cost)
 					{
 						newNode = tempNode;
 						parentNode = bestNeighbor;
 					}
 
+					// reset the remaining nodes to the safe neighbors minus the one we connected to
 					free(remainingNodes);
 					remainingNodes = G_configspace.removeNode(safeNearestNeighbors, bestNeighbor);
 				}
+
+				// add new node and edge to the config graph
 				tempNode = G_configspace.addNode(newNode);
 				G_configspace.addEdge(parentNode, tempNode);
 
-				if (!G_workspace.goalRegionReached)
-					if (G_workspace.checkAtGoal(tempNode))
-						G_workspace.goalRegionReached = true;
+				// if we haven't reached the goal yet and the added node is in the
+				// goal region, then set goalRegionReached to true
+				if (!G_workspace.goalRegionReached && G_workspace.checkAtGoal(tempNode))
+					G_workspace.goalRegionReached = true;
 
-				// start rewiring
+				// do the rewiring while there are nodes left in remainingNodes
 				remainingCount = 0;
 				while (remainingNodes[remainingCount].id)
 				{
+					// check if it is cheaper for the current remaining node to use the added node as
+					// its parent node 
+				
 					if (remainingNodes[remainingCount].cost > (tempNode.cost + G_configspace.computeCost(remainingNodes[remainingCount], tempNode)))
 					{
+						// if it's cheaper, then create the new node, set the new cost, and set
+						// the parent (now the added node)
 						newNode = G_workspace.connectNodes(tempNode, remainingNodes[remainingCount]);
 						newNode.cost = tempNode.cost + G_configspace.computeCost(remainingNodes[remainingCount], tempNode);
 						newNode.parentNodeId = tempNode.id;
+
+						// get the old parent of the current remaining node, remove the old
+						// edge, add the new edge, and replace the old remaining node
 						remainingNodeParent = G_configspace.findNodeId(remainingNodes[remainingCount].parentNodeId);
 						G_configspace.removeEdge(remainingNodeParent, remainingNodes[remainingCount]);
 						G_configspace.addEdge(tempNode, newNode);
 						G_configspace.replaceNode(remainingNodes[remainingCount], newNode);
 
+						// propagate the cost update from using the new node down the tree
+						// (this requires adding the new node to a small pointer array)
 						ConfigspaceNode* updatedNode = (ConfigspaceNode*)calloc(2, sizeof(ConfigspaceNode));
 						updatedNode[0] = newNode;
 						updatedNode[1].id = 0;
@@ -199,10 +248,8 @@ int main()
 		++count;
 	}
 
-	double tempCost = 0, finalCost = 100000;
-	ConfigspaceNode finalNode;
-
-	for (int i = 0; i < G_configspace.numNodes; i++)
+	// find the best node in the goal region
+	for (int i = 0; i < G_configspace.numNodes; ++i)
 	{
 		if (G_workspace.checkAtGoal(G_configspace.nodes[i]))
 		{
@@ -214,17 +261,16 @@ int main()
 			}
 		}
 	}
+
+	// print all the resluts to files
 	printf("Total number of points: %d\n", G_configspace.numNodes);
 	printf("Final node at: (%f, %f)\n", finalNode.x, finalNode.y);
 	printf("Final cost is: %f\n", finalCost);
-	G_configspace.printData(1  + tempItr++, finalNode);
-
-	// get the last m nodes in the tree
-	lastNodes = G_configspace.getLastNodes(finalNode, m);
-	#pragma endregion Primary code for the Anytime RRT# implementaion
+	G_configspace.printData(tempItr, finalNode);
 
 	return 0;
 
+	#pragma endregion Primary code for the Anytime RRT# implementaion
 }
 
 
