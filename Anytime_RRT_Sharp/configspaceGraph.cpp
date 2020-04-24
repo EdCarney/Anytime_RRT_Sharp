@@ -376,20 +376,20 @@ void ConfigspaceGraph::printData(int probNum, ConfigspaceNode finalNode)
 	// print out node file
 	nodeFile << numNodes << "\n";
 
-	for (int i = 0; i < numNodes - 1; i++)
-		nodeFile << nodes[i].t << ", " << nodes[i].x << ", " << nodes[i].y << ", " << nodes[i].theta << ", " << nodes[i].id << "\n";
+	for (int i = 0; i < numNodes - 1; ++i)
+		nodeFile << nodes[i].x << ", " << nodes[i].y << ", " << nodes[i].theta << ", " << nodes[i].id << "\n";
 
-	nodeFile << nodes[numNodes - 1].t << ", " << nodes[numNodes - 1].x << ", " << nodes[numNodes - 1].y << ", "
+	nodeFile << nodes[numNodes - 1].x << ", " << nodes[numNodes - 1].y << ", "
 		<< nodes[numNodes - 1].theta << ", " << nodes[numNodes - 1].id << "\n";
 
 	// print out edge file
 	edgeFile << numEdges << "\n";
 
-	for (int i = 0; i < numEdges; i++)
+	for (int i = 0; i < numEdges; ++i)
 		edgeFile << edges[i].startNode.id << ", " << edges[i].endNode.id << "\n";
 
 	// print out search tree file
-	for (int i = 0; i < numEdges; i++)
+	for (int i = 0; i < numEdges; ++i)
 	{
 		searchTreeFile << edges[i].startNode.id << ", " << edges[i].startNode.x << ", " << edges[i].startNode.y
 			<< ", " << edges[i].endNode.id << ", " << edges[i].endNode.x << ", " << edges[i].endNode.y << "\n";
