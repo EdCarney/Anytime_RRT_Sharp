@@ -555,9 +555,9 @@ void ConfigspaceGraph::propagateCost(ConfigspaceNode * updatedNodes)
 	nodesToUpdate[0].id = 0;
 	int nodeCount = 0;
 
-	for (int i = 0; i < updateNodesCount; i++)
+	for (int i = 0; i < updateNodesCount; ++i)
 	{
-		for (int j = 0; j < numNodes; j++)
+		for (int j = 0; j < numNodes; ++j)
 		{
 			if (updatedNodes[i].id == nodes[j].parentNodeId)
 			{
@@ -567,7 +567,7 @@ void ConfigspaceGraph::propagateCost(ConfigspaceNode * updatedNodes)
 				nodesToUpdate = tempNodesToUpdate;
 				nodesToUpdate[nodeCount] = nodes[j];
 				nodes[j].cost = updatedNodes[i].cost + computeCost(nodes[j], updatedNodes[i]);
-				nodeCount++;
+				++nodeCount;
 			}
 		}
 	}
