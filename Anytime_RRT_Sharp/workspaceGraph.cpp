@@ -61,12 +61,6 @@ void WorkspaceGraph::buildWorkspaceGraph()
 	maxY = 0.0;
 	minTheta = 0.0;
 	maxTheta = 0.0;
-	minV = 0.0;
-	minW = 0.0;
-	maxV = 0.0;
-	maxW = 0.0;
-	maxAbsA = 0.0;
-	maxAbsGamma = 0.0;
 	obstacles = NULL;
 	vehicles = NULL;
 	goalRegionReached = false;
@@ -117,7 +111,7 @@ bool WorkspaceGraph::readVehicleFromFile(const char* vehicleFile)
 	vehicles[numVehicles - 1].nodes =					// allocate memory based on vehicle number
 		(WorkspaceNode*)calloc(vehicles[numVehicles - 1].numNodes, sizeof(WorkspaceNode));
 
-	vehicles[numVehicles - 1].offsetNodes =					// allocate memory based on vehicle number
+	vehicles[numVehicles - 1].offsetNodes =				// allocate memory based on vehicle number
 		(WorkspaceNode*)calloc(vehicles[numVehicles - 1].numNodes, sizeof(WorkspaceNode));
 
 	// assign values
@@ -230,41 +224,31 @@ double WorkspaceGraph::computeObsVol()
 	return volume;
 }
 
-void WorkspaceGraph::addGoalRegion(double x, double y, double theta, double v, double w, double radius)
+void WorkspaceGraph::addGoalRegion(double x, double y, double theta, double radius)
 {
 	goalRegion.x = x;
 	goalRegion.y = y;
 	goalRegion.theta = theta;
-	goalRegion.v = v;
-	goalRegion.w = w;
 	goalRegion.radius = radius;
 }
 
-void WorkspaceGraph::updateGoalRegion(double x, double y, double theta, double v, double w, double radius)
+void WorkspaceGraph::updateGoalRegion(double x, double y, double theta, double radius)
 {
 	goalRegion.x = x;
 	goalRegion.y = y;
 	goalRegion.theta = theta;
-	goalRegion.v = v;
-	goalRegion.w = w;
 	goalRegion.radius = radius;
 }
 
-void WorkspaceGraph::defineFreespace(double newMinX, double newMinY, double newMinTheta, double newMinV, double newMinW,
-	double newMaxX, double newMaxY, double newMaxTheta, double newMaxV, double newMaxW, double newMaxAbsA, double newMaxAbsGamma)
+void WorkspaceGraph::defineFreespace(double newMinX, double newMinY, double newMinTheta, double newMaxX,
+	double newMaxY, double newMaxTheta)
 {
-	minX = newMinX;
-	minY = newMinY;
-	minTheta = newMinTheta;
-	minV = newMinV;
-	minW = newMinW;
+	minX = minX;
+	minY = minY;
+	minTheta = minTheta;
 	maxX = newMaxX;
 	maxY = newMaxY;
 	maxTheta = newMaxTheta;
-	maxV = newMaxV;
-	maxW = newMaxW;
-	maxAbsA = newMaxAbsA;
-	maxAbsGamma = newMaxAbsGamma;
 }
 
 ConfigspaceNode* WorkspaceGraph::checkSafety(ConfigspaceNode newNode, ConfigspaceNode * neighbors)
@@ -360,7 +344,7 @@ void WorkspaceGraph::addVehicle(double vehiclePointXPosition[4], double vehicleP
 	double x = 0.0, y = 0.0;
 
 	// increment number of vehicles in graph (assuming one vehicle per file)
-	numVehicles++;
+	++numVehicles;
 
 	// allocate memory based on vehicle number
 	vehicles = (Vehicle*)calloc(numVehicles, sizeof(Vehicle));

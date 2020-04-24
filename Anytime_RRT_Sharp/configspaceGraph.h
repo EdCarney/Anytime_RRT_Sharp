@@ -16,11 +16,7 @@ struct ConfigspaceNode
 	double x;			// x coordinate location of the vehicle centroid
 	double y;			// y coordinate location of the vehicle centroid
 	double theta;		// rotation of the vehicle
-	double v;			// linear velocity of the vehicle
-	double w;			// rotational velocity of the vehicle
-	double t;			// time of the node
-	double a;			// translational acceleration control input applied 
-	double gamma;		// rotational acceleration control input applied
+	double t;			// time for the node
 	int parentNodeId;	// the id of the parent node for this node
 	double cost;		// cost-to-go for this node
 
@@ -49,8 +45,6 @@ public:
 
 	double minX, minY, maxX, maxY;	// limits of the graph freespace
 	double minTheta, maxTheta;		// limits of the oreintation theta
-	double minV, minW, maxV, maxW;	// limits of the angular and translational velocity
-	double maxAbsA, maxAbsGamma;	// absolute limits of the angular and translational acceleration
 	double freeSpaceMeasure;		// a meaure of the free space in the graph
 	double zeta;					// the volume of a unit ball in the free space
 	double gamma_star;				// optimality constraint calculated from percollation theory
@@ -64,7 +58,7 @@ public:
 
 	// creates a node for the graph with position (x,y)
 	// NOTE: this should only be used for the start node
-	void createNode(double x, double y, double theta, double v, double w, double t);
+	void createNode(double x, double y, double theta, double t);
 
 	// adds a node to the graph
 	// NOTE: this should be used for all other nodes
@@ -88,9 +82,8 @@ public:
 
 	// defines freespace for problem
 	// used when extending to a new node
-	void defineFreespace(double minX, double minY, double minTheta, double minV, double minW,
-		double maxX, double maxY, double maxTheta, double maxV, double maxW, double newMaxAbsA, double newMaxAbsGamma,
-		int dimension, double obstacleVol);
+	void defineFreespace(double minX, double minY, double minTheta, double maxX,
+		double maxY, double maxTheta, int dimension, double obstacleVol);
 
 	// find node from an ID
 	ConfigspaceNode findNodeId(int nodeId);

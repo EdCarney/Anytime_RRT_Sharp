@@ -43,8 +43,6 @@ int main()
 	// initialize variables for the graph limits
 	double xMin = 0.0, yMin = 0.0, xMax = 0.0, yMax = 0.0;
 	double thetaMin = 0.0, thetaMax = 2 * M_PI;
-	double vMin = 0.0, vMax = 1.0, wMin = -M_PI / 8, wMax = M_PI / 8;
-	double linAccelMax = 1.0, rotAccelMax = M_PI / 4;
 
 	// define a buffer region and the side length to use when
 	// defining the square freespace
@@ -79,7 +77,7 @@ int main()
 	ConfigspaceGraph G_configspace;
 
 	// set the goal region (i.e. the UAV starting location)
-	G_workspace.addGoalRegion(uavStartX, uavStartY, uavStartTheta, uavStartV, uavStartW, uavGoalRadius);
+	G_workspace.addGoalRegion(uavStartX, uavStartY, uavStartTheta, uavGoalRadius);
 
 	// function to determine goal node based on approximate gate information
 	gateNode = calcGateNode(approxGateXPosition, approxGateYPosition, approxGateApproach, standOffRange);
@@ -94,15 +92,8 @@ int main()
 
 	// set freespace of graphs based on the graph limits; some values will always
 	// be the same (theta, v, w, a, gamma), while others will vary (x and y)
-	G_workspace.defineFreespace(
-		xMin, yMin, thetaMin, vMin, wMin,
-		xMax, yMax, thetaMax, vMax, wMax,
-		linAccelMax, rotAccelMax);
-	G_configspace.defineFreespace(
-		xMin, yMin, thetaMin, vMin, wMin,
-		xMax, yMax, thetaMax, vMax, wMax,
-		linAccelMax, rotAccelMax,
-		dimension, obsVol);
+	G_workspace.defineFreespace(xMin, yMin, thetaMin, xMax, yMax, thetaMax);
+	G_configspace.defineFreespace(xMin, yMin, thetaMin, xMax, yMax, thetaMax, dimension, obsVol);
 
 	// set the obstacles for this iteration (we don't need to consider all obstacles
 	// for every iteration); use the above defined freespace limits
@@ -245,8 +236,8 @@ ConfigspaceNode calcGateNode(double xPosition, double yPosition, double gateOrie
 	gateNode.y = yPosition + standOffRange * sin(gateOrientation - M_PI);
 	gateNode.theta = gateOrientation;
 
-	gateNode.v = 0.0; gateNode.w = 0.0; gateNode.t = 0.0;
-	gateNode.a = 0.0; gateNode.gamma = 0.0; gateNode.cost = 0.0;
+	gateNode.t = 0.0;
+	gateNode.cost = 0.0;
 	gateNode.parentNodeId = 0;
 
 	return gateNode;

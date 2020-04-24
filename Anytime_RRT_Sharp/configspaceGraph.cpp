@@ -9,20 +9,14 @@ void ConfigspaceGraph::buildGraph()
 	minX = 0;
 	minY = 0;
 	minTheta = 0;
-	minV = 0;
-	minW = 0;
 	maxX = 0;
 	maxY = 0;
 	maxTheta = 0;
-	maxV = 0;
-	maxW = 0;
 	freeSpaceMeasure = 0;
 	zeta = 0;
 	dim = 0;
 	nodes = NULL;
 	edges = NULL;
-	maxAbsA = 0;
-	maxAbsGamma = 0;
 }
 
 void ConfigspaceGraph::deleteGraph()
@@ -36,23 +30,16 @@ void ConfigspaceGraph::deleteGraph()
 	numNodes = 0;
 }
 
-void ConfigspaceGraph::defineFreespace(double newMinX, double newMinY, double newMinTheta, double newMinV, double newMinW,
-	double newMaxX, double newMaxY, double newMaxTheta, double newMaxV, double newMaxW, double newMaxAbsA, double newMaxAbsGamma,
-	int dimension, double obstacleVol)
+void ConfigspaceGraph::defineFreespace(double newMinX, double newMinY, double newMinTheta, double newMaxX,
+		double newMaxY, double newMaxTheta, int dimension, double obstacleVol)
 {
 	// set graph parameters
 	minX = newMinX;
 	minY = newMinY;
 	minTheta = newMinTheta;
-	minV = newMinV;
-	minW = newMinW;
 	maxX = newMaxX;
 	maxY = newMaxY;
 	maxTheta = newMaxTheta;
-	maxV = newMaxV;
-	maxW = newMaxW;
-	maxAbsA = newMaxAbsA;
-	maxAbsGamma = newMaxAbsGamma;
 
 	// compute dependent variables
 	dim = dimension;
@@ -148,9 +135,8 @@ void ConfigspaceGraph::removeGraphNodes(ConfigspaceNode *nodesToRemove)
 		// check if the current node is one of the nodes to be deleted,
 		// if it is, toggle the keepFlag flag
 		for (int j = 0; j < numRemoveNodes; j++)
-		{
-			if (nodes[i].id == nodesToRemove[j].id) { keepFlag = false; }
-		}
+			if (nodes[i].id == nodesToRemove[j].id)
+				keepFlag = false;
 
 		// if the keepFlag flag is still good, then add the node to the
 		// new array of nodes
@@ -168,9 +154,7 @@ void ConfigspaceGraph::removeGraphNodes(ConfigspaceNode *nodesToRemove)
 			// check if the current edge has a start node that is one of the
 			// nodes to be removed, if it is, toggle the flag
 			for (int j = 0; j < numRemoveNodes; j++)
-			{
 				if (edges[i].endNode.id == nodesToRemove[j].id) { keepFlag = false; }
-			}
 
 			// if the keepFlag flag is still good, then add the node to the
 			// new array of nodes
@@ -194,7 +178,7 @@ void ConfigspaceGraph::removeGraphNodes(ConfigspaceNode *nodesToRemove)
 	numEdges = numNodes - 1;//newEdgeArrayInd;
 }
 
-void ConfigspaceGraph::createNode(double x, double y, double theta, double v, double w, double t)
+void ConfigspaceGraph::createNode(double x, double y, double theta, double t)
 {
 	// increase memory of node array for new entry
 	if (numNodes > 0)
@@ -213,17 +197,12 @@ void ConfigspaceGraph::createNode(double x, double y, double theta, double v, do
 	nodes[numNodes].x = x;
 	nodes[numNodes].y = y;
 	nodes[numNodes].theta = theta;
-	nodes[numNodes].v = v;
-	nodes[numNodes].w = w;
-	nodes[numNodes].t = t;
-	nodes[numNodes].a = 0.0;
-	nodes[numNodes].gamma = 0.0;
 	nodes[numNodes].parentNodeId = 0;
 	nodes[numNodes].iterationPoints = NULL;
 	nodes[numNodes].numIterationPoints = 0;
 	nodes[numNodes].id = numNodes + 1;
 	nodes[numNodes].cost = 0.0;
-	numNodes++;
+	++numNodes;
 }
 
 ConfigspaceNode ConfigspaceGraph::findNodeId(int nodeId)
@@ -246,17 +225,12 @@ ConfigspaceNode ConfigspaceGraph::generateRandomNode()
 
 	randX = minX + (minX + static_cast <double> (rand())) / (static_cast <double> (RAND_MAX / (maxX - minX)));
 	randY = minY + (minY + static_cast <double> (rand())) / (static_cast <double> (RAND_MAX / (maxY - minY)));
-	randV = minV + ((minV + static_cast <double> (rand())) / (static_cast <double> (RAND_MAX / (maxV - minV))));
-	randW = minW * 0.25 + ((minW + static_cast <double> (rand())) / (static_cast <double> (RAND_MAX / ((maxW - minW) * 0.25))));
 
 	ConfigspaceNode randNode;
 	randNode.x = randX;
 	randNode.y = randY;
 	randNode.theta = 0.0;
-	randNode.v = randV;
-	randNode.w = randW;
 	randNode.parentNodeId = 0.0;
-	randNode.t = 0.0;
 	randNode.cost = 0.0;
 	randNode.id = 0;
 
@@ -265,19 +239,11 @@ ConfigspaceNode ConfigspaceGraph::generateRandomNode()
 
 ConfigspaceNode ConfigspaceGraph::generateBiasedNode(double biasedX, double biasedY)
 {
-	double randV, randW;
-
-	randV = minV + ((minV + static_cast <double> (rand())) / (static_cast <double> (RAND_MAX / (maxV - minV))));
-	randW = minW * 0.25 + ((minW + static_cast <double> (rand())) / (static_cast <double> (RAND_MAX / ((maxW - minW) * 0.25))));
-
 	ConfigspaceNode biasedNode;
 	biasedNode.x = biasedX;
 	biasedNode.y = biasedY;
 	biasedNode.theta = 0.0;
-	biasedNode.v = 0.0;
-	biasedNode.w = 0.0;
 	biasedNode.parentNodeId = 0;
-	biasedNode.t = 0.0;
 	biasedNode.cost = 0.0;
 	biasedNode.id = 0;
 
@@ -307,7 +273,8 @@ double ConfigspaceGraph::computeRadius(double epsilon)
 void ConfigspaceGraph::trimTreeChildren(ConfigspaceNode *removeNodes, int saveNodeId)
 {
 	int removeNodesCount = 0;
-	while (removeNodes[removeNodesCount].id) { removeNodesCount++; }
+	while (removeNodes[removeNodesCount].id)
+		removeNodesCount++;
 
 	ConfigspaceNode* nodesToRemove = (ConfigspaceNode*)calloc(1, sizeof(ConfigspaceNode));
 	nodesToRemove[0].id = 0;
@@ -408,21 +375,18 @@ void ConfigspaceGraph::printData(int probNum, ConfigspaceNode finalNode)
 
 	// print out node file
 	nodeFile << numNodes << "\n";
-	for (int i = 0; i < numNodes - 1; i++)
-	{
-		nodeFile << nodes[i].t << ", " << nodes[i].x << ", " << nodes[i].y << ", " << nodes[i].theta << ", "
-			<< nodes[i].v << ", " << nodes[i].w << ", " << nodes[i + 1].a << ", " << nodes[i + 1].gamma << ", " << nodes[i].id << "\n";
-	}
 
-	nodeFile << nodes[numNodes - 1].t << ", " << nodes[numNodes - 1].x << ", " << nodes[numNodes - 1].y << ", " << nodes[numNodes - 1].theta << ", "
-		<< nodes[numNodes - 1].v << ", " << nodes[numNodes - 1].w << ", " << "0.0" << ", " << "0.0" << ", " << nodes[numNodes - 1].id << "\n";
+	for (int i = 0; i < numNodes - 1; i++)
+		nodeFile << nodes[i].t << ", " << nodes[i].x << ", " << nodes[i].y << ", " << nodes[i].theta << ", " << nodes[i].id << "\n";
+
+	nodeFile << nodes[numNodes - 1].t << ", " << nodes[numNodes - 1].x << ", " << nodes[numNodes - 1].y << ", "
+		<< nodes[numNodes - 1].theta << ", " << nodes[numNodes - 1].id << "\n";
 
 	// print out edge file
 	edgeFile << numEdges << "\n";
+
 	for (int i = 0; i < numEdges; i++)
-	{
 		edgeFile << edges[i].startNode.id << ", " << edges[i].endNode.id << "\n";
-	}
 
 	// print out search tree file
 	for (int i = 0; i < numEdges; i++)
@@ -435,23 +399,15 @@ void ConfigspaceGraph::printData(int probNum, ConfigspaceNode finalNode)
 	ConfigspaceNode currentNode = finalNode;
 	double tempLinAccel, tempRotAccel;
 
-	outputPathFile << currentNode.t << ", " << currentNode.x << ", " << currentNode.y << ", " << currentNode.theta << ", "
-		<< currentNode.v << ", " << currentNode.w << ", " << "0.0" << ", " << "0.0" << "\n";
-	tempLinAccel = currentNode.a;
-	tempRotAccel = currentNode.gamma;
+	outputPathFile << currentNode.t << ", " << currentNode.x << ", " << currentNode.y << ", " << currentNode.theta << ", " << "\n";
 	currentNode = findNodeId(currentNode.parentNodeId);
 
 	while (currentNode.parentNodeId)
 	{
-		outputPathFile << currentNode.t << ", " << currentNode.x << ", " << currentNode.y << ", " << currentNode.theta << ", "
-			<< currentNode.v << ", " << currentNode.w << ", " << tempLinAccel << ", " << tempRotAccel << "\n";
-
-		tempLinAccel = currentNode.a;
-		tempRotAccel = currentNode.gamma;
+		outputPathFile << currentNode.t << ", " << currentNode.x << ", " << currentNode.y << ", " << currentNode.theta << ", " << "\n";
 		currentNode = findNodeId(currentNode.parentNodeId);
 	}
-	outputPathFile << nodes[0].t << ", " << nodes[0].x << ", " << nodes[0].y << ", " << nodes[0].theta << ", "
-		<< nodes[0].v << ", " << nodes[0].w << ", " << tempLinAccel << ", " << tempRotAccel << "\n";
+	outputPathFile << nodes[0].t << ", " << nodes[0].x << ", " << nodes[0].y << ", " << nodes[0].theta << ", " << "\n";
 
 	printf("Printing nodes to nodes_%d.txt.\n", probNum);
 	printf("Printing edges to edges_%d.txt.\n", probNum);
@@ -489,9 +445,7 @@ ConfigspaceNode ConfigspaceGraph::findClosestNode(ConfigspaceNode node)
 
 double ConfigspaceGraph::computeCost(ConfigspaceNode node_1, ConfigspaceNode node_2)
 {
-	double cost = 0.0;
-	cost += hypot((node_1.x - node_2.x), (node_1.y - node_2.y));
-	return cost;
+	return hypot((node_1.x - node_2.x), (node_1.y - node_2.y));
 }
 
 ConfigspaceNode * ConfigspaceGraph::findNeighbors(ConfigspaceNode centerNode, double radius, int k)
@@ -551,7 +505,7 @@ ConfigspaceNode ConfigspaceGraph::findBestNeighbor(ConfigspaceNode newNode, Conf
 			bestCost = tempBestCost;
 			bestNeighbor = safeNeighbors[numSafeNeighbors];
 		}
-		numSafeNeighbors++;
+		++numSafeNeighbors;
 	}
 
 	return bestNeighbor;
@@ -580,11 +534,6 @@ ConfigspaceNode ConfigspaceGraph::addNode(ConfigspaceNode addedNode)
 	nodes[numNodes].x = addedNode.x;
 	nodes[numNodes].y = addedNode.y;
 	nodes[numNodes].theta = addedNode.theta;
-	nodes[numNodes].v = addedNode.v;
-	nodes[numNodes].w = addedNode.w;
-	nodes[numNodes].t = addedNode.t;
-	nodes[numNodes].a = addedNode.a;
-	nodes[numNodes].gamma = addedNode.gamma;
 	nodes[numNodes].parentNodeId = addedNode.parentNodeId;
 	nodes[numNodes].iterationPoints = addedNode.iterationPoints;
 	nodes[numNodes].numIterationPoints = addedNode.numIterationPoints;

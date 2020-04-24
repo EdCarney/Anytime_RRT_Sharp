@@ -28,13 +28,11 @@ struct GoalRegion
 	double x;
 	double y;
 	double theta;
-	double v;
-	double w;
 	double radius;
 };
 
 // a struct to define the shape of the vehicle for
-// collision checking for RRT for  rigid body of n nodes
+// collision checking for RRT for rigid body of n nodes
 struct Vehicle
 {
 	int numNodes;					// number of representing the vehicle
@@ -66,19 +64,17 @@ class WorkspaceGraph
 {
 public:
 
-	int numObstacles;		// total number of obstacles in the graph
-	int numVehicles;		// total number of vehicles in the graph
+	int numObstacles;				// total number of obstacles in the graph
+	int numVehicles;				// total number of vehicles in the graph
 
-	Obstacle* obstacles;	// an array containing all obstacles
-	Vehicle* vehicles;		// an array containing all vehicles
-	GoalRegion goalRegion;	// the goal region for the graph (treated as an obstacle)
+	Obstacle* obstacles;			// an array containing all obstacles
+	Vehicle* vehicles;				// an array containing all vehicles
+	GoalRegion goalRegion;			// the goal region for the graph (treated as an obstacle)
 
 	double minX, minY, maxX, maxY;	// limits of the graph freespace
 	double minTheta, maxTheta;		// limits of the oreintation theta
-	double minV, minW, maxV, maxW;	// limits of the angular and translational velocity
-	double maxAbsA, maxAbsGamma;	// absolute limits of the angular and translational acceleration
 
-	bool goalRegionReached;	// boolean value to indicate if the goal region has been reached
+	bool goalRegionReached;			// boolean value to indicate if the goal region has been reached
 
 private:
 	void buildWorkspaceGraph();
@@ -88,15 +84,15 @@ public:
 
 	// sets the goal region for the graph
 	// this is treated similar to an obstacle
-	void addGoalRegion(double x, double y, double theta, double v, double w, double radius);
+	void addGoalRegion(double x, double y, double theta, double radius);
 
 	// updates the position and configuration of the graph goal region
-	void updateGoalRegion(double x, double y, double theta, double v, double w, double radius);
+	void updateGoalRegion(double x, double y, double theta, double radius);
 
 	// defines freespace for problem
 	// used when extending to a new node
-	void defineFreespace(double minX, double minY, double minTheta, double minV, double minW,
-		double maxX, double maxY, double maxTheta, double maxV, double maxW, double newMaxAbsA, double newMaxAbsGamma);
+	void defineFreespace(double minX, double minY, double minTheta, double maxX,
+		double maxY, double maxTheta);
 
 	// checks if specified node is in the goal region
 	// returns true if it is and false otherwise
