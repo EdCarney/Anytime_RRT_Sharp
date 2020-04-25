@@ -21,11 +21,10 @@ path_raw = csvread(['output_path_' num2str(problemNum + nodeOffset,'%d') '.txt']
 nodes_raw = csvread(['nodes_' num2str(problemNum + nodeOffset,'%d') '.txt']);
 edges_raw = csvread(['edges_' num2str(problemNum + nodeOffset,'%d') '.txt']);
 obstacles_raw = csvread('obstacles.txt');
-vehicle_raw = csvread('robot.txt');
 
 % specify goal region [x, y, radius] and start point [x, y]
-start_points = [5, 55];
-goal_regions = [100, 60, 2.5];
+root_node = [5, 55];
+uav_start = [100, 60, 2.5];
 
 % a bit of data processing for faster plotting
 search_tree = nan(3*size(search_tree_raw, 1), 2);
@@ -53,10 +52,10 @@ figure('Renderer', 'painters', 'Position', [50 50 600 600])
 
 % plot the goal region
 pos = [
-    (goal_regions(1) - goal_regions(3)),...
-    (goal_regions(2) - goal_regions(3)),...
-    goal_regions(3) * 2,...
-    goal_regions(3) * 2
+    (uav_start(1) - uav_start(3)),...
+    (uav_start(2) - uav_start(3)),...
+    uav_start(3) * 2,...
+    uav_start(3) * 2
     ]; 
 rectangle('Position',pos,'Curvature',[1 1], 'FaceColor',[0 .5 .5],...
     'EdgeColor','b', 'LineWidth',3)
@@ -66,9 +65,9 @@ hold on
 plot(nodes(:,1), nodes(:,2), '.k')
 plot(edges(:,1), edges(:,2), 'k')
 plot(search_tree(:, 1), search_tree(:, 2), 'm', 'LineWidth', 0.5);
-plot(start_points(1), start_points(2), 'or', 'MarkerSize', 10,...
+plot(root_node(1), root_node(2), 'or', 'MarkerSize', 10,...
     'MarkerFaceColor', 'r')
-plot(path_raw(:,2), path_raw(:,3), 'g:', 'LineWidth', 4);
+plot(path_raw(:,1), path_raw(:,2), 'g:', 'LineWidth', 4);
 
 axis([-35.000000, 140.000000, 15.000000, 100.000000])
 
