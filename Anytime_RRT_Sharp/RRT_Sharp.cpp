@@ -16,9 +16,9 @@ int main()
 	//------------------------------------------------------------------------//
 
 	// define arrays for the gate and obstacle information
-	const double approxGateXPosition = 5.0;
-	const double approxGateYPosition = 60.0;
-	const double approxGateApproach = M_PI / 2.0;
+	const double rootXPosition = 5.0;
+	const double rootYPosition = 60.0;
+	const double rootApproach = M_PI / 2.0;
 
 	const double obstacleXPosition[] = { 80, 73, 63, 53, 43, 33, 28, 25, 25, 25, 25, 35, 40, 45, 80, 85, 90, 95, 100, 100, 100, 100, 60 };
 	const double obstacleYPosition[] = { 40, 30, 25, 25, 26, 25, 35, 47, 57, 67, 77, 80, 80, 80, 80, 80, 80, 80, 80, 0, 5, 10, 100 };
@@ -81,7 +81,7 @@ int main()
 	G_workspace.addGoalRegion(uavStartX, uavStartY, uavStartTheta, uavGoalRadius);
 
 	// function to determine goal node based on approximate gate information
-	gateNode = calcGateNode(approxGateXPosition, approxGateYPosition, approxGateApproach, standOffRange);
+	gateNode = calcGateNode(rootXPosition, rootYPosition, rootApproach, standOffRange);
 
 	// define the limits of the graph based on position of the gate
 	// and the robot
@@ -128,8 +128,8 @@ int main()
 	G_workspace.addVehicle(vehiclePointXPosition, vehiclePointYPosition, numVehiclePoints);
 
 	printf("ObsVol: %f, NumObs: %d, NumVehicles: %d, Freespace: [%f, %f, %f, %f]\n", obsVol, G_workspace.numObstacles, G_workspace.numVehicles, xMin, xMax, yMin, yMax);
-	printf("GoalRegion: %f, %f, %f\n", G_workspace.goalRegion.x, G_workspace.goalRegion.y, G_workspace.goalRegion.radius);
-	printf("GateNode: %f, %f, %f\n", G_configspace.nodes[0].x, G_configspace.nodes[0].y, G_configspace.nodes[0].theta);
+	printf("UAV Location: %f, %f, %f\n", G_workspace.goalRegion.x, G_workspace.goalRegion.y, G_workspace.goalRegion.radius);
+	printf("Root Node:    %f, %f, %f\n", G_configspace.nodes[0].x, G_configspace.nodes[0].y, G_configspace.nodes[0].theta);
 
 	//------------------------------------------------------------------------//
 	//------------------------start the RRT# iterations-----------------------//

@@ -371,7 +371,6 @@ void ConfigspaceGraph::printData(int probNum, ConfigspaceNode finalNode)
 	edgeFile.open("edges_" + std::to_string(probNum) + ".txt");
 	searchTreeFile.open("search_tree_" + std::to_string(probNum) + ".txt");
 	outputPathFile.open("output_path_" + std::to_string(probNum) + ".txt");
-	highFidelityPath.open("high_fidelity_path_" + std::to_string(probNum) + ".csv");
 
 	// print out node file
 	nodeFile << numNodes << "\n";
@@ -397,17 +396,16 @@ void ConfigspaceGraph::printData(int probNum, ConfigspaceNode finalNode)
 
 	// print out output path
 	ConfigspaceNode currentNode = finalNode;
-	double tempLinAccel, tempRotAccel;
 
-	outputPathFile << currentNode.t << ", " << currentNode.x << ", " << currentNode.y << ", " << currentNode.theta << ", " << "\n";
+	outputPathFile << currentNode.x << ", " << currentNode.y << ", " << currentNode.theta << "\n";
 	currentNode = findNodeId(currentNode.parentNodeId);
 
 	while (currentNode.parentNodeId)
 	{
-		outputPathFile << currentNode.t << ", " << currentNode.x << ", " << currentNode.y << ", " << currentNode.theta << ", " << "\n";
+		outputPathFile << currentNode.x << ", " << currentNode.y << ", " << currentNode.theta << "\n";
 		currentNode = findNodeId(currentNode.parentNodeId);
 	}
-	outputPathFile << nodes[0].t << ", " << nodes[0].x << ", " << nodes[0].y << ", " << nodes[0].theta << ", " << "\n";
+	outputPathFile << nodes[0].x << ", " << nodes[0].y << ", " << nodes[0].theta << "\n";
 
 	printf("Printing nodes to nodes_%d.txt.\n", probNum);
 	printf("Printing edges to edges_%d.txt.\n", probNum);
@@ -419,7 +417,6 @@ void ConfigspaceGraph::printData(int probNum, ConfigspaceNode finalNode)
 	edgeFile.close();
 	searchTreeFile.close();
 	outputPathFile.close();
-	highFidelityPath.close();
 }
 
 ConfigspaceNode ConfigspaceGraph::findClosestNode(ConfigspaceNode node)
