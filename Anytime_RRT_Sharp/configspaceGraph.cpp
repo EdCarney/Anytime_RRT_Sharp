@@ -422,7 +422,7 @@ void ConfigspaceGraph::printData(int probNum, ConfigspaceNode finalNode)
 ConfigspaceNode ConfigspaceGraph::findClosestNode(ConfigspaceNode node)
 {
 	// initialize distance with first node
-	// use eucledian distance of given node from existing nodes
+	// use euclidean distance of given node from existing nodes
 	double shortestDist, dist;
 	int closestEntry = 0;
 	shortestDist = hypot(nodes[0].x - node.x, nodes[0].y - node.y);
@@ -544,14 +544,18 @@ void ConfigspaceGraph::propagateCost(ConfigspaceNode * updatedNodes)
 {
 	int updateNodesCount = 0;
 
+	// get total number of nodes
 	while (updatedNodes[updateNodesCount].id)
 		++updateNodesCount;
 
+	// allocate space for nodes to update cost for
 	ConfigspaceNode* nodesToUpdate = (ConfigspaceNode*)calloc(1, sizeof(ConfigspaceNode));
 
 	nodesToUpdate[0].id = 0;
 	int nodeCount = 0;
 
+	// go through each updated node and update the cost for any of its
+	// child nodes
 	for (int i = 0; i < updateNodesCount; ++i)
 	{
 		for (int j = 0; j < numNodes; ++j)
@@ -574,6 +578,7 @@ void ConfigspaceGraph::propagateCost(ConfigspaceNode * updatedNodes)
 	nodesToUpdate = tempNodesToUpdate;
 	nodesToUpdate[nodeCount].id = 0;
 
+	// continue recursion if necessary
 	if (nodeCount > 0)
 		propagateCost(nodesToUpdate);
 }

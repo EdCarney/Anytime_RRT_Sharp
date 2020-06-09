@@ -12,7 +12,7 @@ int main()
 
 	#pragma region Initialization 
 	//------------------------------------------------------------------------//
-	//-------this info should be ingested from the intialization script-------//
+	//-------this info should be ingested from the initialization script-------//
 	//------------------------------------------------------------------------//
 
 	// define arrays for the gate and obstacle information
@@ -191,7 +191,7 @@ int main()
 					// compute the cost of tempNode using the best neighbor
 					tempNode.cost = bestNeighbor.cost + G_configspace.computeCost(bestNeighbor, tempNode);
 
-					// if the tempNode is cheaper than make that the newNode
+					// if the tempNode is cheaper then make that the newNode
 					if (tempNode.cost < newNode.cost)
 					{
 						newNode = tempNode;
@@ -262,7 +262,7 @@ int main()
 		}
 	}
 
-	// print all the resluts to files
+	// print all the results to files
 	printf("Total number of points: %d\n", G_configspace.numNodes);
 	printf("Final node at: (%f, %f)\n", finalNode.x, finalNode.y);
 	printf("Final cost is: %f\n", finalCost);
@@ -270,7 +270,7 @@ int main()
 
 	return 0;
 
-	#pragma endregion Primary code for the Anytime RRT# implementaion
+	#pragma endregion Primary code for the Anytime RRT# implementation
 }
 
 

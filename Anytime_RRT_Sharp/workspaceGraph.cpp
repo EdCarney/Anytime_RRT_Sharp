@@ -133,7 +133,7 @@ bool WorkspaceGraph::readVehicleFromFile(const char* vehicleFile)
 		vehicles[numVehicles - 1].centroid.y += y;
 	}
 
-	// calculate centriod
+	// calculate centroid
 	vehicles[numVehicles - 1].centroid.x /= pointCount;
 	vehicles[numVehicles - 1].centroid.y /= pointCount;
 
@@ -440,9 +440,9 @@ bool WorkspaceGraph::checkForCollision(ConfigspaceNode node)
 		// of the obstacle
 		nodeDistance = sqrt(pow((node.x - obstacles[i].x), 2) + pow((node.y - obstacles[i].y), 2));
 
-		// if the distance bewteen the node and the center of the obstacle
+		// if the distance between the node and the center of the obstacle
 		// is <= the radius of the obstacle, then the node collides with
-		// the ostacle
+		// the obstacle
 		if (nodeDistance <= obstacles[i].radius)
 			return true;
 	}

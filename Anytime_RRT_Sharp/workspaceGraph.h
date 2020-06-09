@@ -38,8 +38,8 @@ struct Vehicle
 	int numNodes;					// number of representing the vehicle
 
 	WorkspaceNode* nodes;			// an array of all nodes for the vehicle
-	WorkspaceNode* offsetNodes;		// an array of offset valus loaded on vehicle initialization
-	WorkspaceNode centroid;			// node defining the centeriod of the node points
+	WorkspaceNode* offsetNodes;		// an array of offset values loaded on vehicle initialization
+	WorkspaceNode centroid;			// node defining the centeroid of the node points
 
 	double theta;					// rotation angle of the rigid body
 	double maxPointRadius;			// the radius of a ball circumscribing the vehicle; used for quick collision checking
@@ -72,7 +72,7 @@ public:
 	GoalRegion goalRegion;			// the goal region for the graph (treated as an obstacle)
 
 	double minX, minY, maxX, maxY;	// limits of the graph freespace
-	double minTheta, maxTheta;		// limits of the oreintation theta
+	double minTheta, maxTheta;		// limits of the orientation theta
 
 	bool goalRegionReached;			// boolean value to indicate if the goal region has been reached
 
@@ -102,7 +102,7 @@ public:
 	// returns true if there is a collision and false otherwise
 	bool checkForCollision(ConfigspaceNode node);
 
-	// attempts to buid a path from a parent configuratin node to a new configuration node
+	// attempts to build a path from a parent configuration node to a new configuration node
 	// uses interpolation with a step size of delta and a maximum extension of epsilon
 	ConfigspaceNode extendToNode(ConfigspaceNode parentNode, ConfigspaceNode newNode, double epsilon);
 
@@ -115,7 +115,7 @@ public:
 	// its neighbors; will return an array of safe nodes
 	ConfigspaceNode* checkSafety(ConfigspaceNode newNode, ConfigspaceNode* neighbors);
 
-	// checks if an obsatcle (defined by position and radius) lies within the current freespace
+	// checks if an obstacle (defined by position and radius) lies within the current freespace
 	bool obstacleInFreespace(double xObs, double yObs, double radiusObs);
 
 	// adds an obstacle to the freespace given the obstacle position and radius

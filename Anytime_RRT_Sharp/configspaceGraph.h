@@ -44,8 +44,8 @@ public:
 	Edge* edges;					// an array containing all edges
 
 	double minX, minY, maxX, maxY;	// limits of the graph freespace
-	double minTheta, maxTheta;		// limits of the oreintation theta
-	double freeSpaceMeasure;		// a meaure of the free space in the graph
+	double minTheta, maxTheta;		// limits of the orientation theta
+	double freeSpaceMeasure;		// a measure of the free space in the graph
 	double zeta;					// the volume of a unit ball in the free space
 	double gamma_star;				// optimality constraint calculated from percollation theory
 	int dim;						// dimension of the free space
