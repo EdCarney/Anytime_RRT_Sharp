@@ -13,6 +13,10 @@ ConfigspaceNode calcGateNode(double xPosition, double yPosition, double gateOrie
 
 void rewireRemainingNodes(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_workspace, ConfigspaceNode* remainingNodes, ConfigspaceNode tempNode);
 
+// Compares two nodes to determine which has a cheaper cost-to-go.
+// Returns true if nodeA is cheaper, and false otherwise.
+bool compareNodes(ConfigspaceNode nodeA, ConfigspaceNode nodeB, ConfigspaceGraph& G_configspace);
+
 int main()
 {
 
@@ -250,7 +254,7 @@ int main()
 	#pragma endregion Primary code for the Anytime RRT# implementation
 }
 
-void rewireRemainingNodes(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_workspace, ConfigspaceNode* remainingNodes, ConfigspaceNode tempNode)
+void rewireRemainingNodes(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_workspace, ConfigspaceNode* remainingNodes, ConfigspaceNode addedNode)
 {
 	ConfigspaceNode remainingNodeParent, newNode;
 
@@ -261,19 +265,19 @@ void rewireRemainingNodes(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_wor
 	{
 		// check if it is cheaper for the current remaining node to use the added node as
 		// its parent node 
-		if (remainingNodes[remainingCount].cost > (tempNode.cost + G_configspace.computeCost(remainingNodes[remainingCount], tempNode)))
+		if (!compareNodes(remainingNodes[remainingCount], addedNode, G_configspace))
 		{
 			// if it's cheaper, then create the new node, set the new cost, and set
 			// the parent (now the added node)
-			newNode = G_workspace.connectNodes(tempNode, remainingNodes[remainingCount]);
-			newNode.cost = tempNode.cost + G_configspace.computeCost(remainingNodes[remainingCount], tempNode);
-			newNode.parentNodeId = tempNode.id;
+			newNode = G_workspace.connectNodes(addedNode, remainingNodes[remainingCount]);
+			newNode.cost = addedNode.cost + G_configspace.computeCost(remainingNodes[remainingCount], addedNode);
+			newNode.parentNodeId = addedNode.id;
 
 			// get the old parent of the current remaining node, remove the old
 			// edge, add the new edge, and replace the old remaining node
 			remainingNodeParent = G_configspace.findNodeId(remainingNodes[remainingCount].parentNodeId);
 			G_configspace.removeEdge(remainingNodeParent, remainingNodes[remainingCount]);
-			G_configspace.addEdge(tempNode, newNode);
+			G_configspace.addEdge(addedNode, newNode);
 			G_configspace.replaceNode(remainingNodes[remainingCount], newNode);
 
 			// propagate the cost update from using the new node down the tree
@@ -285,6 +289,13 @@ void rewireRemainingNodes(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_wor
 		}
 		++remainingCount;
 	}
+}
+
+bool compareNodes(ConfigspaceNode nodeA, ConfigspaceNode nodeB, ConfigspaceGraph& G_configspace)
+{
+	if (nodeA.cost < (nodeB.cost + G_configspace.computeCost(nodeA, nodeB)))
+		return true;
+	return false;
 }
 
 ConfigspaceNode calcGateNode(double xPosition, double yPosition, double gateOrientation, double standOffRange)
