@@ -1,11 +1,17 @@
 #include "configspaceGraph.h"
 #include "workspaceGraph.h"
 
-using namespace std;
+#ifndef M_PI
+    #define M_PI 3.14159265358979323846
+#endif
+
+using namespace std;	
 
 // computes the gate (root) node based on the approximate gate location
 // and orientation; outputs a ConfigspaceNode to add to the graph
 ConfigspaceNode calcGateNode(double xPosition, double yPosition, double gateOrientation, double standOffRange);
+
+void rewireRemainingNodes(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_workspace, ConfigspaceNode* remainingNodes, ConfigspaceNode tempNode);
 
 int main()
 {
@@ -213,36 +219,7 @@ int main()
 					G_workspace.goalRegionReached = true;
 
 				// do the rewiring while there are nodes left in remainingNodes
-				remainingCount = 0;
-				while (remainingNodes[remainingCount].id)
-				{
-					// check if it is cheaper for the current remaining node to use the added node as
-					// its parent node 
-				
-					if (remainingNodes[remainingCount].cost > (tempNode.cost + G_configspace.computeCost(remainingNodes[remainingCount], tempNode)))
-					{
-						// if it's cheaper, then create the new node, set the new cost, and set
-						// the parent (now the added node)
-						newNode = G_workspace.connectNodes(tempNode, remainingNodes[remainingCount]);
-						newNode.cost = tempNode.cost + G_configspace.computeCost(remainingNodes[remainingCount], tempNode);
-						newNode.parentNodeId = tempNode.id;
-
-						// get the old parent of the current remaining node, remove the old
-						// edge, add the new edge, and replace the old remaining node
-						remainingNodeParent = G_configspace.findNodeId(remainingNodes[remainingCount].parentNodeId);
-						G_configspace.removeEdge(remainingNodeParent, remainingNodes[remainingCount]);
-						G_configspace.addEdge(tempNode, newNode);
-						G_configspace.replaceNode(remainingNodes[remainingCount], newNode);
-
-						// propagate the cost update from using the new node down the tree
-						// (this requires adding the new node to a small pointer array)
-						ConfigspaceNode* updatedNode = (ConfigspaceNode*)calloc(2, sizeof(ConfigspaceNode));
-						updatedNode[0] = newNode;
-						updatedNode[1].id = 0;
-						G_configspace.propagateCost(updatedNode);
-					}
-					++remainingCount;
-				}
+				rewireRemainingNodes(G_configspace, G_workspace, remainingNodes, tempNode);
 			}
 		}
 		++count;
@@ -273,6 +250,42 @@ int main()
 	#pragma endregion Primary code for the Anytime RRT# implementation
 }
 
+void rewireRemainingNodes(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_workspace, ConfigspaceNode* remainingNodes, ConfigspaceNode tempNode)
+{
+	ConfigspaceNode remainingNodeParent, newNode;
+
+	// do the rewiring while there are nodes left in remainingNodes
+	int remainingCount = 0;
+
+	while (remainingNodes[remainingCount].id)
+	{
+		// check if it is cheaper for the current remaining node to use the added node as
+		// its parent node 
+		if (remainingNodes[remainingCount].cost > (tempNode.cost + G_configspace.computeCost(remainingNodes[remainingCount], tempNode)))
+		{
+			// if it's cheaper, then create the new node, set the new cost, and set
+			// the parent (now the added node)
+			newNode = G_workspace.connectNodes(tempNode, remainingNodes[remainingCount]);
+			newNode.cost = tempNode.cost + G_configspace.computeCost(remainingNodes[remainingCount], tempNode);
+			newNode.parentNodeId = tempNode.id;
+
+			// get the old parent of the current remaining node, remove the old
+			// edge, add the new edge, and replace the old remaining node
+			remainingNodeParent = G_configspace.findNodeId(remainingNodes[remainingCount].parentNodeId);
+			G_configspace.removeEdge(remainingNodeParent, remainingNodes[remainingCount]);
+			G_configspace.addEdge(tempNode, newNode);
+			G_configspace.replaceNode(remainingNodes[remainingCount], newNode);
+
+			// propagate the cost update from using the new node down the tree
+			// (this requires adding the new node to a small pointer array)
+			ConfigspaceNode* updatedNode = (ConfigspaceNode*)calloc(2, sizeof(ConfigspaceNode));
+			updatedNode[0] = newNode;
+			updatedNode[1].id = 0;
+			G_configspace.propagateCost(updatedNode);
+		}
+		++remainingCount;
+	}
+}
 
 ConfigspaceNode calcGateNode(double xPosition, double yPosition, double gateOrientation, double standOffRange)
 {
