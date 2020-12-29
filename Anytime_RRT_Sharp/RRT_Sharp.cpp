@@ -1,5 +1,6 @@
 #include "configspaceGraph.h"
 #include "workspaceGraph.h"
+#include <tuple>
 
 #ifndef M_PI
     #define M_PI 3.14159265358979323846
@@ -28,9 +29,12 @@ ConfigspaceNode* tryConnectToBestNeighbor(ConfigspaceGraph& G_configspace, Works
 // the goal region with the lowest cost-to-go
 ConfigspaceNode findBestNode(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_workspace);
 
+// calculates the absolute limites for the x and y graph coordinates based on the gateNode, graph
+// goal region, and buffer; returns a tuple of (xMin, xMax, yMin, yMax)
+tuple<double, double, double, double> calculateGraphLimits(WorkspaceGraph G_workspace, ConfigspaceNode gateNode, double buffer);
+
 int main()
 {
-
 	#pragma region Initialization 
 	//------------------------------------------------------------------------//
 	//-------this info should be ingested from the initialization script-------//
@@ -102,27 +106,7 @@ int main()
 
 	// define the limits of the graph based on position of the gate
 	// and the robot
-	if (gateNode.x < G_workspace.goalRegion.x)
-	{
-		xMin = gateNode.x - buffer;
-		xMax = G_workspace.goalRegion.x + buffer;
-	}
-	else
-	{
-		xMin = G_workspace.goalRegion.x - buffer;
-		xMax = gateNode.x + buffer;
-	}
-
-	if (gateNode.y < G_workspace.goalRegion.y)
-	{
-		yMin = gateNode.y - buffer;
-		yMax = G_workspace.goalRegion.y + buffer;
-	}
-	else
-	{
-		yMin = G_workspace.goalRegion.y - buffer;
-		yMax = gateNode.y + buffer;
-	}
+	tie(xMin, xMax, yMin, yMax) = calculateGraphLimits(G_workspace, gateNode, buffer);
 
 	// set freespace of graphs based on the graph limits; some values will always
 	// be the same (theta, v, w, a, gamma), while others will vary (x and y)
@@ -225,6 +209,33 @@ int main()
 	return 0;
 
 	#pragma endregion Primary code for the Anytime RRT# implementation
+}
+
+tuple<double, double, double, double> calculateGraphLimits(WorkspaceGraph G_workspace, ConfigspaceNode gateNode, double buffer)
+{
+	double xMin, xMax, yMin, yMax;
+	if (gateNode.x < G_workspace.goalRegion.x)
+	{
+		xMin = gateNode.x - buffer;
+		xMax = G_workspace.goalRegion.x + buffer;
+	}
+	else
+	{
+		xMin = G_workspace.goalRegion.x - buffer;
+		xMax = gateNode.x + buffer;
+	}
+
+	if (gateNode.y < G_workspace.goalRegion.y)
+	{
+		yMin = gateNode.y - buffer;
+		yMax = G_workspace.goalRegion.y + buffer;
+	}
+	else
+	{
+		yMin = G_workspace.goalRegion.y - buffer;
+		yMax = gateNode.y + buffer;
+	}
+	return make_tuple(xMin, xMax, yMin, yMax);
 }
 
 ConfigspaceNode findBestNode(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_workspace)
