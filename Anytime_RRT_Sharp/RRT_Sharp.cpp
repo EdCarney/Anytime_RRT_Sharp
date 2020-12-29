@@ -11,11 +11,22 @@ using namespace std;
 // and orientation; outputs a ConfigspaceNode to add to the graph
 ConfigspaceNode calcGateNode(double xPosition, double yPosition, double gateOrientation, double standOffRange);
 
-void rewireRemainingNodes(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_workspace, ConfigspaceNode* remainingNodes, ConfigspaceNode tempNode);
+// iterates through remainingNodes, determines if the addedNode is a better (cheaper) parent, and
+// rewires the graphs if it is.
+void rewireRemainingNodes(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_workspace, ConfigspaceNode* remainingNodes, ConfigspaceNode addedNode);
 
-// Compares two nodes to determine which has a cheaper cost-to-go.
-// Returns true if nodeA is cheaper, and false otherwise.
+// compares two nodes to determine which has a cheaper cost-to-go;
+// returns true if nodeA is cheaper, and false otherwise
 bool compareNodes(ConfigspaceNode nodeA, ConfigspaceNode nodeB, ConfigspaceGraph& G_configspace);
+
+// checks if any of the newNode's (safe) neighbors function as a better (cheaper) parent than
+// newNode's current parent, and updates newNode if it is (note this does NOT rewire the graphs
+// on this update, and should only be used PRIOR to adding newNode to the graphs)
+ConfigspaceNode* tryConnectToBestNeighbor(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_workspace, ConfigspaceNode* safeNearestNeighbors, ConfigspaceNode& newNode, ConfigspaceNode& parentNode);
+
+// iterates through all nodes in the graphs and finds the node within
+// the goal region with the lowest cost-to-go
+ConfigspaceNode findBestNode(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_workspace);
 
 int main()
 {
@@ -57,9 +68,6 @@ int main()
 	// defining the square freespace
 	const double buffer = 40.0;
 
-	// define values for cost computation
-	double tempCost = 0, finalCost = 100000;
-
 	// seed for random node generation
 	srand (time(NULL));
 
@@ -72,9 +80,8 @@ int main()
 	int maxCount = 7000;
 	int tempItr = 1;
 
-	ConfigspaceNode gateNode, tempNode, parentNode, newNode, bestNeighbor, remainingNodeParent, finalNode;
-	ConfigspaceNode *nearestNeighbors = NULL, *safeNearestNeighbors = NULL, *remainingNodes = NULL,
-		*removeNodes = NULL, *lastNodes = NULL, *costThresholdNodes = NULL;
+	ConfigspaceNode gateNode, tempNode, parentNode, newNode;
+	ConfigspaceNode *safeNearestNeighbors = NULL, *remainingNodes = NULL;
 	bool goalCheck;
 	int remainingCount = 0, k = 10, m = 40, count = 0;
 	double circleRadius = 0.0, epsilon = 5.0;
@@ -146,18 +153,10 @@ int main()
 	//------------------------------------------------------------------------//
 
 	free(safeNearestNeighbors);
-	free(costThresholdNodes);
-	free(nearestNeighbors);
 	free(remainingNodes);
-	free(removeNodes);
-	free(lastNodes);
 
 	safeNearestNeighbors = NULL;
-	costThresholdNodes   = NULL;
-	nearestNeighbors     = NULL;
 	remainingNodes       = NULL;
-	removeNodes          = NULL;
-	lastNodes            = NULL;
 
 	// do the RRT# thing
 	while(!G_workspace.goalRegionReached || count < maxCount)
@@ -193,24 +192,9 @@ int main()
 				// if there were no safe neighbors then the first node id will be zero
 				if (safeNearestNeighbors[0].id)
 				{
-					// find the best safe neighbor and connect newNode and the bestNeighbor
-					// assign the resulting node to tempNode
-					bestNeighbor = G_configspace.findBestNeighbor(newNode, safeNearestNeighbors);
-					tempNode = G_workspace.connectNodes(bestNeighbor, newNode);
-
-					// compute the cost of tempNode using the best neighbor
-					tempNode.cost = bestNeighbor.cost + G_configspace.computeCost(bestNeighbor, tempNode);
-
-					// if the tempNode is cheaper then make that the newNode
-					if (tempNode.cost < newNode.cost)
-					{
-						newNode = tempNode;
-						parentNode = bestNeighbor;
-					}
-
 					// reset the remaining nodes to the safe neighbors minus the one we connected to
 					free(remainingNodes);
-					remainingNodes = G_configspace.removeNode(safeNearestNeighbors, bestNeighbor);
+					remainingNodes = tryConnectToBestNeighbor(G_configspace, G_workspace, safeNearestNeighbors, newNode, parentNode);
 				}
 
 				// add new node and edge to the config graph
@@ -230,6 +214,23 @@ int main()
 	}
 
 	// find the best node in the goal region
+	ConfigspaceNode finalNode = findBestNode(G_configspace, G_workspace);
+
+	// print all the results to files
+	printf("Total number of points: %d\n", G_configspace.numNodes);
+	printf("Final node at: (%f, %f)\n", finalNode.x, finalNode.y);
+	printf("Final cost is: %f\n", finalNode.cost);
+	G_configspace.printData(tempItr, finalNode);
+
+	return 0;
+
+	#pragma endregion Primary code for the Anytime RRT# implementation
+}
+
+ConfigspaceNode findBestNode(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_workspace)
+{
+	double tempCost = 0, finalCost = 100000;
+	ConfigspaceNode finalNode;
 	for (int i = 0; i < G_configspace.numNodes; ++i)
 	{
 		if (G_workspace.checkAtGoal(G_configspace.nodes[i]))
@@ -242,16 +243,28 @@ int main()
 			}
 		}
 	}
+	return finalNode;
+}
 
-	// print all the results to files
-	printf("Total number of points: %d\n", G_configspace.numNodes);
-	printf("Final node at: (%f, %f)\n", finalNode.x, finalNode.y);
-	printf("Final cost is: %f\n", finalCost);
-	G_configspace.printData(tempItr, finalNode);
+ConfigspaceNode* tryConnectToBestNeighbor(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_workspace, ConfigspaceNode* safeNearestNeighbors, ConfigspaceNode& newNode, ConfigspaceNode& parentNode)
+{
+	// find the best safe neighbor and connect newNode and the bestNeighbor
+	// assign the resulting node to tempNode
+	ConfigspaceNode bestNeighbor = G_configspace.findBestNeighbor(newNode, safeNearestNeighbors);
+	ConfigspaceNode tempNode = G_workspace.connectNodes(bestNeighbor, newNode);
 
-	return 0;
+	// compute the cost of tempNode using the best neighbor
+	tempNode.cost = bestNeighbor.cost + G_configspace.computeCost(bestNeighbor, tempNode);
 
-	#pragma endregion Primary code for the Anytime RRT# implementation
+	// if the tempNode is cheaper then make that the newNode
+	if (tempNode.cost < newNode.cost)
+	{
+		newNode = tempNode;
+		parentNode = bestNeighbor;
+	}
+
+	// reset the remaining nodes to the safe neighbors minus the one we connected to
+	return G_configspace.removeNode(safeNearestNeighbors, bestNeighbor);
 }
 
 void rewireRemainingNodes(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_workspace, ConfigspaceNode* remainingNodes, ConfigspaceNode addedNode)
