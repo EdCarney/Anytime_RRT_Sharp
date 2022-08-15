@@ -23,8 +23,8 @@ edges_raw = csvread(['edges_' num2str(problemNum + nodeOffset,'%d') '.txt']);
 obstacles_raw = csvread('obstacles.txt');
 
 % specify goal region [x, y, radius] and start point [x, y]
-root_node = [5, 55];
-uav_start = [100, 60, 2.5];
+root_node = [5, 60];
+uav_start = [100, 60, 0.0];
 
 % a bit of data processing for faster plotting
 search_tree = nan(3*size(search_tree_raw, 1), 2);
