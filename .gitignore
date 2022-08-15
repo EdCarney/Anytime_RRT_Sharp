@@ -8,3 +8,5 @@ high_fidelity_path*.csv
 *.stackdump
 *.exe
 *.vs
+**/RRT_Sharp
+Info.plist
