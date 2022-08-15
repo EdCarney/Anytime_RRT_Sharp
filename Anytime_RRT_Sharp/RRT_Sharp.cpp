@@ -6,7 +6,7 @@
     #define M_PI 3.14159265358979323846
 #endif
 
-using namespace std;	
+using namespace std;
 
 // computes the gate (root) node based on the approximate gate location
 // and orientation; outputs a ConfigspaceNode to add to the graph
@@ -153,7 +153,6 @@ int main()
 
 		// free memory from previous iteration
 		free(remainingNodes);
-		remainingNodes = NULL;
 		remainingNodes = (ConfigspaceNode*)calloc(1, sizeof(ConfigspaceNode));
 		remainingNodes[0].id = 0;
 
@@ -179,6 +178,7 @@ int main()
 					// reset the remaining nodes to the safe neighbors minus the one we connected to
 					free(remainingNodes);
 					remainingNodes = tryConnectToBestNeighbor(G_configspace, G_workspace, safeNearestNeighbors, newNode, parentNode);
+					free(safeNearestNeighbors);
 				}
 
 				// add new node and edge to the config graph
@@ -310,6 +310,7 @@ void rewireRemainingNodes(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_wor
 			updatedNode[0] = newNode;
 			updatedNode[1].id = 0;
 			G_configspace.propagateCost(updatedNode);
+			free(updatedNode);
 		}
 		++remainingCount;
 	}
