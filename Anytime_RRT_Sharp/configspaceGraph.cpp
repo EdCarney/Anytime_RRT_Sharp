@@ -210,6 +210,7 @@ ConfigspaceNode ConfigspaceGraph::findNodeId(int nodeId)
 	for (int i = 0; i < numNodes; i++)
 		if (nodes[i].id == nodeId)
 			return nodes[i];
+	return ConfigspaceNode();
 }
 
 int ConfigspaceGraph::findNodePlacement(int nodeId)
@@ -217,6 +218,7 @@ int ConfigspaceGraph::findNodePlacement(int nodeId)
 	for (int i = 0; i < numNodes; i++)
 		if (nodes[i].id == nodeId)
 			return i;
+	return -1;
 }
 
 ConfigspaceNode ConfigspaceGraph::generateRandomNode()
@@ -543,6 +545,7 @@ ConfigspaceNode ConfigspaceGraph::addNode(ConfigspaceNode addedNode)
 void ConfigspaceGraph::propagateCost(ConfigspaceNode * updatedNodes)
 {
 	int updateNodesCount = 0;
+	ConfigspaceNode* tempNodesToUpdate;
 
 	// get total number of nodes
 	while (updatedNodes[updateNodesCount].id)
@@ -562,25 +565,22 @@ void ConfigspaceGraph::propagateCost(ConfigspaceNode * updatedNodes)
 		{
 			if (updatedNodes[i].id == nodes[j].parentNodeId)
 			{
-				ConfigspaceNode* tempNodesToUpdate = (ConfigspaceNode*)calloc(nodeCount + 1, sizeof(ConfigspaceNode));
+				tempNodesToUpdate = (ConfigspaceNode*)calloc(nodeCount + 2, sizeof(ConfigspaceNode));
 				std::memcpy(tempNodesToUpdate, nodesToUpdate, (nodeCount) * sizeof(ConfigspaceNode));
 				free(nodesToUpdate);
 				nodesToUpdate = tempNodesToUpdate;
 				nodesToUpdate[nodeCount] = nodes[j];
+				nodesToUpdate[++nodeCount].id = 0;
 				nodes[j].cost = updatedNodes[i].cost + computeCost(nodes[j], updatedNodes[i]);
-				++nodeCount;
 			}
 		}
 	}
-	ConfigspaceNode* tempNodesToUpdate = (ConfigspaceNode*)calloc(nodeCount + 1, sizeof(ConfigspaceNode));
-	std::memcpy(tempNodesToUpdate, nodesToUpdate, (nodeCount) * sizeof(ConfigspaceNode));
-	free(nodesToUpdate);
-	nodesToUpdate = tempNodesToUpdate;
-	nodesToUpdate[nodeCount].id = 0;
 
 	// continue recursion if necessary
 	if (nodeCount > 0)
 		propagateCost(nodesToUpdate);
+
+	free(tempNodesToUpdate);
 }
 
 void ConfigspaceGraph::replaceNode(ConfigspaceNode oldNode, ConfigspaceNode newNode)
