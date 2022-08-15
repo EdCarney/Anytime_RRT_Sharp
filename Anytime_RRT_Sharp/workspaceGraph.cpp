@@ -243,9 +243,9 @@ void WorkspaceGraph::updateGoalRegion(double x, double y, double theta, double r
 void WorkspaceGraph::defineFreespace(double newMinX, double newMinY, double newMinTheta, double newMaxX,
 	double newMaxY, double newMaxTheta)
 {
-	minX = minX;
-	minY = minY;
-	minTheta = minTheta;
+	minX = newMinX;
+	minY = newMinY;
+	minTheta = newMinTheta;
 	maxX = newMaxX;
 	maxY = newMaxY;
 	maxTheta = newMaxTheta;
