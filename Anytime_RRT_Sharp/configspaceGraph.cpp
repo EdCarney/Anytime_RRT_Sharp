@@ -410,7 +410,7 @@ ConfigspaceNode * ConfigspaceGraph::findNeighbors(ConfigspaceNode centerNode, do
 	double dist;				// distance between the nodes
 	ConfigspaceNode* neighbors;	// pointer to the configuration node array
 
-	neighbors = (ConfigspaceNode*)calloc(k, sizeof(ConfigspaceNode));
+	neighbors = (ConfigspaceNode*)calloc(k + 1, sizeof(ConfigspaceNode));
 
 	// iterate through all graph nodes and add nodes to the
 	// neighbors set if they are within the radius
