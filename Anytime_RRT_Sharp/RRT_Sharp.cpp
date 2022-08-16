@@ -136,12 +136,6 @@ int main()
 	//------------------------start the RRT# iterations-----------------------//
 	//------------------------------------------------------------------------//
 
-	free(safeNearestNeighbors);
-	free(remainingNodes);
-
-	safeNearestNeighbors = NULL;
-	remainingNodes       = NULL;
-
 	// do the RRT# thing
 	while(!G_workspace.goalRegionReached || count < maxCount)
 	{
@@ -152,7 +146,6 @@ int main()
 		parentNode = G_configspace.findClosestNode(tempNode);
 
 		// free memory from previous iteration
-		free(remainingNodes);
 		remainingNodes = (ConfigspaceNode*)calloc(1, sizeof(ConfigspaceNode));
 		remainingNodes[0].id = 0;
 
@@ -194,6 +187,7 @@ int main()
 				rewireRemainingNodes(G_configspace, G_workspace, remainingNodes, tempNode);
 			}
 		}
+		free(remainingNodes);
 		++count;
 	}
 
@@ -285,7 +279,7 @@ void rewireRemainingNodes(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_wor
 	// do the rewiring while there are nodes left in remainingNodes
 	int remainingCount = 0;
 
-	while (remainingNodes[remainingCount].id)
+	while (remainingNodes[remainingCount].id > 0)
 	{
 		// check if it is cheaper for the current remaining node to use the added node as
 		// its parent node 
