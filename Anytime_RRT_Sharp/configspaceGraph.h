@@ -125,13 +125,6 @@ public:
 	// with the nodes' children first
 	void trimTreeChildren(ConfigspaceNode *removeNodes, int saveNodeId);
 
-	// gets an array of the provided final node and the m-1 parent nodes
-	ConfigspaceNode* getLastNodes(ConfigspaceNode finalNode, int m);
-
-	// returns an array of nodes that are the cost threshold of the graph given a node
-	// (i.e. the nodes before which the cost is less expensive)
-	ConfigspaceNode* getCostThresholdNodes(ConfigspaceNode finalNode);
-
 	// default constructor
 	ConfigspaceGraph() { buildGraph(); }
 
