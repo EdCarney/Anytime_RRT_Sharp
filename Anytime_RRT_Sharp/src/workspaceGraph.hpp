@@ -1,4 +1,4 @@
-#include "configspaceGraph.h"
+#include "configspaceGraph.hpp"
 
 #ifndef WORKSPACE_H
 #define WORKSPACE_H

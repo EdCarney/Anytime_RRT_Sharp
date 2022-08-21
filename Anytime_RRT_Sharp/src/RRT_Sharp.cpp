@@ -1,4 +1,4 @@
-#include "RRT_Sharp.h"
+#include "RRT_Sharp.hpp"
 
 using namespace std;
 
@@ -102,6 +102,9 @@ int main()
 	// and the robot
 	tie(xMin, xMax, yMin, yMax) = calculateGraphLimits(G_workspace, gateNode, buffer);
 
+	// compute the volume of the obstacles
+	obsVol = G_workspace.computeObsVol();
+
 	// set freespace of graphs based on the graph limits; some values will always
 	// be the same (theta, v, w, a, gamma), while others will vary (x and y)
 	G_workspace.defineFreespace(xMin, yMin, thetaMin, xMax, yMax, thetaMax);
@@ -112,9 +115,6 @@ int main()
 	for (int i = 0; i < numObstacles; ++i)
 		if (G_workspace.obstacleInFreespace(obstacleXPosition[i], obstacleYPosition[i], obstacleRadius[i]))
 			G_workspace.addObstacle(obstacleXPosition[i], obstacleYPosition[i], obstacleRadius[i]);
-
-	// compute the volume of the obstacles
-	obsVol = G_workspace.computeObsVol();
 
 	// add gateNode to the graph
 	G_configspace.addNode(gateNode);
