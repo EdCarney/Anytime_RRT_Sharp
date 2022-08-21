@@ -1,4 +1,4 @@
-#include "configspaceGraph.h"
+#include "configspaceGraph.hpp"
 
 void ConfigspaceGraph::buildGraph()
 {
