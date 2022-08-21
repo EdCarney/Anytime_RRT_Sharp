@@ -1,5 +1,5 @@
-#include "configspaceGraph.h"
-#include "workspaceGraph.h"
+#include "configspaceGraph.hpp"
+#include "workspaceGraph.hpp"
 #include <tuple>
 
 #ifndef M_PI
