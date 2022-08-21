@@ -341,8 +341,6 @@ void WorkspaceGraph::addObstacle(double xObs, double yObs, double radiusObs)
 
 void WorkspaceGraph::addVehicle(double vehiclePointXPosition[4], double vehiclePointYPosition[4], int numVehiclePoints)
 {
-	double x = 0.0, y = 0.0;
-
 	// increment number of vehicles in graph (assuming one vehicle per file)
 	++numVehicles;
 
