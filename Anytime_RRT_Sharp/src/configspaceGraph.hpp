@@ -5,11 +5,6 @@
 #ifndef CONFIGSPACE_H
 #define CONFIGSPACE_H
 
-struct BasicNode
-{
-	double x; double y; double theta; double t;
-};
-
 struct ConfigspaceNode
 {
 	int id;				// unique identifer for the node; 1-indexed
