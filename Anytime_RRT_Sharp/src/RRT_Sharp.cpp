@@ -80,8 +80,8 @@ int main()
 
 	ConfigspaceNode gateNode, tempNode, parentNode, newNode;
 	ConfigspaceNode *safeNearestNeighbors = NULL, *remainingNodes = NULL;
-	bool goalCheck;
-	int remainingCount = 0, k = 10, m = 40, count = 0;
+
+	int k = 10, count = 0;
 	double circleRadius = 0.0, epsilon = 5.0;
 
 	#pragma endregion Initializes all necessary variables (could be read-in from file)

@@ -223,7 +223,7 @@ int ConfigspaceGraph::findNodePlacement(int nodeId)
 
 ConfigspaceNode ConfigspaceGraph::generateRandomNode()
 {
-	double randX, randY, randV, randW;
+	double randX, randY;
 
 	randX = minX + (minX + static_cast <double> (rand())) / (static_cast <double> (RAND_MAX / (maxX - minX)));
 	randY = minY + (minY + static_cast <double> (rand())) / (static_cast <double> (RAND_MAX / (maxY - minY)));
