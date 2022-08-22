@@ -11,4 +11,5 @@ high_fidelity_path*.csv
 *.o
 **/RRT_Sharp
 bin
+build
 Info.plist
