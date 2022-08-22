@@ -41,8 +41,9 @@ class DLL_EXPORT ArrtsService
         int GetNumObstacles();
 
         void AddVehiclePoint(double x, double y);
-        void AddVehiclePoints(const double* x, const double *y);
-        Node* GetVehicleOutline();
+        void AddVehiclePoints(const double* x, const double *y, int numPoints);
+        Node* GetVehiclePoints();
+        Node GetVehiclePoint(int i);
         int GetNumVehiclePoints();
 
         // runs ARRTS algorithm
