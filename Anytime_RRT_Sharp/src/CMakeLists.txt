@@ -25,6 +25,9 @@ list(APPEND TEST_LIBS gtest)
 add_subdirectory(googletest)
 include_directories(googletest/inlcude)
 
+# include test data
+file(COPY test/ DESTINATION test)
+
 # add the executables
 add_executable(RRT_Sharp RRT_Sharp.cpp)
 add_executable(tests unitTests.cpp)

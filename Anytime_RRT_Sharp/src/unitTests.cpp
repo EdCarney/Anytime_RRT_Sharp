@@ -261,6 +261,38 @@ TEST(ARRTS_Obstacles, AddMultipleThenSingleObstacle_CheckVals)
     GTEST_ASSERT_EQ(obs4.radius, 3);
 }
 
+TEST(ARRTS_Obstacles, AddFromFile_CheckNum)
+{
+    ArrtsService service;
+    FILE* file = fopen("./test/obstacles.txt", "r");
+    service.AddObstaclesFromFile(file);
+
+    GTEST_ASSERT_EQ(service.GetNumObstacles(), 23);
+}
+
+TEST(ARRTS_Obstacles, AddFromFile_CheckVals)
+{
+    ArrtsService service;
+    FILE* file = fopen("./test/obstacles.txt", "r");
+    service.AddObstaclesFromFile(file);
+
+    Obstacle obs1 = service.GetObstacle(0);
+    Obstacle obs2 = service.GetObstacle(11);
+    Obstacle obs3 = service.GetObstacle(22);
+
+    GTEST_ASSERT_EQ(obs1.x, 80);
+    GTEST_ASSERT_EQ(obs2.x, 35);
+    GTEST_ASSERT_EQ(obs3.x, 60);
+
+    GTEST_ASSERT_EQ(obs1.y, 40);
+    GTEST_ASSERT_EQ(obs2.y, 80);
+    GTEST_ASSERT_EQ(obs3.y, 100);
+
+    GTEST_ASSERT_EQ(obs1.radius, 8);
+    GTEST_ASSERT_EQ(obs2.radius, 8);
+    GTEST_ASSERT_EQ(obs3.radius, 8);
+}
+
 TEST(ARRTS_Obstacles, GetFirstObstacleWhenNone)
 {
     ArrtsService service;
@@ -460,6 +492,34 @@ TEST(ARRTS_VehiclePoints, AddMultipleThenSinglePoint_CheckVals)
     GTEST_ASSERT_EQ(n2.y, 8);
     GTEST_ASSERT_EQ(n3.y, 9);
     GTEST_ASSERT_EQ(n4.y, 2);
+}
+
+TEST(ARRTS_VehiclePoints, AddFromFile_CheckNum)
+{
+    ArrtsService service;
+    FILE* file = fopen("./test/robot.txt", "r");
+    service.AddVehiclePointsFromFile(file);
+
+    GTEST_ASSERT_EQ(service.GetNumVehiclePoints(), 37);
+}
+
+TEST(ARRTS_VehiclePoints, AddFromFile_CheckVals)
+{
+    ArrtsService service;
+    FILE* file = fopen("./test/robot.txt", "r");
+    service.AddVehiclePointsFromFile(file);
+
+    Node n1 = service.GetVehiclePoint(0);
+    Node n2 = service.GetVehiclePoint(20);
+    Node n3 = service.GetVehiclePoint(36);
+
+    GTEST_ASSERT_EQ(n1.x, 0);
+    GTEST_ASSERT_EQ(n2.x, -1);
+    GTEST_ASSERT_EQ(n3.x, -0.8);
+
+    GTEST_ASSERT_EQ(n1.y, 0);
+    GTEST_ASSERT_EQ(n2.y, 0);
+    GTEST_ASSERT_EQ(n3.y, -0.3);
 }
 
 TEST(ARRTS_VehiclePoints, GetFirstPointWhenNone)

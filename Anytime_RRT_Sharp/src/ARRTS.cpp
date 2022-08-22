@@ -59,6 +59,34 @@ void ArrtsService::AddObstacles(const double* x, const double* y, const double* 
         obstacles[numObstacles++] = { x[i], y[i], r[i] };
 }
 
+void ArrtsService::AddObstaclesFromFile(FILE* file)
+{
+    if (file == NULL)
+        throw runtime_error("NULL file pointer in AddObstaclesFromFile");
+
+    // get num of points for allocation
+    int obsCount = 0;
+    double xVal, yVal, rVal;
+    while (fscanf(file, "%lf,%lf,%lf", &xVal, &yVal, &rVal) != EOF)
+        obsCount++;
+
+    // get points
+    double* x = new double[obsCount];
+    double* y = new double[obsCount];
+    double* r = new double[obsCount];
+    rewind(file);
+    for (int i = 0; i < obsCount; ++i)
+    {
+        fscanf(file, "%lf,%lf,%lf", &xVal, &yVal, &rVal);
+        x[i] = xVal;
+        y[i] = yVal;
+        r[i] = rVal;
+    }
+
+    // add points
+    AddObstacles(x, y, r, obsCount);
+}
+
 Obstacle* ArrtsService::GetObstacles()
 {
     return obstacles;
@@ -67,7 +95,7 @@ Obstacle* ArrtsService::GetObstacles()
 Obstacle ArrtsService::GetObstacle(int i)
 {
     if (i >= numObstacles || i < 0)
-        throw runtime_error("ERROR: Attempt to read index beyond array limits in GetObstacle");
+        throw runtime_error("Attempt to read index beyond array limits in GetObstacle");
 
     return obstacles[i];
 }
@@ -90,6 +118,32 @@ void ArrtsService::AddVehiclePoints(const double* x, const double* y, int numPoi
         vehicleOutline[numVehiclePoints++] = { x[i], y[i] };
 }
 
+void ArrtsService::AddVehiclePointsFromFile(FILE* file)
+{
+    if (file == NULL)
+        throw runtime_error("NULL file pointer in AddVehiclePointsFromFile");
+
+    // get num of points for allocation
+    int pointCount = 0;
+    double xVal, yVal;
+    while (fscanf(file, "%lf,%lf", &xVal, &yVal) != EOF)
+        pointCount++;
+
+    // get points
+    double* x = new double[pointCount];
+    double* y = new double[pointCount];
+    rewind(file);
+    for (int i = 0; i < pointCount; ++i)
+    {
+        fscanf(file, "%lf,%lf", &xVal, &yVal);
+        x[i] = xVal;
+        y[i] = yVal;
+    }
+
+    // add points
+    AddVehiclePoints(x, y, pointCount);
+}
+
 Node* ArrtsService::GetVehiclePoints()
 {
     return vehicleOutline;
@@ -98,7 +152,7 @@ Node* ArrtsService::GetVehiclePoints()
 Node ArrtsService::GetVehiclePoint(int i)
 {
     if (i >= numVehiclePoints || i < 0)
-        throw runtime_error("ERROR: Attempt to read index beyond array limits in GetVehiclePoint");
+        throw runtime_error("Attempt to read index beyond array limits in GetVehiclePoint");
 
     return vehicleOutline[i];
 }
@@ -106,4 +160,9 @@ Node ArrtsService::GetVehiclePoint(int i)
 int ArrtsService::GetNumVehiclePoints()
 {
     return numVehiclePoints;
+}
+
+Position* ArrtsService::CalculatePath(double standoffRange, double positionBuffer, double freespaceBuffer)
+{
+
 }
