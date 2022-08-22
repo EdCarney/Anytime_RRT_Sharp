@@ -74,7 +74,7 @@ Obstacle* ArrtsService::GetObstacles()
 
 Obstacle ArrtsService::GetObstacle(int i)
 {
-    if (i >= numObstacles)
+    if (i >= numObstacles || i < 0)
         throw runtime_error("ERROR: Attempt to read index beyond obstacle array in GetObstacle");
 
     return obstacles[i];
