@@ -2,6 +2,22 @@
 
 #define FUNC_PREFIX __func__
 
+template <typename T>
+void ResetArraySize(T** arrStart, int oldSize, int newSize)
+{
+    if (arrStart == NULL)
+    {
+        *arrStart = (T*) calloc(newSize, sizeof(T));
+    }
+    else
+    {
+        auto temp = (T*) calloc(oldSize + newSize, sizeof(T));
+        copy(*arrStart, *arrStart + oldSize, temp);
+        delete *arrStart;
+        *arrStart = temp;
+    }
+}
+
 ArrtsService::ArrtsService()
 {
     numObstacles = 0;
@@ -32,33 +48,13 @@ Position ArrtsService::GetStartPosition()
 
 void ArrtsService::AddObstacle(double x, double y, double r)
 {
-    if (obstacles == NULL)
-    {
-        obstacles = (Obstacle*) calloc(1, sizeof(Obstacle));
-    }
-    else
-    {
-        auto temp = (Obstacle*) calloc(numObstacles + 1, sizeof(Obstacle));
-        copy(obstacles, obstacles + numObstacles, temp);
-        delete obstacles;
-        obstacles = temp;
-    }
+    ResetArraySize<Obstacle>(&obstacles, numObstacles, numObstacles + 1);
     obstacles[numObstacles++] = { x, y, r };
 }
 
 void ArrtsService::AddObstacles(const double* x, const double* y, const double* r, int numObs)
 {
-    if (obstacles == NULL)
-    {
-        obstacles = (Obstacle*) calloc(numObs, sizeof(Obstacle));
-    }
-    else
-    {
-        auto temp = (Obstacle*) calloc(numObstacles + numObs, sizeof(Obstacle));
-        copy(obstacles, obstacles + numObstacles, temp);
-        delete obstacles;
-        obstacles = temp;
-    }
+    ResetArraySize<Obstacle>(&obstacles, numObstacles, numObstacles + numObs);
     for (int i = 0; i < numObs; ++i)
         obstacles[numObstacles++] = { x[i], y[i], r[i] };
 }
@@ -83,33 +79,13 @@ int ArrtsService::GetNumObstacles()
 
 void ArrtsService::AddVehiclePoint(double x, double y)
 {
-    if (vehicleOutline == NULL)
-    {
-        vehicleOutline = (Node*) calloc(1, sizeof(Node));
-    }
-    else
-    {
-        auto temp = (Node*) calloc(numVehiclePoints + 1, sizeof(Node));
-        copy(vehicleOutline, vehicleOutline + numVehiclePoints, temp);
-        delete vehicleOutline;
-        vehicleOutline = temp;
-    }
+    ResetArraySize<Node>(&vehicleOutline, numVehiclePoints, numVehiclePoints + 1);
     vehicleOutline[numVehiclePoints++] = { x, y };
 }
 
 void ArrtsService::AddVehiclePoints(const double* x, const double* y, int numPoints)
 {
-    if (vehicleOutline == NULL)
-    {
-        vehicleOutline = (Node*) calloc(numPoints, sizeof(Node));
-    }
-    else
-    {
-        auto temp = (Node*) calloc(numVehiclePoints + numPoints, sizeof(Node));
-        copy(vehicleOutline, vehicleOutline + numVehiclePoints, temp);
-        delete vehicleOutline;
-        vehicleOutline = temp;
-    }
+    ResetArraySize<Node>(&vehicleOutline, numVehiclePoints, numVehiclePoints + numPoints);
     for (int i = 0; i < numPoints; ++i)
         vehicleOutline[numVehiclePoints++] = { x[i], y[i] };
 }
@@ -130,20 +106,4 @@ Node ArrtsService::GetVehiclePoint(int i)
 int ArrtsService::GetNumVehiclePoints()
 {
     return numVehiclePoints;
-}
-
-template <typename T>
-void ResetArraySize(T* arrStart, int oldSize, int newSize)
-{
-    if (arrStart == NULL)
-    {
-        arrStart = (T*) calloc(newSize, sizeof(T));
-    }
-    else
-    {
-        auto temp = (T*) calloc(oldSize + newSize, sizeof(T));
-        copy(arrStart, arrStart + oldSize, temp);
-        delete arrStart;
-        arrStart = temp;
-    }
 }
