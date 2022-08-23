@@ -1,27 +1,9 @@
 #include "configspaceGraph.hpp"
+#include "Geometry.hpp"
+#include "Utility.hpp"
 
 #ifndef WORKSPACE_H
 #define WORKSPACE_H
-
-struct WorkspaceNode
-{
-	int id;		// unique identifer for the node; 1-indexed
-
-	double x;	// x coordinate location
-	double y;	// y coordinate location
-
-	int parentNodeId;
-};
-
-// for the RRT algorithm obstacles will be defined
-// as circles with a given position and radius
-struct Obstacle
-{
-	double x;		// x coordinate of obstacle center
-	double y;		// y coordinate of obstacle center
-	double radius;	// radius of disk obstacle
-
-};
 
 struct GoalRegion
 {
@@ -37,9 +19,9 @@ struct Vehicle
 {
 	int numNodes;					// number of representing the vehicle
 
-	WorkspaceNode* nodes;			// an array of all nodes for the vehicle
-	WorkspaceNode* offsetNodes;		// an array of offset values loaded on vehicle initialization
-	WorkspaceNode centroid;			// node defining the centeroid of the node points
+	GraphNode* nodes;				// an array of all nodes for the vehicle
+	GraphNode* offsetNodes;			// an array of offset values loaded on vehicle initialization
+	GraphNode centroid;				// node defining the centeroid of the node points
 
 	double theta;					// rotation angle of the rigid body
 	double maxPointRadius;			// the radius of a ball circumscribing the vehicle; used for quick collision checking
