@@ -549,10 +549,10 @@ TEST(WorkspaceGraph_Vehicle, Initialize_CheckVals)
 {
     Vehicle v;
 
-    GTEST_ASSERT_EQ(v.centroid.x, 0);
-    GTEST_ASSERT_EQ(v.centroid.y, 0);
+    GTEST_ASSERT_EQ(v.state.x, 0);
+    GTEST_ASSERT_EQ(v.state.y, 0);
+    GTEST_ASSERT_EQ(v.state.theta, 0);
     GTEST_ASSERT_EQ(v.maxPointRadius, 0);
-    GTEST_ASSERT_EQ(v.theta, 0);
     GTEST_ASSERT_EQ(v.numNodes, 0);
     EXPECT_TRUE(v.nodes == NULL);
     EXPECT_TRUE(v.offsetNodes == NULL);
@@ -564,10 +564,10 @@ TEST(WorkspaceGraph_Vehicle, UpdateState_CheckVals)
     State p = { 1, 2, 3 };
     v.updateState(p);
 
-    GTEST_ASSERT_EQ(v.centroid.x, 1);
-    GTEST_ASSERT_EQ(v.centroid.y, 2);
+    GTEST_ASSERT_EQ(v.state.x, 1);
+    GTEST_ASSERT_EQ(v.state.y, 2);
+    GTEST_ASSERT_EQ(v.state.theta, 3);
     GTEST_ASSERT_EQ(v.maxPointRadius, 0);
-    GTEST_ASSERT_EQ(v.theta, 3);
     GTEST_ASSERT_EQ(v.numNodes, 0);
     EXPECT_TRUE(v.nodes == NULL);
     EXPECT_TRUE(v.offsetNodes == NULL);

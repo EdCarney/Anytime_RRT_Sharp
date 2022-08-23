@@ -5,25 +5,20 @@ void Vehicle::buildVehicle()
 	nodes = NULL;
 	offsetNodes = NULL;
 	numNodes = 0;
-	theta = 0.0;
-	centroid.x = 0.0;
-	centroid.y = 0.0;
+	state = { 0.0, 0.0, 0.0 };
 	maxPointRadius = 0.0;
 }
 
-void Vehicle::updateState(State position)
+void Vehicle::updateState(State newState)
 {
 	// update body nodes based on deltas
 	for (int i = 0; i < numNodes; i++)
 	{
-		nodes[i].x = position.x + cos(position.theta) * offsetNodes[i].x - sin(position.theta) * offsetNodes[i].y;
-		nodes[i].y = position.y + sin(position.theta) * offsetNodes[i].x + cos(position.theta) * offsetNodes[i].y;
+		nodes[i].x = newState.x + cos(newState.theta) * offsetNodes[i].x - sin(newState.theta) * offsetNodes[i].y;
+		nodes[i].y = newState.y + sin(newState.theta) * offsetNodes[i].x + cos(newState.theta) * offsetNodes[i].y;
 	}
 
-	// update centroid
-	centroid.x = position.x;
-	centroid.y = position.y;
-	theta = position.theta;
+	state = { newState.x, newState.y, newState.theta };
 }
 
 void WorkspaceGraph::buildWorkspaceGraph()
@@ -90,29 +85,29 @@ bool WorkspaceGraph::readVehicleFromFile(const char* vehicleFile)
 		vehicle.nodes[i].x = 0.0;
 		vehicle.nodes[i].y = 0.0;
 
-		vehicle.centroid.x += x;
-		vehicle.centroid.y += y;
+		vehicle.state.x += x;
+		vehicle.state.y += y;
 	}
 
 	// calculate centroid
-	vehicle.centroid.x /= pointCount;
-	vehicle.centroid.y /= pointCount;
+	vehicle.state.x /= pointCount;
+	vehicle.state.y /= pointCount;
 
 	// set rotation default as zero
-	vehicle.theta = 0.0;
+	vehicle.state.theta = 0.0;
 
 	// define radius of circle enscribing the vehicle
 	double maxTempRad;
 	double maxRad = hypot(
-		(vehicle.offsetNodes[0].x - vehicle.centroid.x),
-		(vehicle.offsetNodes[0].y - vehicle.centroid.y)
+		(vehicle.offsetNodes[0].x - vehicle.state.x),
+		(vehicle.offsetNodes[0].y - vehicle.state.y)
 	);
 
 	for (int i = 1; i < vehicle.numNodes; i++)
 	{
 		maxTempRad = hypot(
-			(vehicle.offsetNodes[i].x - vehicle.centroid.x),
-			(vehicle.offsetNodes[i].y - vehicle.centroid.y)
+			(vehicle.offsetNodes[i].x - vehicle.state.x),
+			(vehicle.offsetNodes[i].y - vehicle.state.y)
 		);
 		if (maxTempRad > maxRad) { maxRad = maxTempRad; }
 	}
@@ -289,29 +284,29 @@ void WorkspaceGraph::setVehicle(double vehiclePointXPosition[4], double vehicleP
 		vehicle.nodes[i].x = 0.0;
 		vehicle.nodes[i].y = 0.0;
 
-		vehicle.centroid.x += vehiclePointXPosition[i];
-		vehicle.centroid.y += vehiclePointYPosition[i];;
+		vehicle.state.x += vehiclePointXPosition[i];
+		vehicle.state.y += vehiclePointYPosition[i];;
 	}
 
 	// calculate centriod
-	vehicle.centroid.x /= numVehiclePoints;
-	vehicle.centroid.y /= numVehiclePoints;
+	vehicle.state.x /= numVehiclePoints;
+	vehicle.state.y /= numVehiclePoints;
 
 	// set rotation default as zero
-	vehicle.theta = 0.0;
+	vehicle.state.theta = 0.0;
 
 	// define radius of circle enscribing the vehicle
 	double maxTempRad;
 	double maxRad = hypot(
-		(vehicle.offsetNodes[0].x - vehicle.centroid.x),
-		(vehicle.offsetNodes[0].y - vehicle.centroid.y)
+		(vehicle.offsetNodes[0].x - vehicle.state.x),
+		(vehicle.offsetNodes[0].y - vehicle.state.y)
 	);
 
 	for (int i = 1; i < vehicle.numNodes; i++)
 	{
 		maxTempRad = hypot(
-			(vehicle.offsetNodes[i].x - vehicle.centroid.x),
-			(vehicle.offsetNodes[i].y - vehicle.centroid.y)
+			(vehicle.offsetNodes[i].x - vehicle.state.x),
+			(vehicle.offsetNodes[i].y - vehicle.state.y)
 		);
 		if (maxTempRad > maxRad) { maxRad = maxTempRad; }
 	}
@@ -382,6 +377,6 @@ bool WorkspaceGraph::checkAtGoal(ConfigspaceNode node)
 	// update vehicle state to temp node
 	vehicle.updateState(node);
 
-	double distToGoal = hypot((vehicle.centroid.x - goalRegion.x), (vehicle.centroid.y - goalRegion.y));
+	double distToGoal = hypot((vehicle.state.x - goalRegion.x), (vehicle.state.y - goalRegion.y));
 	return distToGoal < (goalRegion.radius + vehicle.maxPointRadius);
 }
