@@ -1,7 +1,5 @@
 #include "ARRTS.hpp"
 
-#define FUNC_PREFIX __func__
-
 template <typename T>
 void ResetArraySize(T** arrStart, int oldSize, int newSize)
 {
@@ -83,6 +81,9 @@ void ArrtsService::AddObstaclesFromFile(FILE* file)
         r[i] = rVal;
     }
 
+    // close file
+    fclose(file);
+
     // add points
     AddObstacles(x, y, r, obsCount);
 }
@@ -139,6 +140,9 @@ void ArrtsService::AddVehiclePointsFromFile(FILE* file)
         x[i] = xVal;
         y[i] = yVal;
     }
+
+    // close file
+    fclose(file);
 
     // add points
     AddVehiclePoints(x, y, pointCount);
