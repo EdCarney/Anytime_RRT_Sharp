@@ -8,7 +8,7 @@ TEST(ARRTS_StartPosition, SetAndGet)
 {
     ArrtsService service;
     service.SetStartPosition(5, 6, 7);
-    Position pos = service.GetStartPosition();
+    State pos = service.GetStartPosition();
     GTEST_ASSERT_EQ(pos.x, 5);
     GTEST_ASSERT_EQ(pos.y, 6);
     GTEST_ASSERT_EQ(pos.theta, 7);
@@ -19,7 +19,7 @@ TEST(ARRTS_StartPosition, SetUpdateAndGet)
     ArrtsService service;
     service.SetStartPosition(5, 6, 7);
     service.SetStartPosition(8, 9, 10);
-    Position pos = service.GetStartPosition();
+    State pos = service.GetStartPosition();
     GTEST_ASSERT_EQ(pos.x, 8);
     GTEST_ASSERT_EQ(pos.y, 9);
     GTEST_ASSERT_EQ(pos.theta, 10);
@@ -33,7 +33,7 @@ TEST(ARRTS_GoalPosition, SetAndGet)
 {
     ArrtsService service;
     service.SetGoalPosition(5, 6, 7);
-    Position pos = service.GetGoalPosition();
+    State pos = service.GetGoalPosition();
     GTEST_ASSERT_EQ(pos.x, 5);
     GTEST_ASSERT_EQ(pos.y, 6);
     GTEST_ASSERT_EQ(pos.theta, 7);
@@ -44,7 +44,7 @@ TEST(ARRTS_GoalPosition, SetUpdateAndGet)
     ArrtsService service;
     service.SetGoalPosition(5, 6, 7);
     service.SetGoalPosition(8, 9, 10);
-    Position pos = service.GetGoalPosition();
+    State pos = service.GetGoalPosition();
     GTEST_ASSERT_EQ(pos.x, 8);
     GTEST_ASSERT_EQ(pos.y, 9);
     GTEST_ASSERT_EQ(pos.theta, 10);
@@ -561,7 +561,7 @@ TEST(WorkspaceGraph_Vehicle, Initialize_CheckVals)
 TEST(WorkspaceGraph_Vehicle, UpdateState_CheckVals)
 {
     Vehicle v;
-    Position p = { 1, 2, 3 };
+    State p = { 1, 2, 3 };
     v.updateState(p);
 
     GTEST_ASSERT_EQ(v.centroid.x, 1);
