@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "ARRTS.hpp"
+#include "workspaceGraph.hpp"
 
 #pragma region ARRTS_StartPosition
 
@@ -541,6 +542,52 @@ TEST(ARRTS_VehiclePoints, GetSecondPointWhenOne)
     EXPECT_ANY_THROW(service.GetVehiclePoint(1));
 }
 #pragma endregion //ARRTS_VehiclePoints
+
+#pragma region WorkspaceGraph_Vehicle
+
+TEST(WorkspaceGraph_Vehicle, Initialize_CheckVals)
+{
+    Vehicle v;
+
+    GTEST_ASSERT_EQ(v.centroid.x, 0);
+    GTEST_ASSERT_EQ(v.centroid.y, 0);
+    GTEST_ASSERT_EQ(v.maxPointRadius, 0);
+    GTEST_ASSERT_EQ(v.theta, 0);
+    GTEST_ASSERT_EQ(v.numNodes, 0);
+    EXPECT_TRUE(v.nodes == NULL);
+    EXPECT_TRUE(v.offsetNodes == NULL);
+}
+
+TEST(WorkspaceGraph_Vehicle, UpdateState_CheckVals)
+{
+    Vehicle v;
+    Position p = { 1, 2, 3 };
+    v.updateState(p);
+
+    GTEST_ASSERT_EQ(v.centroid.x, 1);
+    GTEST_ASSERT_EQ(v.centroid.y, 2);
+    GTEST_ASSERT_EQ(v.maxPointRadius, 0);
+    GTEST_ASSERT_EQ(v.theta, 3);
+    GTEST_ASSERT_EQ(v.numNodes, 0);
+    EXPECT_TRUE(v.nodes == NULL);
+    EXPECT_TRUE(v.offsetNodes == NULL);
+}
+
+// TEST(WorkspaceGraph_Vehicle, AddNodes_CheckVals)
+// {
+//     Vehicle v;
+//     v.offsetNodes = { { -0.5, -0.5 }, { 0.5, -0.5 } };
+
+//     GTEST_ASSERT_EQ(v.centroid.x, 1);
+//     GTEST_ASSERT_EQ(v.centroid.y, 2);
+//     GTEST_ASSERT_EQ(v.maxPointRadius, 0);
+//     GTEST_ASSERT_EQ(v.theta, 3);
+//     GTEST_ASSERT_EQ(v.numNodes, 0);
+//     EXPECT_TRUE(v.nodes == NULL);
+//     EXPECT_TRUE(v.offsetNodes == NULL);
+// }
+
+#pragma endregion //WorkspaceGraph_Vehicle
 
 int main(int argc, char* argv[])
 {
