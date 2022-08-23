@@ -1,18 +1,15 @@
-#include <algorithm>
 #include <cstddef>
 #include <cstdlib>
 #include <stdexcept>
 #include <string>
 #include "cppshrhelp.hpp"
+#include "Geometry.hpp"
+#include "Utility.hpp"
 
 using namespace std;
 
 #ifndef ARRTS_H
 #define ARRTS_H
-
-struct DLL_EXPORT Node { double x, y; };
-struct DLL_EXPORT Obstacle : Node { double radius; };
-struct DLL_EXPORT Position : Node { double theta; };
 
 class DLL_EXPORT ArrtsService
 {

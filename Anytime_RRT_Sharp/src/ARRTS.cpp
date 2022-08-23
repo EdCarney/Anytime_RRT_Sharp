@@ -1,21 +1,5 @@
 #include "ARRTS.hpp"
 
-template <typename T>
-void ResetArraySize(T** arrStart, int oldSize, int newSize)
-{
-    if (arrStart == NULL)
-    {
-        *arrStart = (T*) calloc(newSize, sizeof(T));
-    }
-    else
-    {
-        auto temp = (T*) calloc(oldSize + newSize, sizeof(T));
-        copy(*arrStart, *arrStart + oldSize, temp);
-        delete *arrStart;
-        *arrStart = temp;
-    }
-}
-
 ArrtsService::ArrtsService()
 {
     numObstacles = 0;
