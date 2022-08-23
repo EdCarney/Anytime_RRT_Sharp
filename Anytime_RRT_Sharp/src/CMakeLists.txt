@@ -12,14 +12,17 @@ configure_file(ARRTSConfig.h.in ARRTSConfig.h)
 # add libraries
 add_library(ConfigspaceGraph configspaceGraph.cpp)
 add_library(WorkspaceGraph workspaceGraph.cpp)
+add_library(Vehicle Vehicle.cpp)
 add_library(ARRTS ARRTS.cpp)
 
 list(APPEND EXTRA_LIBS ConfigspaceGraph)
 list(APPEND EXTRA_LIBS WorkspaceGraph)
+list(APPEND EXTRA_LIBS Vehicle)
 list(APPEND EXTRA_LIBS ARRTS)
 
 list(APPEND TEST_LIBS ARRTS)
 list(APPEND TEST_LIBS WorkspaceGraph)
+list(APPEND TEST_LIBS Vehicle)
 list(APPEND TEST_LIBS gtest)
 
 # add googletest directory

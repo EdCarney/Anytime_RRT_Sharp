@@ -1,32 +1,10 @@
 #include "configspaceGraph.hpp"
 #include "Geometry.hpp"
 #include "Utility.hpp"
+#include "Vehicle.hpp"
 
 #ifndef WORKSPACE_H
 #define WORKSPACE_H
-
-// a struct to define the shape of the vehicle for
-// collision checking for RRT for rigid body of n nodes
-struct Vehicle
-{
-	int numNodes;					// number of representing the vehicle
-
-	Node* nodes;					// an array of all nodes for the vehicle
-	Node* offsetNodes;				// an array of offset values loaded on vehicle initialization
-	State state;					// state of the vehicle
-	double maxPointRadius;			// the radius of a ball circumscribing the vehicle; used for quick collision checking
-
-private:
-	void buildVehicle();
-
-public:
-	// default constructor
-	Vehicle() { buildVehicle(); }
-
-	// update the vehicle state based on config node
-	void updateState(State newState);
-};
-
 
 class WorkspaceGraph
 {

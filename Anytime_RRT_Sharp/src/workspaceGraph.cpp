@@ -1,26 +1,5 @@
 #include "workspaceGraph.hpp"
 
-void Vehicle::buildVehicle()
-{
-	nodes = NULL;
-	offsetNodes = NULL;
-	numNodes = 0;
-	state = { 0.0, 0.0, 0.0 };
-	maxPointRadius = 0.0;
-}
-
-void Vehicle::updateState(State newState)
-{
-	// update body nodes based on deltas
-	for (int i = 0; i < numNodes; i++)
-	{
-		nodes[i].x = newState.x + cos(newState.theta) * offsetNodes[i].x - sin(newState.theta) * offsetNodes[i].y;
-		nodes[i].y = newState.y + sin(newState.theta) * offsetNodes[i].x + cos(newState.theta) * offsetNodes[i].y;
-	}
-
-	state = { newState.x, newState.y, newState.theta };
-}
-
 void WorkspaceGraph::buildWorkspaceGraph()
 {
 	printf("Constructing a default empty workspace graph.\n");
