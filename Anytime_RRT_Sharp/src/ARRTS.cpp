@@ -13,7 +13,7 @@ void ArrtsService::SetGoalPosition(double x, double y, double theta)
     goalPosition = { x, y, theta };
 }
 
-Position ArrtsService::GetGoalPosition()
+State ArrtsService::GetGoalPosition()
 {
     return goalPosition;
 }
@@ -23,7 +23,7 @@ void ArrtsService::SetStartPosition(double x, double y, double theta)
     startPosition = { x, y, theta };
 }
 
-Position ArrtsService::GetStartPosition()
+State ArrtsService::GetStartPosition()
 {
     return startPosition;
 }
@@ -150,7 +150,7 @@ int ArrtsService::GetNumVehiclePoints()
     return numVehiclePoints;
 }
 
-Position* ArrtsService::CalculatePath(double standoffRange, double positionBuffer, double freespaceBuffer)
+State* ArrtsService::CalculatePath(double standoffRange, double positionBuffer, double freespaceBuffer)
 {
 
 }

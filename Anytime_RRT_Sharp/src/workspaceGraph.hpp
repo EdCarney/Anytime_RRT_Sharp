@@ -5,14 +5,6 @@
 #ifndef WORKSPACE_H
 #define WORKSPACE_H
 
-struct GoalRegion
-{
-	double x;
-	double y;
-	double theta;
-	double radius;
-};
-
 // a struct to define the shape of the vehicle for
 // collision checking for RRT for rigid body of n nodes
 struct Vehicle
@@ -38,7 +30,7 @@ public:
 	Vehicle() { buildVehicle(); }
 
 	// update the vehicle state based on config node
-	void updateState(Position position);
+	void updateState(State position);
 };
 
 
@@ -50,7 +42,7 @@ public:
 
 	Obstacle* obstacles;			// an array containing all obstacles
 	Vehicle vehicle;				// an array containing all vehicles
-	GoalRegion goalRegion;			// the goal region for the graph (treated as an obstacle)
+	GoalState goalRegion;			// the goal region for the graph (treated as an obstacle)
 
 	double minX, minY, maxX, maxY;	// limits of the graph freespace
 	double minTheta, maxTheta;		// limits of the orientation theta
