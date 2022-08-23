@@ -15,8 +15,8 @@ class DLL_EXPORT ArrtsService
 {
     private:
         Obstacle* obstacles;
-        State startPosition;
-        State goalPosition;
+        State startState;
+        State goalState;
         Node* vehicleOutline;
 
         int numObstacles;
@@ -25,11 +25,11 @@ class DLL_EXPORT ArrtsService
     public:
         ArrtsService();
 
-        void SetGoalPosition(double x, double y, double theta);
-        State GetGoalPosition();
+        void SetGoalState(double x, double y, double theta);
+        State GetGoalState();
 
-        void SetStartPosition(double x, double y, double theta);
-        State GetStartPosition();
+        void SetStartState(double x, double y, double theta);
+        State GetStartState();
 
         void AddObstacle(double x, double y, double r);
         void AddObstacles(const double* x, const double* y, const double* r, int numObs);

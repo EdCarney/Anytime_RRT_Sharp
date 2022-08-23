@@ -8,24 +8,24 @@ ArrtsService::ArrtsService()
     vehicleOutline = NULL;
 }
 
-void ArrtsService::SetGoalPosition(double x, double y, double theta)
+void ArrtsService::SetGoalState(double x, double y, double theta)
 {
-    goalPosition = { x, y, theta };
+    goalState = { x, y, theta };
 }
 
-State ArrtsService::GetGoalPosition()
+State ArrtsService::GetGoalState()
 {
-    return goalPosition;
+    return goalState;
 }
 
-void ArrtsService::SetStartPosition(double x, double y, double theta)
+void ArrtsService::SetStartState(double x, double y, double theta)
 {
-    startPosition = { x, y, theta };
+    startState = { x, y, theta };
 }
 
-State ArrtsService::GetStartPosition()
+State ArrtsService::GetStartState()
 {
-    return startPosition;
+    return startState;
 }
 
 void ArrtsService::AddObstacle(double x, double y, double r)
