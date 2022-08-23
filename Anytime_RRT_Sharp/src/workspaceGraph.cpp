@@ -2,38 +2,34 @@
 
 void Vehicle::buildVehicle()
 {
-	printf("Constructing a default vehicle.\n");
 	nodes = NULL;
 	offsetNodes = NULL;
 	numNodes = 0;
 	theta = 0.0;
-	centroid.id = 0;
 	centroid.x = 0.0;
 	centroid.y = 0.0;
-	centroid.parentNodeId = 0;
 	maxPointRadius = 0.0;
 }
 
-void Vehicle::updateState(ConfigspaceNode newConfigNode)
+void Vehicle::updateState(Position position)
 {
 	// update body nodes based on deltas
 	for (int i = 0; i < numNodes; i++)
 	{
-		nodes[i].x = newConfigNode.x + cos(newConfigNode.theta) * offsetNodes[i].x - sin(newConfigNode.theta) * offsetNodes[i].y;
-		nodes[i].y = newConfigNode.y + sin(newConfigNode.theta) * offsetNodes[i].x + cos(newConfigNode.theta) * offsetNodes[i].y;
+		nodes[i].x = position.x + cos(position.theta) * offsetNodes[i].x - sin(position.theta) * offsetNodes[i].y;
+		nodes[i].y = position.y + sin(position.theta) * offsetNodes[i].x + cos(position.theta) * offsetNodes[i].y;
 	}
 
 	// update centroid
-	centroid.x = newConfigNode.x;
-	centroid.y = newConfigNode.y;
-	theta = newConfigNode.theta;
+	centroid.x = position.x;
+	centroid.y = position.y;
+	theta = position.theta;
 }
 
 void WorkspaceGraph::buildWorkspaceGraph()
 {
 	printf("Constructing a default empty workspace graph.\n");
 	numObstacles = 0;
-	numVehicles = 0;
 	minX = 0.0;
 	minY = 0.0;
 	maxX = 0.0;
@@ -41,7 +37,6 @@ void WorkspaceGraph::buildWorkspaceGraph()
 	minTheta = 0.0;
 	maxTheta = 0.0;
 	obstacles = NULL;
-	vehicles = NULL;
 	goalRegionReached = false;
 }
 
@@ -50,11 +45,8 @@ void WorkspaceGraph::deleteWorkspaceGraph()
 	printf("Deleting a workspace graph.\n");
 
 	free(obstacles);
-	free(vehicles);
 	obstacles = NULL;
-	vehicles = NULL;
 	numObstacles = 0;
-	numVehicles = 0;
 }
 
 bool WorkspaceGraph::readVehicleFromFile(const char* vehicleFile)
@@ -74,68 +66,58 @@ bool WorkspaceGraph::readVehicleFromFile(const char* vehicleFile)
 	// confirm reading in file
 	printf("Reading in vehicle data from %s.\n", vehicleFile);
 
-	// increment number of vehicles in graph (assuming one vehicle per file)
-	numVehicles++;
-
-	// allocate memory based on vehicle number
-	vehicles = (Vehicle*)calloc(numVehicles, sizeof(Vehicle));
-
 	// determine the number of vehicle points in the vehicle file
 	int pointCount = 0;
 	double x, y;
 	while (fscanf(pFile, "%lf,%lf", &x, &y) != EOF) { pointCount++; }
 
-	vehicles[numVehicles - 1].numNodes = pointCount;	// set the graph number of obstacles per the count
+	vehicle.numNodes = pointCount;	// set the graph number of obstacles per the count
 
-	vehicles[numVehicles - 1].nodes =					// allocate memory based on vehicle number
-		(GraphNode*)calloc(vehicles[numVehicles - 1].numNodes, sizeof(GraphNode));
+	vehicle.nodes =					// allocate memory based on vehicle number
+		(GraphNode*)calloc(vehicle.numNodes, sizeof(GraphNode));
 
-	vehicles[numVehicles - 1].offsetNodes =				// allocate memory based on vehicle number
-		(GraphNode*)calloc(vehicles[numVehicles - 1].numNodes, sizeof(GraphNode));
+	vehicle.offsetNodes =				// allocate memory based on vehicle number
+		(GraphNode*)calloc(vehicle.numNodes, sizeof(GraphNode));
 
 	// assign values
 	rewind(pFile);
 	for (int i = 0; i < pointCount; i++)
 	{
 		fscanf(pFile, "%lf,%lf", &x, &y);
-		vehicles[numVehicles - 1].offsetNodes[i].x = x;
-		vehicles[numVehicles - 1].offsetNodes[i].y = y;
-		vehicles[numVehicles - 1].offsetNodes[i].id = 0;
-		vehicles[numVehicles - 1].offsetNodes[i].parentNodeId = 0;
+		vehicle.offsetNodes[i].x = x;
+		vehicle.offsetNodes[i].y = y;
 
-		vehicles[numVehicles - 1].nodes[i].x = 0.0;
-		vehicles[numVehicles - 1].nodes[i].y = 0.0;
-		vehicles[numVehicles - 1].nodes[i].id = 0;
-		vehicles[numVehicles - 1].nodes[i].parentNodeId = 0;
+		vehicle.nodes[i].x = 0.0;
+		vehicle.nodes[i].y = 0.0;
 
-		vehicles[numVehicles - 1].centroid.x += x;
-		vehicles[numVehicles - 1].centroid.y += y;
+		vehicle.centroid.x += x;
+		vehicle.centroid.y += y;
 	}
 
 	// calculate centroid
-	vehicles[numVehicles - 1].centroid.x /= pointCount;
-	vehicles[numVehicles - 1].centroid.y /= pointCount;
+	vehicle.centroid.x /= pointCount;
+	vehicle.centroid.y /= pointCount;
 
 	// set rotation default as zero
-	vehicles[numVehicles - 1].theta = 0.0;
+	vehicle.theta = 0.0;
 
 	// define radius of circle enscribing the vehicle
 	double maxTempRad;
 	double maxRad = hypot(
-		(vehicles[numVehicles - 1].offsetNodes[0].x - vehicles[numVehicles - 1].centroid.x),
-		(vehicles[numVehicles - 1].offsetNodes[0].y - vehicles[numVehicles - 1].centroid.y)
+		(vehicle.offsetNodes[0].x - vehicle.centroid.x),
+		(vehicle.offsetNodes[0].y - vehicle.centroid.y)
 	);
 
-	for (int i = 1; i < vehicles[numVehicles - 1].numNodes; i++)
+	for (int i = 1; i < vehicle.numNodes; i++)
 	{
 		maxTempRad = hypot(
-			(vehicles[numVehicles - 1].offsetNodes[i].x - vehicles[numVehicles - 1].centroid.x),
-			(vehicles[numVehicles - 1].offsetNodes[i].y - vehicles[numVehicles - 1].centroid.y)
+			(vehicle.offsetNodes[i].x - vehicle.centroid.x),
+			(vehicle.offsetNodes[i].y - vehicle.centroid.y)
 		);
 		if (maxTempRad > maxRad) { maxRad = maxTempRad; }
 	}
 
-	vehicles[numVehicles - 1].maxPointRadius = maxRad;
+	vehicle.maxPointRadius = maxRad;
 
 	// close the file
 	fclose(pFile);
@@ -292,56 +274,50 @@ void WorkspaceGraph::addObstacle(double xObs, double yObs, double radiusObs)
 	obstacles[numObstacles++] = { xObs, yObs, radiusObs };
 }
 
-void WorkspaceGraph::addVehicle(double vehiclePointXPosition[4], double vehiclePointYPosition[4], int numVehiclePoints)
+void WorkspaceGraph::setVehicle(double vehiclePointXPosition[4], double vehiclePointYPosition[4], int numVehiclePoints)
 {
-	ResetArraySize<Vehicle>(&vehicles, numVehicles, ++numVehicles);
-
-	vehicles[numVehicles - 1].numNodes = numVehiclePoints;
-	vehicles[numVehicles - 1].nodes = (GraphNode*)calloc(vehicles[numVehicles - 1].numNodes, sizeof(GraphNode));
-	vehicles[numVehicles - 1].offsetNodes = (GraphNode*)calloc(vehicles[numVehicles - 1].numNodes, sizeof(GraphNode));
+	vehicle.numNodes = numVehiclePoints;
+	vehicle.nodes = (GraphNode*)calloc(vehicle.numNodes, sizeof(GraphNode));
+	vehicle.offsetNodes = (GraphNode*)calloc(vehicle.numNodes, sizeof(GraphNode));
 
 	// assign values
 	for (int i = 0; i < numVehiclePoints; i++)
 	{
-		vehicles[numVehicles - 1].offsetNodes[i].x = vehiclePointXPosition[i];
-		vehicles[numVehicles - 1].offsetNodes[i].y = vehiclePointYPosition[i];
-		vehicles[numVehicles - 1].offsetNodes[i].id = 0;
-		vehicles[numVehicles - 1].offsetNodes[i].parentNodeId = 0;
+		vehicle.offsetNodes[i].x = vehiclePointXPosition[i];
+		vehicle.offsetNodes[i].y = vehiclePointYPosition[i];
 
-		vehicles[numVehicles - 1].nodes[i].x = 0.0;
-		vehicles[numVehicles - 1].nodes[i].y = 0.0;
-		vehicles[numVehicles - 1].nodes[i].id = 0;
-		vehicles[numVehicles - 1].nodes[i].parentNodeId = 0;
+		vehicle.nodes[i].x = 0.0;
+		vehicle.nodes[i].y = 0.0;
 
-		vehicles[numVehicles - 1].centroid.x += vehiclePointXPosition[i];
-		vehicles[numVehicles - 1].centroid.y += vehiclePointYPosition[i];;
+		vehicle.centroid.x += vehiclePointXPosition[i];
+		vehicle.centroid.y += vehiclePointYPosition[i];;
 	}
 
 	// calculate centriod
-	vehicles[numVehicles - 1].centroid.x /= numVehiclePoints;
-	vehicles[numVehicles - 1].centroid.y /= numVehiclePoints;
+	vehicle.centroid.x /= numVehiclePoints;
+	vehicle.centroid.y /= numVehiclePoints;
 
 	// set rotation default as zero
-	vehicles[numVehicles - 1].theta = 0.0;
+	vehicle.theta = 0.0;
 
 	// define radius of circle enscribing the vehicle
 	double maxTempRad;
 	double maxRad = hypot(
-		(vehicles[numVehicles - 1].offsetNodes[0].x - vehicles[numVehicles - 1].centroid.x),
-		(vehicles[numVehicles - 1].offsetNodes[0].y - vehicles[numVehicles - 1].centroid.y)
+		(vehicle.offsetNodes[0].x - vehicle.centroid.x),
+		(vehicle.offsetNodes[0].y - vehicle.centroid.y)
 	);
 
-	for (int i = 1; i < vehicles[numVehicles - 1].numNodes; i++)
+	for (int i = 1; i < vehicle.numNodes; i++)
 	{
 		maxTempRad = hypot(
-			(vehicles[numVehicles - 1].offsetNodes[i].x - vehicles[numVehicles - 1].centroid.x),
-			(vehicles[numVehicles - 1].offsetNodes[i].y - vehicles[numVehicles - 1].centroid.y)
+			(vehicle.offsetNodes[i].x - vehicle.centroid.x),
+			(vehicle.offsetNodes[i].y - vehicle.centroid.y)
 		);
 		if (maxTempRad > maxRad) { maxRad = maxTempRad; }
 	}
 
-	vehicles[numVehicles - 1].maxPointRadius = maxRad;
-	printf("Max Vehicle Radius: %f\n", vehicles[numVehicles - 1].maxPointRadius);
+	vehicle.maxPointRadius = maxRad;
+	printf("Max Vehicle Radius: %f\n", vehicle.maxPointRadius);
 }
 
 bool WorkspaceGraph::atGate(ConfigspaceNode node)
@@ -403,18 +379,9 @@ ConfigspaceNode WorkspaceGraph::connectNodes(ConfigspaceNode parentNode, Configs
 
 bool WorkspaceGraph::checkAtGoal(ConfigspaceNode node)
 {
-	double nodeDistance;
-
 	// update vehicle state to temp node
-	vehicles[0].updateState(node);
+	vehicle.updateState(node);
 
-	for (int i = 0; i < numVehicles; i++)
-	{
-		nodeDistance = hypot((vehicles[i].centroid.x - goalRegion.x), (vehicles[i].centroid.y - goalRegion.y));
-
-		if (nodeDistance < (goalRegion.radius + vehicles[i].maxPointRadius))
-			return true;
-	}
-
-	return false;
+	double distToGoal = hypot((vehicle.centroid.x - goalRegion.x), (vehicle.centroid.y - goalRegion.y));
+	return distToGoal < (goalRegion.radius + vehicle.maxPointRadius);
 }

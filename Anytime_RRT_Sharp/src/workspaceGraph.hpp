@@ -19,9 +19,9 @@ struct Vehicle
 {
 	int numNodes;					// number of representing the vehicle
 
-	GraphNode* nodes;				// an array of all nodes for the vehicle
-	GraphNode* offsetNodes;			// an array of offset values loaded on vehicle initialization
-	GraphNode centroid;				// node defining the centeroid of the node points
+	Node* nodes;				// an array of all nodes for the vehicle
+	Node* offsetNodes;			// an array of offset values loaded on vehicle initialization
+	Node centroid;				// node defining the centeroid of the node points
 
 	double theta;					// rotation angle of the rigid body
 	double maxPointRadius;			// the radius of a ball circumscribing the vehicle; used for quick collision checking
@@ -38,7 +38,7 @@ public:
 	Vehicle() { buildVehicle(); }
 
 	// update the vehicle state based on config node
-	void updateState(ConfigspaceNode newConfigNode);
+	void updateState(Position position);
 };
 
 
@@ -47,10 +47,9 @@ class WorkspaceGraph
 public:
 
 	int numObstacles;				// total number of obstacles in the graph
-	int numVehicles;				// total number of vehicles in the graph
 
 	Obstacle* obstacles;			// an array containing all obstacles
-	Vehicle* vehicles;				// an array containing all vehicles
+	Vehicle vehicle;				// an array containing all vehicles
 	GoalRegion goalRegion;			// the goal region for the graph (treated as an obstacle)
 
 	double minX, minY, maxX, maxY;	// limits of the graph freespace
@@ -104,7 +103,7 @@ public:
 	void addObstacle(double xObs, double yObs, double radiusObs);
 
 	// adds a vehicle to the graph (currently hard-coded to four points)
-	void addVehicle(double vehiclePointXPosition[4], double vehiclePointYPosition[4], int numVehiclePoints);
+	void setVehicle(double vehiclePointXPosition[4], double vehiclePointYPosition[4], int numVehiclePoints);
 
 	// read in obstacles from a specified file
 	bool readObstaclesFromFile(const char* obstacleFile);
