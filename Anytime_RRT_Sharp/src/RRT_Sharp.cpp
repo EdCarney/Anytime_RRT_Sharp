@@ -12,7 +12,7 @@ int main()
 	// define arrays for the gate and obstacle information
 	const double rootXPosition = 5.0;
 	const double rootYPosition = 60.0;
-	const double rootApproach = M_PI / 2.0;
+	const double rootApproach = - M_PI / 2.0;
 
 	const double obstacleXPosition[] = { 80, 73, 63, 53, 43, 33, 28, 25, 25, 25, 25, 35, 40, 45, 80, 85, 90, 95, 100, 100, 100, 100, 60 };
 	const double obstacleYPosition[] = { 40, 30, 25, 25, 26, 25, 35, 47, 57, 67, 77, 80, 80, 80, 80, 80, 80, 80, 80, 0, 5, 10, 100 };
@@ -77,19 +77,20 @@ int main()
 	// and the robot
 	tie(xMin, xMax, yMin, yMax) = calculateGraphLimits(G_workspace, gateNode, buffer);
 
-	// compute the volume of the obstacles
-	obsVol = G_workspace.computeObsVol();
-
-	// set freespace of graphs based on the graph limits; some values will always
-	// be the same (theta, v, w, a, gamma), while others will vary (x and y)
 	G_workspace.defineFreespace(xMin, yMin, thetaMin, xMax, yMax, thetaMax);
-	G_configspace.defineFreespace(xMin, yMin, thetaMin, xMax, yMax, thetaMax, dimension, obsVol);
 
 	// set the obstacles for this iteration (we don't need to consider all obstacles
 	// for every iteration); use the above defined freespace limits
 	for (int i = 0; i < numObstacles; ++i)
 		if (G_workspace.obstacleInFreespace(obstacleXPosition[i], obstacleYPosition[i], obstacleRadius[i]))
 			G_workspace.addObstacle(obstacleXPosition[i], obstacleYPosition[i], obstacleRadius[i]);
+
+	// compute the volume of the obstacles
+	obsVol = G_workspace.computeObsVol();
+
+	// set freespace of graphs based on the graph limits; some values will always
+	// be the same (theta, v, w, a, gamma), while others will vary (x and y)
+	G_configspace.defineFreespace(xMin, yMin, thetaMin, xMax, yMax, thetaMax, dimension, obsVol);
 
 	// add gateNode to the graph
 	G_configspace.addNode(gateNode);
