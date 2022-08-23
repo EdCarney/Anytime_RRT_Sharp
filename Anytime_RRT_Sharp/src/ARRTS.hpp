@@ -15,8 +15,8 @@ class DLL_EXPORT ArrtsService
 {
     private:
         Obstacle* obstacles;
-        Position startPosition;
-        Position goalPosition;
+        State startPosition;
+        State goalPosition;
         Node* vehicleOutline;
 
         int numObstacles;
@@ -26,10 +26,10 @@ class DLL_EXPORT ArrtsService
         ArrtsService();
 
         void SetGoalPosition(double x, double y, double theta);
-        Position GetGoalPosition();
+        State GetGoalPosition();
 
         void SetStartPosition(double x, double y, double theta);
-        Position GetStartPosition();
+        State GetStartPosition();
 
         void AddObstacle(double x, double y, double r);
         void AddObstacles(const double* x, const double* y, const double* r, int numObs);
@@ -46,7 +46,7 @@ class DLL_EXPORT ArrtsService
         int GetNumVehiclePoints();
 
         // runs ARRTS algorithm
-        Position* CalculatePath(double standoffRange, double positionBuffer, double freespaceBuffer);
+        State* CalculatePath(double standoffRange, double positionBuffer, double freespaceBuffer);
 };
 
 #endif

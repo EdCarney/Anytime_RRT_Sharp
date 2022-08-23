@@ -6,7 +6,7 @@
 #ifndef CONFIGSPACE_H
 #define CONFIGSPACE_H
 
-struct ConfigspaceNode : Position
+struct ConfigspaceNode : State
 {
 	int id;				// unique identifer for the node; 1-indexed
 	double t;			// time for the node

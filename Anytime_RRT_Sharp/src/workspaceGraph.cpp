@@ -11,7 +11,7 @@ void Vehicle::buildVehicle()
 	maxPointRadius = 0.0;
 }
 
-void Vehicle::updateState(Position position)
+void Vehicle::updateState(State position)
 {
 	// update body nodes based on deltas
 	for (int i = 0; i < numNodes; i++)
