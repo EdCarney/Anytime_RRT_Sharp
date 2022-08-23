@@ -11,26 +11,20 @@ struct Vehicle
 {
 	int numNodes;					// number of representing the vehicle
 
-	Node* nodes;				// an array of all nodes for the vehicle
-	Node* offsetNodes;			// an array of offset values loaded on vehicle initialization
-	Node centroid;				// node defining the centeroid of the node points
-
-	double theta;					// rotation angle of the rigid body
+	Node* nodes;					// an array of all nodes for the vehicle
+	Node* offsetNodes;				// an array of offset values loaded on vehicle initialization
+	State state;					// state of the vehicle
 	double maxPointRadius;			// the radius of a ball circumscribing the vehicle; used for quick collision checking
 
 private:
 	void buildVehicle();
-
-	// calculates the centroid of the vehicle (as a node)
-	// using the list of nodes for the point
-	void calculateCentroid();
 
 public:
 	// default constructor
 	Vehicle() { buildVehicle(); }
 
 	// update the vehicle state based on config node
-	void updateState(State position);
+	void updateState(State newState);
 };
 
 
