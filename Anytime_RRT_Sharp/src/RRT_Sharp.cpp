@@ -96,9 +96,9 @@ int main()
 	G_configspace.addNode(gateNode);
 
 	// add vehicle to the graph
-	G_workspace.addVehicle(vehiclePointXPosition, vehiclePointYPosition, numVehiclePoints);
+	G_workspace.setVehicle(vehiclePointXPosition, vehiclePointYPosition, numVehiclePoints);
 
-	printf("ObsVol: %f, NumObs: %d, NumVehicles: %d, Freespace: [%f, %f, %f, %f]\n", obsVol, G_workspace.numObstacles, G_workspace.numVehicles, xMin, xMax, yMin, yMax);
+	printf("ObsVol: %f, NumObs: %d, Freespace: [%f, %f, %f, %f]\n", obsVol, G_workspace.numObstacles, xMin, xMax, yMin, yMax);
 	printf("UAV Location: %f, %f, %f\n", G_workspace.goalRegion.x, G_workspace.goalRegion.y, G_workspace.goalRegion.radius);
 	printf("Root Node:    %f, %f, %f\n", G_configspace.nodes[0].x, G_configspace.nodes[0].y, G_configspace.nodes[0].theta);
 

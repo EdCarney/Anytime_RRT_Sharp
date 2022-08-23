@@ -19,6 +19,7 @@ list(APPEND EXTRA_LIBS WorkspaceGraph)
 list(APPEND EXTRA_LIBS ARRTS)
 
 list(APPEND TEST_LIBS ARRTS)
+list(APPEND TEST_LIBS WorkspaceGraph)
 list(APPEND TEST_LIBS gtest)
 
 # add googletest directory

@@ -1,16 +1,14 @@
 #include <math.h>
 #include <fstream>
 #include <cstring>
+#include "Geometry.hpp"
 
 #ifndef CONFIGSPACE_H
 #define CONFIGSPACE_H
 
-struct ConfigspaceNode
+struct ConfigspaceNode : Position
 {
 	int id;				// unique identifer for the node; 1-indexed
-	double x;			// x coordinate location of the vehicle centroid
-	double y;			// y coordinate location of the vehicle centroid
-	double theta;		// rotation of the vehicle
 	double t;			// time for the node
 	int parentNodeId;	// the id of the parent node for this node
 	double cost;		// cost-to-go for this node
