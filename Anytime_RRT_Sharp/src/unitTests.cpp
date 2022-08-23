@@ -1,56 +1,57 @@
 #include <gtest/gtest.h>
 #include "ARRTS.hpp"
+#include "Vehicle.hpp"
 #include "workspaceGraph.hpp"
 
-#pragma region ARRTS_StartPosition
+#pragma region ARRTS_StartState
 
-TEST(ARRTS_StartPosition, SetAndGet)
+TEST(ARRTS_StartState, SetAndGet)
 {
     ArrtsService service;
-    service.SetStartPosition(5, 6, 7);
-    State pos = service.GetStartPosition();
-    GTEST_ASSERT_EQ(pos.x, 5);
-    GTEST_ASSERT_EQ(pos.y, 6);
-    GTEST_ASSERT_EQ(pos.theta, 7);
+    service.SetStartState(5, 6, 7);
+    State state = service.GetStartState();
+    GTEST_ASSERT_EQ(state.x, 5);
+    GTEST_ASSERT_EQ(state.y, 6);
+    GTEST_ASSERT_EQ(state.theta, 7);
 }
 
-TEST(ARRTS_StartPosition, SetUpdateAndGet)
+TEST(ARRTS_StartState, SetUpdateAndGet)
 {
     ArrtsService service;
-    service.SetStartPosition(5, 6, 7);
-    service.SetStartPosition(8, 9, 10);
-    State pos = service.GetStartPosition();
-    GTEST_ASSERT_EQ(pos.x, 8);
-    GTEST_ASSERT_EQ(pos.y, 9);
-    GTEST_ASSERT_EQ(pos.theta, 10);
+    service.SetStartState(5, 6, 7);
+    service.SetStartState(8, 9, 10);
+    State state = service.GetStartState();
+    GTEST_ASSERT_EQ(state.x, 8);
+    GTEST_ASSERT_EQ(state.y, 9);
+    GTEST_ASSERT_EQ(state.theta, 10);
 }
 
-#pragma endregion //ARRTS_StartPosition
+#pragma endregion //ARRTS_StartState
 
-#pragma region ARRTS_GoalPosition
+#pragma region ARRTS_GoalState
 
-TEST(ARRTS_GoalPosition, SetAndGet)
+TEST(ARRTS_GoalState, SetAndGet)
 {
     ArrtsService service;
-    service.SetGoalPosition(5, 6, 7);
-    State pos = service.GetGoalPosition();
-    GTEST_ASSERT_EQ(pos.x, 5);
-    GTEST_ASSERT_EQ(pos.y, 6);
-    GTEST_ASSERT_EQ(pos.theta, 7);
+    service.SetGoalState(5, 6, 7);
+    State state = service.GetGoalState();
+    GTEST_ASSERT_EQ(state.x, 5);
+    GTEST_ASSERT_EQ(state.y, 6);
+    GTEST_ASSERT_EQ(state.theta, 7);
 }
 
-TEST(ARRTS_GoalPosition, SetUpdateAndGet)
+TEST(ARRTS_GoalState, SetUpdateAndGet)
 {
     ArrtsService service;
-    service.SetGoalPosition(5, 6, 7);
-    service.SetGoalPosition(8, 9, 10);
-    State pos = service.GetGoalPosition();
-    GTEST_ASSERT_EQ(pos.x, 8);
-    GTEST_ASSERT_EQ(pos.y, 9);
-    GTEST_ASSERT_EQ(pos.theta, 10);
+    service.SetGoalState(5, 6, 7);
+    service.SetGoalState(8, 9, 10);
+    State state = service.GetGoalState();
+    GTEST_ASSERT_EQ(state.x, 8);
+    GTEST_ASSERT_EQ(state.y, 9);
+    GTEST_ASSERT_EQ(state.theta, 10);
 }
 
-#pragma endregion //ARRTS_GoalPosition
+#pragma endregion //ARRTS_GoalState
 
 #pragma region ARRTS_Obstacles
 
@@ -573,19 +574,75 @@ TEST(WorkspaceGraph_Vehicle, UpdateState_CheckVals)
     EXPECT_TRUE(v.offsetNodes == NULL);
 }
 
-// TEST(WorkspaceGraph_Vehicle, AddNodes_CheckVals)
-// {
-//     Vehicle v;
-//     v.offsetNodes = { { -0.5, -0.5 }, { 0.5, -0.5 } };
+TEST(WorkspaceGraph_Vehicle, AddNodesUpdateStateNoRotation_CheckVals)
+{
+    Vehicle v;
+    v.offsetNodes = (Node*) calloc(4, sizeof(Node));
+    v.nodes = (Node*) calloc(4, sizeof(Node));
 
-//     GTEST_ASSERT_EQ(v.centroid.x, 1);
-//     GTEST_ASSERT_EQ(v.centroid.y, 2);
-//     GTEST_ASSERT_EQ(v.maxPointRadius, 0);
-//     GTEST_ASSERT_EQ(v.theta, 3);
-//     GTEST_ASSERT_EQ(v.numNodes, 0);
-//     EXPECT_TRUE(v.nodes == NULL);
-//     EXPECT_TRUE(v.offsetNodes == NULL);
-// }
+    v.offsetNodes[0] = { -0.5, -0.5 };
+    v.offsetNodes[1] = {  0.5, -0.5 };
+    v.offsetNodes[2] = {  0.5,  0.5 };
+    v.offsetNodes[3] = { -0.5,  0.5 };
+
+    v.numNodes = 4;
+
+    State p = { 1, 2, 0 };
+    v.updateState(p);
+
+    GTEST_ASSERT_EQ(v.state.x, 1);
+    GTEST_ASSERT_EQ(v.state.y, 2);
+    GTEST_ASSERT_EQ(v.state.theta, 0);
+    GTEST_ASSERT_EQ(v.maxPointRadius, 0);
+
+    GTEST_ASSERT_EQ(v.nodes[0].x, 0.5);
+    GTEST_ASSERT_EQ(v.nodes[1].x, 1.5);
+    GTEST_ASSERT_EQ(v.nodes[2].x, 1.5);
+    GTEST_ASSERT_EQ(v.nodes[3].x, 0.5);
+
+    GTEST_ASSERT_EQ(v.nodes[0].y, 1.5);
+    GTEST_ASSERT_EQ(v.nodes[1].y, 1.5);
+    GTEST_ASSERT_EQ(v.nodes[2].y, 2.5);
+    GTEST_ASSERT_EQ(v.nodes[3].y, 2.5);
+
+    GTEST_ASSERT_EQ(v.numNodes, 4);
+}
+
+TEST(WorkspaceGraph_Vehicle, AddNodesUpdateStateWithPosRotation_CheckVals)
+{
+    Vehicle v;
+    v.offsetNodes = (Node*) calloc(4, sizeof(Node));
+    v.nodes = (Node*) calloc(4, sizeof(Node));
+
+    v.offsetNodes[0] = { -0.5, -0.5 };
+    v.offsetNodes[1] = {  0.5, -0.5 };
+    v.offsetNodes[2] = {  0.5,  0.5 };
+    v.offsetNodes[3] = { -0.5,  0.5 };
+
+    v.numNodes = 4;
+
+    State p = { 1, 2, M_PI / 4.0 };
+    v.updateState(p);
+
+    GTEST_ASSERT_EQ(v.state.x, 1);
+    GTEST_ASSERT_EQ(v.state.y, 2);
+    GTEST_ASSERT_EQ(v.state.theta, M_PI / 4.0);
+    GTEST_ASSERT_EQ(v.maxPointRadius, 0);
+
+    double tol = 0.001;
+
+    EXPECT_NEAR(v.nodes[0].x, 1.00000, tol);
+    EXPECT_NEAR(v.nodes[1].x, 1.70711, tol);
+    EXPECT_NEAR(v.nodes[2].x, 1.00000, tol);
+    EXPECT_NEAR(v.nodes[3].x, 0.29289, tol);
+
+    EXPECT_NEAR(v.nodes[0].y, 1.29289, tol);
+    EXPECT_NEAR(v.nodes[1].y, 2.00000, tol);
+    EXPECT_NEAR(v.nodes[2].y, 2.70711, tol);
+    EXPECT_NEAR(v.nodes[3].y, 2.00000, tol);
+
+    GTEST_ASSERT_EQ(v.numNodes, 4);
+}
 
 #pragma endregion //WorkspaceGraph_Vehicle
 
