@@ -316,44 +316,43 @@ TEST(ARRTS_Obstacles, GetSecondObstacleWhenOne)
 
 #pragma endregion //ARRTS_Obstacles
 
-#pragma region ARRTS_VehiclePoints
+#pragma region Vehicle
 
-
-TEST(ARRTS_VehiclePoints, AddOnePoint_CheckNum)
+TEST(Vehicle, AddOnePoint_CheckNum)
 {
-    ArrtsService service;
-    service.AddVehiclePoint(1, 1);
-    GTEST_ASSERT_EQ(service.GetNumVehiclePoints(), 1);
+    Vehicle v;
+    v.AddOffsetNode(1, 1);
+    GTEST_ASSERT_EQ(v.GetNumNodes(), 1);
 }
 
-TEST(ARRTS_VehiclePoints, AddOnePoint_CheckVal)
+TEST(Vehicle, AddOnePoint_CheckVal)
 {
-    ArrtsService service;
-    service.AddVehiclePoint(1, 2);
-    Node n = service.GetVehiclePoint(0);
+    Vehicle v;
+    v.AddOffsetNode(1, 2);
+    Node n = v.GetOffsetNode(0);
     GTEST_ASSERT_EQ(n.x, 1);
     GTEST_ASSERT_EQ(n.y, 2);
 }
 
-TEST(ARRTS_VehiclePoints, AddMultiplePoint_CheckNum)
+TEST(Vehicle, AddMultiplePoint_CheckNum)
 {
-    ArrtsService service;
+    Vehicle v;
     const double x[] = { 1, 2, 3 };
     const double y[] = { 1, 2, 3 };
-    service.AddVehiclePoints(x, y, 3);
-    GTEST_ASSERT_EQ(service.GetNumVehiclePoints(), 3);
+    v.AddOffsetNodes(x, y, 3);
+    GTEST_ASSERT_EQ(v.GetNumNodes(), 3);
 }
 
-TEST(ARRTS_VehiclePoints, AddMultiplePoint_CheckVals)
+TEST(Vehicle, AddMultiplePoint_CheckVals)
 {
-    ArrtsService service;
+    Vehicle v;
     const double x[] = { 1, 2, 3 };
     const double y[] = { 4, 5, 6 };
-    service.AddVehiclePoints(x, y, 3);
+    v.AddOffsetNodes(x, y, 3);
 
-    Node n1 = service.GetVehiclePoint(0);
-    Node n2 = service.GetVehiclePoint(1);
-    Node n3 = service.GetVehiclePoint(2);
+    Node n1 = v.GetOffsetNode(0);
+    Node n2 = v.GetOffsetNode(1);
+    Node n3 = v.GetOffsetNode(2);
     
     GTEST_ASSERT_EQ(n1.x, 1);
     GTEST_ASSERT_EQ(n2.x, 2);
@@ -364,22 +363,22 @@ TEST(ARRTS_VehiclePoints, AddMultiplePoint_CheckVals)
     GTEST_ASSERT_EQ(n3.y, 6);
 }
 
-TEST(ARRTS_VehiclePoints, AddSingleThenSinglePoint_CheckNum)
+TEST(Vehicle, AddSingleThenSinglePoint_CheckNum)
 {
-    ArrtsService service;
-    service.AddVehiclePoint(1, 2);
-    service.AddVehiclePoint(1, 2);
-    GTEST_ASSERT_EQ(service.GetNumVehiclePoints(), 2);
+    Vehicle v;
+    v.AddOffsetNode(1, 2);
+    v.AddOffsetNode(1, 2);
+    GTEST_ASSERT_EQ(v.GetNumNodes(), 2);
 }
 
-TEST(ARRTS_VehiclePoints, AddSingleThenSinglePoint_CheckVals)
+TEST(Vehicle, AddSingleThenSinglePoint_CheckVals)
 {
-    ArrtsService service;
-    service.AddVehiclePoint(1, 2);
-    service.AddVehiclePoint(3, 4);
+    Vehicle v;
+    v.AddOffsetNode(1, 2);
+    v.AddOffsetNode(3, 4);
 
-    Node n1 = service.GetVehiclePoint(0);
-    Node n2 = service.GetVehiclePoint(1);
+    Node n1 = v.GetOffsetNode(0);
+    Node n2 = v.GetOffsetNode(1);
 
     GTEST_ASSERT_EQ(n1.x, 1);
     GTEST_ASSERT_EQ(n2.x, 3);
@@ -388,32 +387,32 @@ TEST(ARRTS_VehiclePoints, AddSingleThenSinglePoint_CheckVals)
     GTEST_ASSERT_EQ(n2.y, 4);
 }
 
-TEST(ARRTS_VehiclePoints, AddMultipleThenMultiplePoint_CheckNum)
+TEST(Vehicle, AddMultipleThenMultiplePoint_CheckNum)
 {
-    ArrtsService service;
+    Vehicle v;
     const double x1[] = { 1, 2 };
     const double y1[] = { 1, 2 };
     const double x2[] = { 1, 2 };
     const double y2[] = { 1, 2 };
-    service.AddVehiclePoints(x1, y1, 2);
-    service.AddVehiclePoints(x2, y2, 2);
-    GTEST_ASSERT_EQ(service.GetNumVehiclePoints(), 4);
+    v.AddOffsetNodes(x1, y1, 2);
+    v.AddOffsetNodes(x2, y2, 2);
+    GTEST_ASSERT_EQ(v.GetNumNodes(), 4);
 }
 
-TEST(ARRTS_VehiclePoints, AddMultipleThenMultiplePoint_CheckVals)
+TEST(Vehicle, AddMultipleThenMultiplePoint_CheckVals)
 {
-    ArrtsService service;
+    Vehicle v;
     const double x1[] = { 1, 2 };
     const double y1[] = { 3, 4 };
     const double x2[] = { 5, 6 };
     const double y2[] = { 7, 8 };
-    service.AddVehiclePoints(x1, y1, 2);
-    service.AddVehiclePoints(x2, y2, 2);
+    v.AddOffsetNodes(x1, y1, 2);
+    v.AddOffsetNodes(x2, y2, 2);
     
-    Node n1 = service.GetVehiclePoint(0);
-    Node n2 = service.GetVehiclePoint(1);
-    Node n3 = service.GetVehiclePoint(2);
-    Node n4 = service.GetVehiclePoint(3);
+    Node n1 = v.GetOffsetNode(0);
+    Node n2 = v.GetOffsetNode(1);
+    Node n3 = v.GetOffsetNode(2);
+    Node n4 = v.GetOffsetNode(3);
 
     GTEST_ASSERT_EQ(n1.x, 1);
     GTEST_ASSERT_EQ(n2.x, 2);
@@ -426,30 +425,30 @@ TEST(ARRTS_VehiclePoints, AddMultipleThenMultiplePoint_CheckVals)
     GTEST_ASSERT_EQ(n4.y, 8);
 }
 
-TEST(ARRTS_VehiclePoints, AddSingleThenMultiplePoint_CheckNum)
+TEST(Vehicle, AddSingleThenMultiplePoint_CheckNum)
 {
-    ArrtsService service;
-    service.AddVehiclePoint(1, 2);
+    Vehicle v;
+    v.AddOffsetNode(1, 2);
     const double x[] = { 1, 2, 3 };
     const double y[] = { 1, 2, 3 };
     const double r[] = { 1, 2, 3 };
-    service.AddVehiclePoints(x, y, 3);
-    GTEST_ASSERT_EQ(service.GetNumVehiclePoints(), 4);
+    v.AddOffsetNodes(x, y, 3);
+    GTEST_ASSERT_EQ(v.GetNumNodes(), 4);
 }
 
-TEST(ARRTS_VehiclePoints, AddSingleThenMultiplePoint_CheckVals)
+TEST(Vehicle, AddSingleThenMultiplePoint_CheckVals)
 {
-    ArrtsService service;
-    service.AddVehiclePoint(1, 2);
+    Vehicle v;
+    v.AddOffsetNode(1, 2);
     const double x[] = { 4, 5, 6 };
     const double y[] = { 7, 8, 9 };
     const double r[] = { 10, 11, 12 };
-    service.AddVehiclePoints(x, y, 3);
+    v.AddOffsetNodes(x, y, 3);
     
-    Node n1 = service.GetVehiclePoint(0);
-    Node n2 = service.GetVehiclePoint(1);
-    Node n3 = service.GetVehiclePoint(2);
-    Node n4 = service.GetVehiclePoint(3);
+    Node n1 = v.GetOffsetNode(0);
+    Node n2 = v.GetOffsetNode(1);
+    Node n3 = v.GetOffsetNode(2);
+    Node n4 = v.GetOffsetNode(3);
 
     GTEST_ASSERT_EQ(n1.x, 1);
     GTEST_ASSERT_EQ(n2.x, 4);
@@ -462,28 +461,28 @@ TEST(ARRTS_VehiclePoints, AddSingleThenMultiplePoint_CheckVals)
     GTEST_ASSERT_EQ(n4.y, 9);
 }
 
-TEST(ARRTS_VehiclePoints, AddMultipleThenSinglePoint_CheckNum)
+TEST(Vehicle, AddMultipleThenSinglePoint_CheckNum)
 {
-    ArrtsService service;
+    Vehicle v;
     const double x[] = { 1, 2, 3 };
     const double y[] = { 1, 2, 3 };
-    service.AddVehiclePoints(x, y, 3);
-    service.AddVehiclePoint(1, 2);
-    GTEST_ASSERT_EQ(service.GetNumVehiclePoints(), 4);
+    v.AddOffsetNodes(x, y, 3);
+    v.AddOffsetNode(1, 2);
+    GTEST_ASSERT_EQ(v.GetNumNodes(), 4);
 }
 
-TEST(ARRTS_VehiclePoints, AddMultipleThenSinglePoint_CheckVals)
+TEST(Vehicle, AddMultipleThenSinglePoint_CheckVals)
 {
-    ArrtsService service;
+    Vehicle v;
     const double x[] = { 4, 5, 6 };
     const double y[] = { 7, 8, 9 };
-    service.AddVehiclePoints(x, y, 3);
-    service.AddVehiclePoint(1, 2);
+    v.AddOffsetNodes(x, y, 3);
+    v.AddOffsetNode(1, 2);
     
-    Node n1 = service.GetVehiclePoint(0);
-    Node n2 = service.GetVehiclePoint(1);
-    Node n3 = service.GetVehiclePoint(2);
-    Node n4 = service.GetVehiclePoint(3);
+    Node n1 = v.GetOffsetNode(0);
+    Node n2 = v.GetOffsetNode(1);
+    Node n3 = v.GetOffsetNode(2);
+    Node n4 = v.GetOffsetNode(3);
 
     GTEST_ASSERT_EQ(n1.x, 4);
     GTEST_ASSERT_EQ(n2.x, 5);
@@ -496,24 +495,24 @@ TEST(ARRTS_VehiclePoints, AddMultipleThenSinglePoint_CheckVals)
     GTEST_ASSERT_EQ(n4.y, 2);
 }
 
-TEST(ARRTS_VehiclePoints, AddFromFile_CheckNum)
+TEST(Vehicle, AddFromFile_CheckNum)
 {
-    ArrtsService service;
+    Vehicle v;
     FILE* file = fopen("./test/robot.txt", "r");
-    service.AddVehiclePointsFromFile(file);
+    v.AddOffsetNodesFromFile(file);
 
-    GTEST_ASSERT_EQ(service.GetNumVehiclePoints(), 37);
+    GTEST_ASSERT_EQ(v.GetNumNodes(), 37);
 }
 
-TEST(ARRTS_VehiclePoints, AddFromFile_CheckVals)
+TEST(Vehicle, AddFromFile_CheckVals)
 {
-    ArrtsService service;
+    Vehicle v;
     FILE* file = fopen("./test/robot.txt", "r");
-    service.AddVehiclePointsFromFile(file);
+    v.AddOffsetNodesFromFile(file);
 
-    Node n1 = service.GetVehiclePoint(0);
-    Node n2 = service.GetVehiclePoint(20);
-    Node n3 = service.GetVehiclePoint(36);
+    Node n1 = v.GetOffsetNode(0);
+    Node n2 = v.GetOffsetNode(20);
+    Node n3 = v.GetOffsetNode(36);
 
     GTEST_ASSERT_EQ(n1.x, 0);
     GTEST_ASSERT_EQ(n2.x, -1);
@@ -524,127 +523,119 @@ TEST(ARRTS_VehiclePoints, AddFromFile_CheckVals)
     GTEST_ASSERT_EQ(n3.y, -0.3);
 }
 
-TEST(ARRTS_VehiclePoints, GetFirstPointWhenNone)
+TEST(Vehicle, GetFirstPointWhenNone)
 {
-    ArrtsService service;
-    EXPECT_ANY_THROW(service.GetVehiclePoint(0));
+    Vehicle v;
+    EXPECT_ANY_THROW(v.GetOffsetNode(0));
+    EXPECT_ANY_THROW(v.GetNode(0));
 }
 
-TEST(ARRTS_VehiclePoints, GetNegativePointWhenNone)
+TEST(Vehicle, GetNegativePointWhenNone)
 {
-    ArrtsService service;
-    EXPECT_ANY_THROW(service.GetVehiclePoint(-1));
+    Vehicle v;
+    EXPECT_ANY_THROW(v.GetOffsetNode(-1));
+    EXPECT_ANY_THROW(v.GetNode(-1));
 }
 
-TEST(ARRTS_VehiclePoints, GetSecondPointWhenOne)
+TEST(Vehicle, GetSecondPointWhenOne)
 {
-    ArrtsService service;
-    service.AddVehiclePoint(1, 2);
-    EXPECT_ANY_THROW(service.GetVehiclePoint(1));
+    Vehicle v;
+    v.AddOffsetNode(1, 2);
+    EXPECT_ANY_THROW(v.GetOffsetNode(1));
+    EXPECT_ANY_THROW(v.GetNode(1));
 }
-#pragma endregion //ARRTS_VehiclePoints
 
-#pragma region WorkspaceGraph_Vehicle
-
-TEST(WorkspaceGraph_Vehicle, Initialize_CheckVals)
+TEST(Vehicle, Initialize_CheckVals)
 {
     Vehicle v;
 
-    GTEST_ASSERT_EQ(v.state.x, 0);
-    GTEST_ASSERT_EQ(v.state.y, 0);
-    GTEST_ASSERT_EQ(v.state.theta, 0);
-    GTEST_ASSERT_EQ(v.maxPointRadius, 0);
-    GTEST_ASSERT_EQ(v.numNodes, 0);
-    EXPECT_TRUE(v.nodes == NULL);
-    EXPECT_TRUE(v.offsetNodes == NULL);
+    GTEST_ASSERT_EQ(v.GetState().x, 0);
+    GTEST_ASSERT_EQ(v.GetState().y, 0);
+    GTEST_ASSERT_EQ(v.GetState().theta, 0);
+    GTEST_ASSERT_EQ(v.GetBoundingRadius(), 0);
+    GTEST_ASSERT_EQ(v.GetNumNodes(), 0);
+    EXPECT_TRUE(v.GetOffsetNodes() == NULL);
 }
 
-TEST(WorkspaceGraph_Vehicle, UpdateState_CheckVals)
+TEST(Vehicle, UpdateState_CheckVals)
 {
     Vehicle v;
     State p = { 1, 2, 3 };
-    v.updateState(p);
+    v.UpdateState(p);
 
-    GTEST_ASSERT_EQ(v.state.x, 1);
-    GTEST_ASSERT_EQ(v.state.y, 2);
-    GTEST_ASSERT_EQ(v.state.theta, 3);
-    GTEST_ASSERT_EQ(v.maxPointRadius, 0);
-    GTEST_ASSERT_EQ(v.numNodes, 0);
-    EXPECT_TRUE(v.nodes == NULL);
-    EXPECT_TRUE(v.offsetNodes == NULL);
+    GTEST_ASSERT_EQ(v.GetState().x, 1);
+    GTEST_ASSERT_EQ(v.GetState().y, 2);
+    GTEST_ASSERT_EQ(v.GetState().theta, 3);
+    GTEST_ASSERT_EQ(v.GetBoundingRadius(), 0);
+    GTEST_ASSERT_EQ(v.GetNumNodes(), 0);
+    GTEST_ASSERT_EQ(v.GetNumNodes(), 0);
+    EXPECT_TRUE(v.GetOffsetNodes() == NULL);
 }
 
-TEST(WorkspaceGraph_Vehicle, AddNodesUpdateStateNoRotation_CheckVals)
+TEST(Vehicle, AddNodesUpdateStateNoRotation_CheckVals)
 {
     Vehicle v;
-    v.offsetNodes = (Node*) calloc(4, sizeof(Node));
-    v.nodes = (Node*) calloc(4, sizeof(Node));
-
-    v.offsetNodes[0] = { -0.5, -0.5 };
-    v.offsetNodes[1] = {  0.5, -0.5 };
-    v.offsetNodes[2] = {  0.5,  0.5 };
-    v.offsetNodes[3] = { -0.5,  0.5 };
-
-    v.numNodes = 4;
-
     State p = { 1, 2, 0 };
-    v.updateState(p);
+    const double x[] = { -0.5, 0.5, 0.5, -0.5 };
+    const double y[] = { -0.5, -0.5, 0.5, 0.5 };
 
-    GTEST_ASSERT_EQ(v.state.x, 1);
-    GTEST_ASSERT_EQ(v.state.y, 2);
-    GTEST_ASSERT_EQ(v.state.theta, 0);
-    GTEST_ASSERT_EQ(v.maxPointRadius, 0);
-
-    GTEST_ASSERT_EQ(v.nodes[0].x, 0.5);
-    GTEST_ASSERT_EQ(v.nodes[1].x, 1.5);
-    GTEST_ASSERT_EQ(v.nodes[2].x, 1.5);
-    GTEST_ASSERT_EQ(v.nodes[3].x, 0.5);
-
-    GTEST_ASSERT_EQ(v.nodes[0].y, 1.5);
-    GTEST_ASSERT_EQ(v.nodes[1].y, 1.5);
-    GTEST_ASSERT_EQ(v.nodes[2].y, 2.5);
-    GTEST_ASSERT_EQ(v.nodes[3].y, 2.5);
-
-    GTEST_ASSERT_EQ(v.numNodes, 4);
-}
-
-TEST(WorkspaceGraph_Vehicle, AddNodesUpdateStateWithPosRotation_CheckVals)
-{
-    Vehicle v;
-    v.offsetNodes = (Node*) calloc(4, sizeof(Node));
-    v.nodes = (Node*) calloc(4, sizeof(Node));
-
-    v.offsetNodes[0] = { -0.5, -0.5 };
-    v.offsetNodes[1] = {  0.5, -0.5 };
-    v.offsetNodes[2] = {  0.5,  0.5 };
-    v.offsetNodes[3] = { -0.5,  0.5 };
-
-    v.numNodes = 4;
-
-    State p = { 1, 2, M_PI / 4.0 };
-    v.updateState(p);
-
-    GTEST_ASSERT_EQ(v.state.x, 1);
-    GTEST_ASSERT_EQ(v.state.y, 2);
-    GTEST_ASSERT_EQ(v.state.theta, M_PI / 4.0);
-    GTEST_ASSERT_EQ(v.maxPointRadius, 0);
+    v.AddOffsetNodes(x, y, 4);
+    v.UpdateState(p);
 
     double tol = 0.001;
 
-    EXPECT_NEAR(v.nodes[0].x, 1.00000, tol);
-    EXPECT_NEAR(v.nodes[1].x, 1.70711, tol);
-    EXPECT_NEAR(v.nodes[2].x, 1.00000, tol);
-    EXPECT_NEAR(v.nodes[3].x, 0.29289, tol);
+    GTEST_ASSERT_EQ(v.GetState().x, 1);
+    GTEST_ASSERT_EQ(v.GetState().y, 2);
+    GTEST_ASSERT_EQ(v.GetState().theta, 0);
 
-    EXPECT_NEAR(v.nodes[0].y, 1.29289, tol);
-    EXPECT_NEAR(v.nodes[1].y, 2.00000, tol);
-    EXPECT_NEAR(v.nodes[2].y, 2.70711, tol);
-    EXPECT_NEAR(v.nodes[3].y, 2.00000, tol);
+    EXPECT_NEAR(v.GetBoundingRadius(), 0.707106, tol);
 
-    GTEST_ASSERT_EQ(v.numNodes, 4);
+    EXPECT_NEAR(v.GetNode(0).x, 0.5, tol);
+    EXPECT_NEAR(v.GetNode(1).x, 1.5, tol);
+    EXPECT_NEAR(v.GetNode(2).x, 1.5, tol);
+    EXPECT_NEAR(v.GetNode(3).x, 0.5, tol);
+
+    EXPECT_NEAR(v.GetNode(0).y, 1.5, tol);
+    EXPECT_NEAR(v.GetNode(1).y, 1.5, tol);
+    EXPECT_NEAR(v.GetNode(2).y, 2.5, tol);
+    EXPECT_NEAR(v.GetNode(3).y, 2.5, tol);
+
+    GTEST_ASSERT_EQ(v.GetNumNodes(), 4);
 }
 
-#pragma endregion //WorkspaceGraph_Vehicle
+TEST(Vehicle, AddNodesUpdateStateWithPosRotation_CheckVals)
+{
+    Vehicle v;
+    const double x[] = { -0.5, 0.5, 0.5, -0.5 };
+    const double y[] = { -0.5, -0.5, 0.5, 0.5 };
+
+    v.AddOffsetNodes(x, y, 4);
+
+    State p = { 1, 2, M_PI / 4.0 };
+    v.UpdateState(p);
+
+    double tol = 0.001;
+
+    GTEST_ASSERT_EQ(v.GetState().x, 1);
+    GTEST_ASSERT_EQ(v.GetState().y, 2);
+    GTEST_ASSERT_EQ(v.GetState().theta, M_PI / 4.0);
+
+    EXPECT_NEAR(v.GetBoundingRadius(), 0.707106, tol);
+
+    EXPECT_NEAR(v.GetNode(0).x, 1.00000, tol);
+    EXPECT_NEAR(v.GetNode(1).x, 1.70711, tol);
+    EXPECT_NEAR(v.GetNode(2).x, 1.00000, tol);
+    EXPECT_NEAR(v.GetNode(3).x, 0.29289, tol);
+
+    EXPECT_NEAR(v.GetNode(0).y, 1.29289, tol);
+    EXPECT_NEAR(v.GetNode(1).y, 2.00000, tol);
+    EXPECT_NEAR(v.GetNode(2).y, 2.70711, tol);
+    EXPECT_NEAR(v.GetNode(3).y, 2.00000, tol);
+
+    GTEST_ASSERT_EQ(v.GetNumNodes(), 4);
+}
+
+#pragma endregion //Vehicle
 
 int main(int argc, char* argv[])
 {
