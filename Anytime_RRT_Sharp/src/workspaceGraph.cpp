@@ -23,84 +23,6 @@ void WorkspaceGraph::deleteWorkspaceGraph()
 	numObstacles = 0;
 }
 
-bool WorkspaceGraph::readVehicleFromFile(const char* vehicleFile)
-{
-	FILE* pFile;
-
-	// open the obstacle file
-	pFile = fopen(vehicleFile, "r");
-
-	// check for null pointer
-	if (pFile == NULL)
-	{
-		printf("Unable to open file %s\n", vehicleFile);
-		return false;
-	}
-
-	// confirm reading in file
-	printf("Reading in vehicle data from %s.\n", vehicleFile);
-
-	// determine the number of vehicle points in the vehicle file
-	int pointCount = 0;
-	double x, y;
-	while (fscanf(pFile, "%lf,%lf", &x, &y) != EOF) { pointCount++; }
-
-	vehicle.numNodes = pointCount;	// set the graph number of obstacles per the count
-
-	vehicle.nodes =					// allocate memory based on vehicle number
-		(GraphNode*)calloc(vehicle.numNodes, sizeof(GraphNode));
-
-	vehicle.offsetNodes =				// allocate memory based on vehicle number
-		(GraphNode*)calloc(vehicle.numNodes, sizeof(GraphNode));
-
-	// assign values
-	rewind(pFile);
-	for (int i = 0; i < pointCount; i++)
-	{
-		fscanf(pFile, "%lf,%lf", &x, &y);
-		vehicle.offsetNodes[i].x = x;
-		vehicle.offsetNodes[i].y = y;
-
-		vehicle.nodes[i].x = 0.0;
-		vehicle.nodes[i].y = 0.0;
-
-		vehicle.state.x += x;
-		vehicle.state.y += y;
-	}
-
-	// calculate centroid
-	vehicle.state.x /= pointCount;
-	vehicle.state.y /= pointCount;
-
-	// set rotation default as zero
-	vehicle.state.theta = 0.0;
-
-	// define radius of circle enscribing the vehicle
-	double maxTempRad;
-	double maxRad = hypot(
-		(vehicle.offsetNodes[0].x - vehicle.state.x),
-		(vehicle.offsetNodes[0].y - vehicle.state.y)
-	);
-
-	for (int i = 1; i < vehicle.numNodes; i++)
-	{
-		maxTempRad = hypot(
-			(vehicle.offsetNodes[i].x - vehicle.state.x),
-			(vehicle.offsetNodes[i].y - vehicle.state.y)
-		);
-		if (maxTempRad > maxRad) { maxRad = maxTempRad; }
-	}
-
-	vehicle.maxPointRadius = maxRad;
-
-	// close the file
-	fclose(pFile);
-
-	// done reading data
-	printf("Completed reading data.\n");
-	return true;
-}
-
 bool WorkspaceGraph::readObstaclesFromFile(const char* obstacleFile)
 {
 	FILE* pFile;
@@ -248,52 +170,6 @@ void WorkspaceGraph::addObstacle(double xObs, double yObs, double radiusObs)
 	obstacles[numObstacles++] = { xObs, yObs, radiusObs };
 }
 
-void WorkspaceGraph::setVehicle(double vehiclePointXPosition[4], double vehiclePointYPosition[4], int numVehiclePoints)
-{
-	vehicle.numNodes = numVehiclePoints;
-	vehicle.nodes = (GraphNode*)calloc(vehicle.numNodes, sizeof(GraphNode));
-	vehicle.offsetNodes = (GraphNode*)calloc(vehicle.numNodes, sizeof(GraphNode));
-
-	// assign values
-	for (int i = 0; i < numVehiclePoints; i++)
-	{
-		vehicle.offsetNodes[i].x = vehiclePointXPosition[i];
-		vehicle.offsetNodes[i].y = vehiclePointYPosition[i];
-
-		vehicle.nodes[i].x = 0.0;
-		vehicle.nodes[i].y = 0.0;
-
-		vehicle.state.x += vehiclePointXPosition[i];
-		vehicle.state.y += vehiclePointYPosition[i];;
-	}
-
-	// calculate centriod
-	vehicle.state.x /= numVehiclePoints;
-	vehicle.state.y /= numVehiclePoints;
-
-	// set rotation default as zero
-	vehicle.state.theta = 0.0;
-
-	// define radius of circle enscribing the vehicle
-	double maxTempRad;
-	double maxRad = hypot(
-		(vehicle.offsetNodes[0].x - vehicle.state.x),
-		(vehicle.offsetNodes[0].y - vehicle.state.y)
-	);
-
-	for (int i = 1; i < vehicle.numNodes; i++)
-	{
-		maxTempRad = hypot(
-			(vehicle.offsetNodes[i].x - vehicle.state.x),
-			(vehicle.offsetNodes[i].y - vehicle.state.y)
-		);
-		if (maxTempRad > maxRad) { maxRad = maxTempRad; }
-	}
-
-	vehicle.maxPointRadius = maxRad;
-	printf("Max Vehicle Radius: %f\n", vehicle.maxPointRadius);
-}
-
 bool WorkspaceGraph::atGate(ConfigspaceNode node)
 {
 	double dist = hypot((node.x - goalRegion.x), (node.y - goalRegion.y));
@@ -354,8 +230,8 @@ ConfigspaceNode WorkspaceGraph::connectNodes(ConfigspaceNode parentNode, Configs
 bool WorkspaceGraph::checkAtGoal(ConfigspaceNode node)
 {
 	// update vehicle state to temp node
-	vehicle.updateState(node);
+	vehicle.UpdateState(node);
 
-	double distToGoal = hypot((vehicle.state.x - goalRegion.x), (vehicle.state.y - goalRegion.y));
-	return distToGoal < (goalRegion.radius + vehicle.maxPointRadius);
+	double distToGoal = hypot((vehicle.GetState().x - goalRegion.x), (vehicle.GetState().y - goalRegion.y));
+	return distToGoal < (goalRegion.radius + vehicle.GetBoundingRadius());
 }
