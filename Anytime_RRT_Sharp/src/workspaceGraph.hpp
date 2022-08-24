@@ -66,14 +66,8 @@ public:
 	// adds an obstacle to the freespace given the obstacle position and radius
 	void addObstacle(double xObs, double yObs, double radiusObs);
 
-	// adds a vehicle to the graph (currently hard-coded to four points)
-	void setVehicle(double vehiclePointXPosition[4], double vehiclePointYPosition[4], int numVehiclePoints);
-
 	// read in obstacles from a specified file
 	bool readObstaclesFromFile(const char* obstacleFile);
-
-	// read in vehicle from a specified file
-	bool readVehicleFromFile(const char* vehicleFile);
 
 	// compute the volume of the obstacles defined in the graph
 	double computeObsVol();

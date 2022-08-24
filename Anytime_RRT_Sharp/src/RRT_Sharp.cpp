@@ -29,8 +29,8 @@ int main()
 	const double uavGoalRadius = 2.5;
 
 	// vehicle rigid body information
-	double vehiclePointXPosition[] = { -0.5, 0.5, 0.5, -0.5 };
-	double vehiclePointYPosition[] = { -0.5, -0.5, 0.5, 0.5 };
+	const double vehiclePointXPosition[] = { -0.5, 0.5, 0.5, -0.5 };
+	const double vehiclePointYPosition[] = { -0.5, -0.5, 0.5, 0.5 };
 	int numVehiclePoints = sizeof(vehiclePointXPosition) / sizeof(double);
 
 	// initialize variables for the graph limits
@@ -96,7 +96,8 @@ int main()
 	G_configspace.addNode(gateNode);
 
 	// add vehicle to the graph
-	G_workspace.setVehicle(vehiclePointXPosition, vehiclePointYPosition, numVehiclePoints);
+	Vehicle v(vehiclePointXPosition, vehiclePointYPosition, numVehiclePoints);
+	G_workspace.vehicle = v;
 
 	printf("ObsVol: %f, NumObs: %d, Freespace: [%f, %f, %f, %f]\n", obsVol, G_workspace.numObstacles, xMin, xMax, yMin, yMax);
 	printf("UAV Location: %f, %f, %f\n", G_workspace.goalRegion.x, G_workspace.goalRegion.y, G_workspace.goalRegion.radius);

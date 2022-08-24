@@ -90,66 +90,6 @@ int ArrtsService::GetNumObstacles()
     return numObstacles;
 }
 
-void ArrtsService::AddVehiclePoint(double x, double y)
-{
-    ResetArraySize<Node>(&vehicleOutline, numVehiclePoints, numVehiclePoints + 1);
-    vehicleOutline[numVehiclePoints++] = { x, y };
-}
-
-void ArrtsService::AddVehiclePoints(const double* x, const double* y, int numPoints)
-{
-    ResetArraySize<Node>(&vehicleOutline, numVehiclePoints, numVehiclePoints + numPoints);
-    for (int i = 0; i < numPoints; ++i)
-        vehicleOutline[numVehiclePoints++] = { x[i], y[i] };
-}
-
-void ArrtsService::AddVehiclePointsFromFile(FILE* file)
-{
-    if (file == NULL)
-        throw runtime_error("NULL file pointer in AddVehiclePointsFromFile");
-
-    // get num of points for allocation
-    int pointCount = 0;
-    double xVal, yVal;
-    while (fscanf(file, "%lf,%lf", &xVal, &yVal) != EOF)
-        pointCount++;
-
-    // get points
-    double* x = new double[pointCount];
-    double* y = new double[pointCount];
-    rewind(file);
-    for (int i = 0; i < pointCount; ++i)
-    {
-        fscanf(file, "%lf,%lf", &xVal, &yVal);
-        x[i] = xVal;
-        y[i] = yVal;
-    }
-
-    // close file
-    fclose(file);
-
-    // add points
-    AddVehiclePoints(x, y, pointCount);
-}
-
-Node* ArrtsService::GetVehiclePoints()
-{
-    return vehicleOutline;
-}
-
-Node ArrtsService::GetVehiclePoint(int i)
-{
-    if (i >= numVehiclePoints || i < 0)
-        throw runtime_error("Attempt to read index beyond array limits in GetVehiclePoint");
-
-    return vehicleOutline[i];
-}
-
-int ArrtsService::GetNumVehiclePoints()
-{
-    return numVehiclePoints;
-}
-
 State* ArrtsService::CalculatePath(double standoffRange, double positionBuffer, double freespaceBuffer)
 {
 
