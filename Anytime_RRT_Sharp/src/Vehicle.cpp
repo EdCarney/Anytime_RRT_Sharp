@@ -65,7 +65,7 @@ void Vehicle::UpdateState(State newState)
 void Vehicle::AddOffsetNode(double x, double y)
 {
     ResetArraySize<Node>(&nodes, numNodes, numNodes + 1);
-	ResetArraySize<Node>(&offsetNodes, numNodes, numNodes + 1);
+    ResetArraySize<Node>(&offsetNodes, numNodes, numNodes + 1);
     offsetNodes[numNodes++] = { x, y };
     updateOffsetParams();
 }
@@ -73,7 +73,7 @@ void Vehicle::AddOffsetNode(double x, double y)
 void Vehicle::AddOffsetNodes(const double* x, const double* y, int numPoints)
 {
     ResetArraySize<Node>(&nodes, numNodes, numNodes + numPoints);
-	ResetArraySize<Node>(&offsetNodes, numNodes, numNodes + numPoints);
+    ResetArraySize<Node>(&offsetNodes, numNodes, numNodes + numPoints);
     for (int i = 0; i < numPoints; ++i)
         offsetNodes[numNodes++] = { x[i], y[i] };
     updateOffsetParams();
