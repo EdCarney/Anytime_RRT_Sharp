@@ -1,5 +1,6 @@
 #include "configspaceGraph.hpp"
 #include "Geometry.hpp"
+#include "Obstacle.hpp"
 #include "Utility.hpp"
 #include "Vehicle.hpp"
 

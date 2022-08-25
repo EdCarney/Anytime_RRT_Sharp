@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "ARRTS.hpp"
+#include "Obstacle.hpp"
 #include "Vehicle.hpp"
 #include "workspaceGraph.hpp"
 
@@ -67,9 +68,9 @@ TEST(ARRTS_Obstacles, AddOneObstacle_CheckVal)
     ArrtsService service;
     service.AddObstacle(1, 2, 3);
     Obstacle obs = service.GetObstacle(0);
-    GTEST_ASSERT_EQ(obs.x, 1);
-    GTEST_ASSERT_EQ(obs.y, 2);
-    GTEST_ASSERT_EQ(obs.radius, 3);
+    GTEST_ASSERT_EQ(obs.GetX(), 1);
+    GTEST_ASSERT_EQ(obs.GetY(), 2);
+    GTEST_ASSERT_EQ(obs.GetRadius(), 3);
 }
 
 TEST(ARRTS_Obstacles, AddMultipleObstacle_CheckNum)
@@ -329,7 +330,7 @@ TEST(Vehicle, AddOnePoint_CheckVal)
 {
     Vehicle v;
     v.AddOffsetNode(1, 2);
-    Node n = v.GetOffsetNode(0);
+    Point n = v.GetOffsetNode(0);
     GTEST_ASSERT_EQ(n.x, 1);
     GTEST_ASSERT_EQ(n.y, 2);
 }
@@ -350,9 +351,9 @@ TEST(Vehicle, AddMultiplePoint_CheckVals)
     const double y[] = { 4, 5, 6 };
     v.AddOffsetNodes(x, y, 3);
 
-    Node n1 = v.GetOffsetNode(0);
-    Node n2 = v.GetOffsetNode(1);
-    Node n3 = v.GetOffsetNode(2);
+    Point n1 = v.GetOffsetNode(0);
+    Point n2 = v.GetOffsetNode(1);
+    Point n3 = v.GetOffsetNode(2);
     
     GTEST_ASSERT_EQ(n1.x, 1);
     GTEST_ASSERT_EQ(n2.x, 2);
@@ -377,8 +378,8 @@ TEST(Vehicle, AddSingleThenSinglePoint_CheckVals)
     v.AddOffsetNode(1, 2);
     v.AddOffsetNode(3, 4);
 
-    Node n1 = v.GetOffsetNode(0);
-    Node n2 = v.GetOffsetNode(1);
+    Point n1 = v.GetOffsetNode(0);
+    Point n2 = v.GetOffsetNode(1);
 
     GTEST_ASSERT_EQ(n1.x, 1);
     GTEST_ASSERT_EQ(n2.x, 3);
@@ -409,10 +410,10 @@ TEST(Vehicle, AddMultipleThenMultiplePoint_CheckVals)
     v.AddOffsetNodes(x1, y1, 2);
     v.AddOffsetNodes(x2, y2, 2);
     
-    Node n1 = v.GetOffsetNode(0);
-    Node n2 = v.GetOffsetNode(1);
-    Node n3 = v.GetOffsetNode(2);
-    Node n4 = v.GetOffsetNode(3);
+    Point n1 = v.GetOffsetNode(0);
+    Point n2 = v.GetOffsetNode(1);
+    Point n3 = v.GetOffsetNode(2);
+    Point n4 = v.GetOffsetNode(3);
 
     GTEST_ASSERT_EQ(n1.x, 1);
     GTEST_ASSERT_EQ(n2.x, 2);
@@ -445,10 +446,10 @@ TEST(Vehicle, AddSingleThenMultiplePoint_CheckVals)
     const double r[] = { 10, 11, 12 };
     v.AddOffsetNodes(x, y, 3);
     
-    Node n1 = v.GetOffsetNode(0);
-    Node n2 = v.GetOffsetNode(1);
-    Node n3 = v.GetOffsetNode(2);
-    Node n4 = v.GetOffsetNode(3);
+    Point n1 = v.GetOffsetNode(0);
+    Point n2 = v.GetOffsetNode(1);
+    Point n3 = v.GetOffsetNode(2);
+    Point n4 = v.GetOffsetNode(3);
 
     GTEST_ASSERT_EQ(n1.x, 1);
     GTEST_ASSERT_EQ(n2.x, 4);
@@ -479,10 +480,10 @@ TEST(Vehicle, AddMultipleThenSinglePoint_CheckVals)
     v.AddOffsetNodes(x, y, 3);
     v.AddOffsetNode(1, 2);
     
-    Node n1 = v.GetOffsetNode(0);
-    Node n2 = v.GetOffsetNode(1);
-    Node n3 = v.GetOffsetNode(2);
-    Node n4 = v.GetOffsetNode(3);
+    Point n1 = v.GetOffsetNode(0);
+    Point n2 = v.GetOffsetNode(1);
+    Point n3 = v.GetOffsetNode(2);
+    Point n4 = v.GetOffsetNode(3);
 
     GTEST_ASSERT_EQ(n1.x, 4);
     GTEST_ASSERT_EQ(n2.x, 5);
@@ -510,9 +511,9 @@ TEST(Vehicle, AddFromFile_CheckVals)
     FILE* file = fopen("./test/robot.txt", "r");
     v.AddOffsetNodesFromFile(file);
 
-    Node n1 = v.GetOffsetNode(0);
-    Node n2 = v.GetOffsetNode(20);
-    Node n3 = v.GetOffsetNode(36);
+    Point n1 = v.GetOffsetNode(0);
+    Point n2 = v.GetOffsetNode(20);
+    Point n3 = v.GetOffsetNode(36);
 
     GTEST_ASSERT_EQ(n1.x, 0);
     GTEST_ASSERT_EQ(n2.x, -1);
