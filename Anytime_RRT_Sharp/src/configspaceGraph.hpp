@@ -1,22 +1,24 @@
 #include <math.h>
 #include <fstream>
 #include <cstring>
+#include "cppshrhelp.hpp"
 #include "Geometry.hpp"
 
 #ifndef CONFIGSPACE_H
 #define CONFIGSPACE_H
 
-struct ConfigspaceNode : State
+class ConfigspaceNode : public GraphNode
 {
-	int id;				// unique identifer for the node; 1-indexed
-	double t;			// time for the node
-	int parentNodeId;	// the id of the parent node for this node
-	double cost;		// cost-to-go for this node
+	public:
+		ConfigspaceNode();
+		ConfigspaceNode(double xVal, double yVal, int idVal, int parentIdVal, double costVal);
+		double theta;
+		double cost;		// cost-to-go for this node
 
-	// iteration point parameters
-	// used for collision checking
-	ConfigspaceNode* iterationPoints;
-	int numIterationPoints;
+		// iteration point parameters
+		// used for collision checking
+		ConfigspaceNode* iterationPoints;
+		int numIterationPoints;
 };
 
 struct Edge

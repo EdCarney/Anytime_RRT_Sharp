@@ -59,9 +59,7 @@ bool WorkspaceGraph::readObstaclesFromFile(const char* obstacleFile)
 	for (int i = 0; i < numObstacles; i++)
 	{
 		fscanf(pFile, "%lf,%lf,%lf", &x, &y, &radius);
-		obstacles[i].x = x;
-		obstacles[i].y = y;
-		obstacles[i].radius = radius;
+		obstacles[i] = Obstacle(x, y, radius);
 	}
 
 	// close the file
@@ -77,25 +75,19 @@ double WorkspaceGraph::computeObsVol()
 	double volume = 0.0;
 	
 	for (int i = 0; i < numObstacles; i++)
-		volume += 3.14159 * pow(obstacles[i].radius, 2);
+		volume += 3.14159 * pow(obstacles[i].GetRadius(), 2);
 
 	return volume;
 }
 
 void WorkspaceGraph::addGoalRegion(double x, double y, double theta, double radius)
 {
-	goalRegion.x = x;
-	goalRegion.y = y;
-	goalRegion.theta = theta;
-	goalRegion.radius = radius;
+	goalRegion = GoalState(x, y, radius, theta);
 }
 
 void WorkspaceGraph::updateGoalRegion(double x, double y, double theta, double radius)
 {
-	goalRegion.x = x;
-	goalRegion.y = y;
-	goalRegion.theta = theta;
-	goalRegion.radius = radius;
+	goalRegion = GoalState(x, y, radius, theta);
 }
 
 void WorkspaceGraph::defineFreespace(double newMinX, double newMinY, double newMinTheta, double newMaxX,
@@ -114,7 +106,7 @@ ConfigspaceNode* WorkspaceGraph::checkSafety(ConfigspaceNode newNode, Configspac
 	// determine number of nodes in neighbors and set the
 	// size of the safe neighbors array based on this
 	int numNeighbors = 0;
-	while (neighbors[numNeighbors].id) { numNeighbors++; }
+	while (neighbors[numNeighbors].GetId()) { numNeighbors++; }
 	ConfigspaceNode* safeNeighbors = (ConfigspaceNode*)calloc(numNeighbors + 1, sizeof(ConfigspaceNode));
 
 	// check the distance of each obstacle to the newNode
@@ -126,9 +118,9 @@ ConfigspaceNode* WorkspaceGraph::checkSafety(ConfigspaceNode newNode, Configspac
 
 	for (int i = 0; i < numNeighbors; i++)
 	{
-		nodeCircleRad = hypot((newNode.x - neighbors[i].x), (newNode.y - neighbors[i].y)) / 2;
-		midpointX = (newNode.x + neighbors[i].x) / 2;
-		midpointY = (newNode.y + neighbors[i].y) / 2;
+		nodeCircleRad = hypot((newNode.GetX() - neighbors[i].GetX()), (newNode.GetY() - neighbors[i].GetY())) / 2;
+		midpointX = (newNode.GetX() + neighbors[i].GetX()) / 2;
+		midpointY = (newNode.GetY() + neighbors[i].GetY()) / 2;
 		Obstacle pathObstacle(midpointX, midpointY, nodeCircleRad);
 		safetyCheck = true;
 
@@ -151,7 +143,7 @@ ConfigspaceNode* WorkspaceGraph::checkSafety(ConfigspaceNode newNode, Configspac
 	}
 
 	ResetArraySize<ConfigspaceNode>(&safeNeighbors, numNeighbors, safeNeighborCount + 1);
-	safeNeighbors[numNeighbors].id = 0;
+	safeNeighbors[numNeighbors].SetId(0);
 	return safeNeighbors;
 }
 
@@ -172,31 +164,28 @@ void WorkspaceGraph::addObstacle(double xObs, double yObs, double radiusObs)
 
 bool WorkspaceGraph::atGate(ConfigspaceNode node)
 {
-	double dist = hypot((node.x - goalRegion.x), (node.y - goalRegion.y));
-	return dist <= goalRegion.radius;
+	double dist = hypot((node.GetX() - goalRegion.GetX()), (node.GetY() - goalRegion.GetY()));
+	return dist <= goalRegion.GetRadius();
 }
 
 ConfigspaceNode WorkspaceGraph::extendToNode(ConfigspaceNode parentNode, ConfigspaceNode newNode, double epsilon)
 {
 	ConfigspaceNode currentNode;
-	double dist = hypot((parentNode.x - newNode.x), (parentNode.y - newNode.y));
-
-	currentNode.parentNodeId = parentNode.id;
-	currentNode.id = 0;
+	double dist = hypot((parentNode.GetX() - newNode.GetX()), (parentNode.GetY() - newNode.GetY()));
 
 	if (dist >= epsilon)
 	{
-		currentNode.x = parentNode.x + ((newNode.x - parentNode.x) / dist) * epsilon;
-		currentNode.y = parentNode.y + ((newNode.y - parentNode.y) / dist) * epsilon;
+		double xVal = parentNode.GetX() + ((newNode.GetX() - parentNode.GetX()) / dist) * epsilon;
+		double yVal = parentNode.GetY() + ((newNode.GetY() - parentNode.GetY()) / dist) * epsilon;
+		currentNode = ConfigspaceNode(xVal, yVal, 0, parentNode.GetId(), 0);
 	}
 	else
 	{
-		currentNode.x = newNode.x;
-		currentNode.y = newNode.y;
+		currentNode = ConfigspaceNode(newNode.GetX(), newNode.GetY(), 0, parentNode.GetId(), 0);
 	}
 
 	if (checkForCollision(currentNode))
-		currentNode.id = parentNode.id;
+		currentNode.SetId(parentNode.GetId());
 
 	return currentNode;
 }
@@ -211,15 +200,16 @@ bool WorkspaceGraph::checkForCollision(ConfigspaceNode node)
 
 ConfigspaceNode WorkspaceGraph::connectNodes(ConfigspaceNode parentNode, ConfigspaceNode newNode)
 {
-	newNode.parentNodeId = parentNode.id;
+	newNode.SetParentId(parentNode.GetId());
 	return newNode;
 }
 
 bool WorkspaceGraph::checkAtGoal(ConfigspaceNode node)
 {
 	// update vehicle state to temp node
-	vehicle.UpdateState(node);
+	State s(node.GetX(), node.GetY(), node.theta);
+	vehicle.UpdateState(s);
 
-	double distToGoal = hypot((vehicle.GetState().x - goalRegion.x), (vehicle.GetState().y - goalRegion.y));
-	return distToGoal < (goalRegion.radius + vehicle.GetBoundingRadius());
+	double distToGoal = hypot((vehicle.GetState().GetX() - goalRegion.GetX()), (vehicle.GetState().GetY() - goalRegion.GetY()));
+	return distToGoal < (goalRegion.GetRadius() + vehicle.GetBoundingRadius());
 }

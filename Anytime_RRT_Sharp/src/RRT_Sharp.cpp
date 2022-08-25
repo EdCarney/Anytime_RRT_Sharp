@@ -100,8 +100,8 @@ int main()
 	G_workspace.vehicle = v;
 
 	printf("ObsVol: %f, NumObs: %d, Freespace: [%f, %f, %f, %f]\n", obsVol, G_workspace.numObstacles, xMin, xMax, yMin, yMax);
-	printf("UAV Location: %f, %f, %f\n", G_workspace.goalRegion.x, G_workspace.goalRegion.y, G_workspace.goalRegion.radius);
-	printf("Root Node:    %f, %f, %f\n", G_configspace.nodes[0].x, G_configspace.nodes[0].y, G_configspace.nodes[0].theta);
+	printf("UAV Location: %f, %f, %f\n", G_workspace.goalRegion.GetX(), G_workspace.goalRegion.GetY(), G_workspace.goalRegion.GetRadius());
+	printf("Root Node:    %f, %f, %f\n", G_configspace.nodes[0].GetX(), G_configspace.nodes[0].GetY(), G_configspace.nodes[0].theta);
 
 	//------------------------------------------------------------------------//
 	//------------------------start the RRT# iterations-----------------------//
@@ -111,14 +111,14 @@ int main()
 	while(!G_workspace.goalRegionReached || count < maxCount)
 	{
 		// create a new node (not yet connected to the graph)
-		tempNode = (count % goalBiasCount != 0) ? G_configspace.generateRandomNode() : G_configspace.generateBiasedNode(G_workspace.goalRegion.x, G_workspace.goalRegion.y);
+		tempNode = (count % goalBiasCount != 0) ? G_configspace.generateRandomNode() : G_configspace.generateBiasedNode(G_workspace.goalRegion.GetX(), G_workspace.goalRegion.GetY());
 
 		// find the closest graph node and set it as the parent
 		parentNode = G_configspace.findClosestNode(tempNode);
 
 		// free memory from previous iteration
 		remainingNodes = (ConfigspaceNode*)calloc(1, sizeof(ConfigspaceNode));
-		remainingNodes[0].id = 0;
+		remainingNodes[0].SetId(0);
 
 		// skip if the parent node is already in the goal region
 		if (!G_workspace.checkAtGoal(parentNode))
@@ -129,7 +129,7 @@ int main()
 			newNode.cost = parentNode.cost + G_configspace.computeCost(parentNode, newNode);
 
 			// if there is a collision, newNode id will be set to its parent's id
-			if (newNode.id != parentNode.id)
+			if (newNode.GetId() != parentNode.GetId())
 			{
 				// compute ball radius and find k safe neighbor nodes (i.e. no collision)
 				// within that ball
@@ -137,7 +137,7 @@ int main()
 				safeNearestNeighbors = G_configspace.findNeighbors(newNode, circleRadius, k);
 
 				// if there were no safe neighbors then the first node id will be zero
-				if (safeNearestNeighbors[0].id)
+				if (safeNearestNeighbors[0].GetId())
 				{
 					// reset the remaining nodes to the safe neighbors minus the one we connected to
 					free(remainingNodes);
@@ -167,7 +167,7 @@ int main()
 
 	// print all the results to files
 	printf("Total number of points: %d\n", G_configspace.numNodes);
-	printf("Final node at: (%f, %f)\n", finalNode.x, finalNode.y);
+	printf("Final node at: (%f, %f)\n", finalNode.GetX(), finalNode.GetY());
 	printf("Final cost is: %f\n", finalNode.cost);
 	G_configspace.printData(tempItr, finalNode);
 
@@ -179,26 +179,26 @@ int main()
 tuple<double, double, double, double> calculateGraphLimits(WorkspaceGraph G_workspace, ConfigspaceNode gateNode, double buffer)
 {
 	double xMin, xMax, yMin, yMax;
-	if (gateNode.x < G_workspace.goalRegion.x)
+	if (gateNode.GetX() < G_workspace.goalRegion.GetX())
 	{
-		xMin = gateNode.x - buffer;
-		xMax = G_workspace.goalRegion.x + buffer;
+		xMin = gateNode.GetX() - buffer;
+		xMax = G_workspace.goalRegion.GetX() + buffer;
 	}
 	else
 	{
-		xMin = G_workspace.goalRegion.x - buffer;
-		xMax = gateNode.x + buffer;
+		xMin = G_workspace.goalRegion.GetX() - buffer;
+		xMax = gateNode.GetX() + buffer;
 	}
 
-	if (gateNode.y < G_workspace.goalRegion.y)
+	if (gateNode.GetY() < G_workspace.goalRegion.GetY())
 	{
-		yMin = gateNode.y - buffer;
-		yMax = G_workspace.goalRegion.y + buffer;
+		yMin = gateNode.GetY() - buffer;
+		yMax = G_workspace.goalRegion.GetY() + buffer;
 	}
 	else
 	{
-		yMin = G_workspace.goalRegion.y - buffer;
-		yMax = gateNode.y + buffer;
+		yMin = G_workspace.goalRegion.GetY() - buffer;
+		yMax = gateNode.GetY() + buffer;
 	}
 	return make_tuple(xMin, xMax, yMin, yMax);
 }
@@ -250,7 +250,7 @@ void rewireRemainingNodes(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_wor
 	// do the rewiring while there are nodes left in remainingNodes
 	int remainingCount = 0;
 
-	while (remainingNodes[remainingCount].id > 0)
+	while (remainingNodes[remainingCount].GetId() > 0)
 	{
 		// check if it is cheaper for the current remaining node to use the added node as
 		// its parent node 
@@ -260,11 +260,11 @@ void rewireRemainingNodes(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_wor
 			// the parent (now the added node)
 			newNode = G_workspace.connectNodes(addedNode, remainingNodes[remainingCount]);
 			newNode.cost = addedNode.cost + G_configspace.computeCost(remainingNodes[remainingCount], addedNode);
-			newNode.parentNodeId = addedNode.id;
+			newNode.SetParentId(addedNode.GetId());
 
 			// get the old parent of the current remaining node, remove the old
 			// edge, add the new edge, and replace the old remaining node
-			remainingNodeParent = G_configspace.findNodeId(remainingNodes[remainingCount].parentNodeId);
+			remainingNodeParent = G_configspace.findNodeId(remainingNodes[remainingCount].GetParentId());
 			G_configspace.removeEdge(remainingNodeParent, remainingNodes[remainingCount]);
 			G_configspace.addEdge(addedNode, newNode);
 			G_configspace.replaceNode(remainingNodes[remainingCount], newNode);
@@ -273,7 +273,8 @@ void rewireRemainingNodes(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_wor
 			// (this requires adding the new node to a small pointer array)
 			ConfigspaceNode* updatedNode = (ConfigspaceNode*)calloc(2, sizeof(ConfigspaceNode));
 			updatedNode[0] = newNode;
-			updatedNode[1].id = 0;
+			updatedNode[1].SetId(0);
+
 			G_configspace.propagateCost(updatedNode);
 			free(updatedNode);
 		}
@@ -290,15 +291,11 @@ bool compareNodes(ConfigspaceNode nodeA, ConfigspaceNode nodeB, ConfigspaceGraph
 
 ConfigspaceNode calcGateNode(double xPosition, double yPosition, double gateOrientation, double standOffRange)
 {
-	ConfigspaceNode gateNode;
+	double x = xPosition + standOffRange * cos(gateOrientation - M_PI);
+	double y = yPosition + standOffRange * sin(gateOrientation - M_PI);;
 
-	gateNode.x = xPosition + standOffRange * cos(gateOrientation - M_PI);
-	gateNode.y = yPosition + standOffRange * sin(gateOrientation - M_PI);
+	ConfigspaceNode gateNode(x, y, 0, 0, 0);
 	gateNode.theta = gateOrientation;
-
-	gateNode.t = 0.0;
-	gateNode.cost = 0.0;
-	gateNode.parentNodeId = 0;
 
 	return gateNode;
 }
