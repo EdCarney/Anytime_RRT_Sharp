@@ -129,6 +129,7 @@ ConfigspaceNode* WorkspaceGraph::checkSafety(ConfigspaceNode newNode, Configspac
 		nodeCircleRad = hypot((newNode.x - neighbors[i].x), (newNode.y - neighbors[i].y)) / 2;
 		midpointX = (newNode.x + neighbors[i].x) / 2;
 		midpointY = (newNode.y + neighbors[i].y) / 2;
+		Obstacle pathObstacle(midpointX, midpointY, nodeCircleRad);
 		safetyCheck = true;
 
 		// check the given neighbor for all obstacles
@@ -136,8 +137,7 @@ ConfigspaceNode* WorkspaceGraph::checkSafety(ConfigspaceNode newNode, Configspac
 		// all obstacles
 		for (int j = 0; j < numObstacles; j++)
 		{
-			obsDist = hypot((midpointX - obstacles[j].x), (midpointY - obstacles[j].y));
-			if (obsDist < (nodeCircleRad + obstacles[j].radius))
+			if (obstacles[j].Intersects(pathObstacle))
 			{
 				safetyCheck = false;
 				break;
@@ -203,21 +203,9 @@ ConfigspaceNode WorkspaceGraph::extendToNode(ConfigspaceNode parentNode, Configs
 
 bool WorkspaceGraph::checkForCollision(ConfigspaceNode node)
 {
-	double nodeDistance;
-
 	for (int i = 0; i < numObstacles; i++)
-	{
-		// calculate the euclidean distance from the node to the center
-		// of the obstacle
-		nodeDistance = sqrt(pow((node.x - obstacles[i].x), 2) + pow((node.y - obstacles[i].y), 2));
-
-		// if the distance between the node and the center of the obstacle
-		// is <= the radius of the obstacle, then the node collides with
-		// the obstacle
-		if (nodeDistance <= obstacles[i].radius)
+		if (obstacles[i].Intersects(node))
 			return true;
-	}
-
 	return false;
 }
 

@@ -13,16 +13,19 @@ configure_file(ARRTSConfig.h.in ARRTSConfig.h)
 add_library(ConfigspaceGraph configspaceGraph.cpp)
 add_library(WorkspaceGraph workspaceGraph.cpp)
 add_library(Vehicle Vehicle.cpp)
+add_library(Obstacle Obstacle.cpp)
 add_library(ARRTS ARRTS.cpp)
 
 list(APPEND EXTRA_LIBS ConfigspaceGraph)
 list(APPEND EXTRA_LIBS WorkspaceGraph)
 list(APPEND EXTRA_LIBS Vehicle)
+list(APPEND EXTRA_LIBS Obstacle)
 list(APPEND EXTRA_LIBS ARRTS)
 
-list(APPEND TEST_LIBS ARRTS)
 list(APPEND TEST_LIBS WorkspaceGraph)
 list(APPEND TEST_LIBS Vehicle)
+list(APPEND EXTRA_LIBS Obstacle)
+list(APPEND TEST_LIBS ARRTS)
 list(APPEND TEST_LIBS gtest)
 
 # add googletest directory
@@ -36,6 +39,7 @@ file(COPY test/ DESTINATION test)
 add_executable(RRT_Sharp RRT_Sharp.cpp)
 add_executable(tests unitTests.cpp)
 
+target_link_libraries(ARRTS PRIVATE Obstacle)
 target_link_libraries(RRT_Sharp PUBLIC ${EXTRA_LIBS})
 target_link_libraries(tests PRIVATE ${TEST_LIBS})
 

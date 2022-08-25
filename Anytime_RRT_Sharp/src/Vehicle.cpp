@@ -64,16 +64,16 @@ void Vehicle::UpdateState(State newState)
 
 void Vehicle::AddOffsetNode(double x, double y)
 {
-    ResetArraySize<Node>(&nodes, numNodes, numNodes + 1);
-    ResetArraySize<Node>(&offsetNodes, numNodes, numNodes + 1);
+    ResetArraySize<Point>(&nodes, numNodes, numNodes + 1);
+    ResetArraySize<Point>(&offsetNodes, numNodes, numNodes + 1);
     offsetNodes[numNodes++] = { x, y };
     updateOffsetParams();
 }
 
 void Vehicle::AddOffsetNodes(const double* x, const double* y, int numPoints)
 {
-    ResetArraySize<Node>(&nodes, numNodes, numNodes + numPoints);
-    ResetArraySize<Node>(&offsetNodes, numNodes, numNodes + numPoints);
+    ResetArraySize<Point>(&nodes, numNodes, numNodes + numPoints);
+    ResetArraySize<Point>(&offsetNodes, numNodes, numNodes + numPoints);
     for (int i = 0; i < numPoints; ++i)
         offsetNodes[numNodes++] = { x[i], y[i] };
     updateOffsetParams();
@@ -108,12 +108,12 @@ void Vehicle::AddOffsetNodesFromFile(FILE* file)
     AddOffsetNodes(x, y, pointCount);
 }
 
-Node* Vehicle::GetNodes()
+Point* Vehicle::GetNodes()
 {
     return nodes;
 }
 
-Node Vehicle::GetNode(int i)
+Point Vehicle::GetNode(int i)
 {
     if (i >= numNodes || i < 0)
         throw runtime_error("Attempt to read index beyond array limits in GetNode");
@@ -121,12 +121,12 @@ Node Vehicle::GetNode(int i)
     return nodes[i];
 }
 
-Node* Vehicle::GetOffsetNodes()
+Point* Vehicle::GetOffsetNodes()
 {
     return offsetNodes;
 }
 
-Node Vehicle::GetOffsetNode(int i)
+Point Vehicle::GetOffsetNode(int i)
 {
     if (i >= numNodes || i < 0)
         throw runtime_error("Attempt to read index beyond array limits in GetOffsetNode");

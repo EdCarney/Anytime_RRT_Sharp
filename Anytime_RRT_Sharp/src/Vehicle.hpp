@@ -9,9 +9,9 @@
 class Vehicle
 {
     int numNodes;                   // number of nodes representing the vehicle
-    Node* nodes;                    // an array of all nodes for the vehicle
-    Node* offsetNodes;              // an array of offset values loaded on vehicle initialization
-    Node centroid;                  // centroid of vehicle relative to the offset nodes
+    Point* nodes;                    // an array of all nodes for the vehicle
+    Point* offsetNodes;              // an array of offset values loaded on vehicle initialization
+    Point centroid;                  // centroid of vehicle relative to the offset nodes
     State state;                    // state (x, y, theta) of the vehicle
     double boundingRadius;          // the radius of a ball circumscribing the vehicle; used for quick collision checking
     void updateOffsetParams();      // updates centroid and bounding radius from offset nodes
@@ -26,10 +26,10 @@ class Vehicle
         void AddOffsetNode(double x, double y);
         void AddOffsetNodes(const double* x, const double *y, int numPoints);
         void AddOffsetNodesFromFile(FILE* file);
-        Node* GetNodes();
-        Node GetNode(int i);
-        Node* GetOffsetNodes();
-        Node GetOffsetNode(int i);
+        Point* GetNodes();
+        Point GetNode(int i);
+        Point* GetOffsetNodes();
+        Point GetOffsetNode(int i);
         State GetState();
         int GetNumNodes();
         double GetBoundingRadius();
