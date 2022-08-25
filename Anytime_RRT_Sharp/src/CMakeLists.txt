@@ -36,14 +36,14 @@ add_subdirectory(googletest)
 include_directories(googletest/inlcude)
 
 # include test data
-file(COPY test/ DESTINATION test)
+file(COPY testdata/ DESTINATION test)
 
 # add the executables
 add_executable(RRT_Sharp RRT_Sharp.cpp)
-add_executable(tests unitTests.cpp)
+add_executable(UnitTests tests/UnitTests.cpp)
 
 target_link_libraries(ARRTS PRIVATE Obstacle)
 target_link_libraries(RRT_Sharp PUBLIC ${EXTRA_LIBS})
-target_link_libraries(tests PRIVATE ${TEST_LIBS})
+target_link_libraries(UnitTests PRIVATE ${TEST_LIBS})
 
 target_include_directories(RRT_Sharp PUBLIC "${PROJECT_BINARY_DIR}")
