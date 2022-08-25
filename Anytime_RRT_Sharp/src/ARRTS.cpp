@@ -31,14 +31,14 @@ State ArrtsService::GetStartState()
 void ArrtsService::AddObstacle(double x, double y, double r)
 {
     ResetArraySize<Obstacle>(&obstacles, numObstacles, numObstacles + 1);
-    obstacles[numObstacles++] = { x, y, r };
+    obstacles[numObstacles++] = Obstacle(x, y, r);
 }
 
 void ArrtsService::AddObstacles(const double* x, const double* y, const double* r, int numObs)
 {
     ResetArraySize<Obstacle>(&obstacles, numObstacles, numObstacles + numObs);
     for (int i = 0; i < numObs; ++i)
-        obstacles[numObstacles++] = { x[i], y[i], r[i] };
+        obstacles[numObstacles++] = Obstacle(x[i], y[i], r[i]);
 }
 
 void ArrtsService::AddObstaclesFromFile(FILE* file)

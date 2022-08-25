@@ -4,6 +4,7 @@
 #include <string>
 #include "cppshrhelp.hpp"
 #include "Geometry.hpp"
+#include "Obstacle.hpp"
 #include "Utility.hpp"
 
 using namespace std;
@@ -17,7 +18,7 @@ class DLL_EXPORT ArrtsService
         Obstacle* obstacles;
         State startState;
         State goalState;
-        Node* vehicleOutline;
+        Point* vehicleOutline;
 
         int numObstacles;
         int numVehiclePoints;
