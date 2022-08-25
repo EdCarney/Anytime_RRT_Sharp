@@ -25,7 +25,7 @@ void Vehicle::calculateBoundingRadius()
     double maxRadius = 0, tempMaxRadius = 0;
     for (int i = 0; i < numNodes; ++i)
     {
-        tempMaxRadius = hypot(offsetNodes[i].x - centroid.x, offsetNodes[i].y - centroid.y);
+        tempMaxRadius = hypot(offsetNodes[i].GetX() - centroid.GetX(), offsetNodes[i].GetY() - centroid.GetY());
         if (tempMaxRadius > maxRadius)
             maxRadius = tempMaxRadius;
     }
@@ -37,8 +37,8 @@ void Vehicle::calculateCentroid()
     double xSum = 0, ySum = 0;
     for (int i = 0; i < numNodes; ++i)
     {
-        xSum += nodes[i].x;
-        ySum += nodes[i].y;
+        xSum += nodes[i].GetX();
+        ySum += nodes[i].GetY();
     }
     centroid = { xSum / numNodes, ySum / numNodes };
 }
@@ -52,13 +52,16 @@ void Vehicle::updateOffsetParams()
 
 void Vehicle::UpdateState(State newState)
 {
-    state = { newState.x, newState.y, newState.theta };
+    state = { newState.GetX(), newState.GetY(), newState.GetTheta() };
+
+    double x, y;
 
     // update body nodes based on deltas
     for (int i = 0; i < numNodes; i++)
     {
-        nodes[i].x = state.x + cos(state.theta) * offsetNodes[i].x - sin(state.theta) * offsetNodes[i].y;
-        nodes[i].y = state.y + sin(state.theta) * offsetNodes[i].x + cos(state.theta) * offsetNodes[i].y;
+        x = state.GetX() + cos(state.GetTheta()) * offsetNodes[i].GetX() - sin(state.GetTheta()) * offsetNodes[i].GetY();
+        y = state.GetY() + sin(state.GetTheta()) * offsetNodes[i].GetX() + cos(state.GetTheta()) * offsetNodes[i].GetY();
+        nodes[i] = Point(x, y);
     }
 }
 
