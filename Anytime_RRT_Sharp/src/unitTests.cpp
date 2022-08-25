@@ -11,9 +11,9 @@ TEST(ARRTS_StartState, SetAndGet)
     ArrtsService service;
     service.SetStartState(5, 6, 7);
     State state = service.GetStartState();
-    GTEST_ASSERT_EQ(state.x, 5);
-    GTEST_ASSERT_EQ(state.y, 6);
-    GTEST_ASSERT_EQ(state.theta, 7);
+    GTEST_ASSERT_EQ(state.GetX(), 5);
+    GTEST_ASSERT_EQ(state.GetY(), 6);
+    GTEST_ASSERT_EQ(state.GetTheta(), 7);
 }
 
 TEST(ARRTS_StartState, SetUpdateAndGet)
@@ -22,9 +22,9 @@ TEST(ARRTS_StartState, SetUpdateAndGet)
     service.SetStartState(5, 6, 7);
     service.SetStartState(8, 9, 10);
     State state = service.GetStartState();
-    GTEST_ASSERT_EQ(state.x, 8);
-    GTEST_ASSERT_EQ(state.y, 9);
-    GTEST_ASSERT_EQ(state.theta, 10);
+    GTEST_ASSERT_EQ(state.GetX(), 8);
+    GTEST_ASSERT_EQ(state.GetY(), 9);
+    GTEST_ASSERT_EQ(state.GetTheta(), 10);
 }
 
 #pragma endregion //ARRTS_StartState
@@ -36,9 +36,9 @@ TEST(ARRTS_GoalState, SetAndGet)
     ArrtsService service;
     service.SetGoalState(5, 6, 7);
     State state = service.GetGoalState();
-    GTEST_ASSERT_EQ(state.x, 5);
-    GTEST_ASSERT_EQ(state.y, 6);
-    GTEST_ASSERT_EQ(state.theta, 7);
+    GTEST_ASSERT_EQ(state.GetX(), 5);
+    GTEST_ASSERT_EQ(state.GetY(), 6);
+    GTEST_ASSERT_EQ(state.GetTheta(), 7);
 }
 
 TEST(ARRTS_GoalState, SetUpdateAndGet)
@@ -47,9 +47,9 @@ TEST(ARRTS_GoalState, SetUpdateAndGet)
     service.SetGoalState(5, 6, 7);
     service.SetGoalState(8, 9, 10);
     State state = service.GetGoalState();
-    GTEST_ASSERT_EQ(state.x, 8);
-    GTEST_ASSERT_EQ(state.y, 9);
-    GTEST_ASSERT_EQ(state.theta, 10);
+    GTEST_ASSERT_EQ(state.GetX(), 8);
+    GTEST_ASSERT_EQ(state.GetY(), 9);
+    GTEST_ASSERT_EQ(state.GetTheta(), 10);
 }
 
 #pragma endregion //ARRTS_GoalState
@@ -95,17 +95,17 @@ TEST(ARRTS_Obstacles, AddMultipleObstacle_CheckVals)
     Obstacle obs2 = service.GetObstacle(1);
     Obstacle obs3 = service.GetObstacle(2);
     
-    GTEST_ASSERT_EQ(obs1.x, 1);
-    GTEST_ASSERT_EQ(obs2.x, 2);
-    GTEST_ASSERT_EQ(obs3.x, 3);
+    GTEST_ASSERT_EQ(obs1.GetX(), 1);
+    GTEST_ASSERT_EQ(obs2.GetX(), 2);
+    GTEST_ASSERT_EQ(obs3.GetX(), 3);
 
-    GTEST_ASSERT_EQ(obs1.y, 4);
-    GTEST_ASSERT_EQ(obs2.y, 5);
-    GTEST_ASSERT_EQ(obs3.y, 6);
+    GTEST_ASSERT_EQ(obs1.GetY(), 4);
+    GTEST_ASSERT_EQ(obs2.GetY(), 5);
+    GTEST_ASSERT_EQ(obs3.GetY(), 6);
 
-    GTEST_ASSERT_EQ(obs1.radius, 7);
-    GTEST_ASSERT_EQ(obs2.radius, 8);
-    GTEST_ASSERT_EQ(obs3.radius, 9);
+    GTEST_ASSERT_EQ(obs1.GetRadius(), 7);
+    GTEST_ASSERT_EQ(obs2.GetRadius(), 8);
+    GTEST_ASSERT_EQ(obs3.GetRadius(), 9);
 }
 
 TEST(ARRTS_Obstacles, AddSingleThenSingleObstacle_CheckNum)
@@ -125,14 +125,14 @@ TEST(ARRTS_Obstacles, AddSingleThenSingleObstacle_CheckVals)
     Obstacle obs1 = service.GetObstacle(0);
     Obstacle obs2 = service.GetObstacle(1);
 
-    GTEST_ASSERT_EQ(obs1.x, 1);
-    GTEST_ASSERT_EQ(obs2.x, 4);
+    GTEST_ASSERT_EQ(obs1.GetX(), 1);
+    GTEST_ASSERT_EQ(obs2.GetX(), 4);
 
-    GTEST_ASSERT_EQ(obs1.y, 2);
-    GTEST_ASSERT_EQ(obs2.y, 5);
+    GTEST_ASSERT_EQ(obs1.GetY(), 2);
+    GTEST_ASSERT_EQ(obs2.GetY(), 5);
 
-    GTEST_ASSERT_EQ(obs1.radius, 3);
-    GTEST_ASSERT_EQ(obs2.radius, 6);
+    GTEST_ASSERT_EQ(obs1.GetRadius(), 3);
+    GTEST_ASSERT_EQ(obs2.GetRadius(), 6);
 }
 
 TEST(ARRTS_Obstacles, AddMultipleThenMultipleObstacle_CheckNum)
@@ -166,20 +166,20 @@ TEST(ARRTS_Obstacles, AddMultipleThenMultipleObstacle_CheckVals)
     Obstacle obs3 = service.GetObstacle(2);
     Obstacle obs4 = service.GetObstacle(3);
 
-    GTEST_ASSERT_EQ(obs1.x, 1);
-    GTEST_ASSERT_EQ(obs2.x, 2);
-    GTEST_ASSERT_EQ(obs3.x, 7);
-    GTEST_ASSERT_EQ(obs4.x, 8);
+    GTEST_ASSERT_EQ(obs1.GetX(), 1);
+    GTEST_ASSERT_EQ(obs2.GetX(), 2);
+    GTEST_ASSERT_EQ(obs3.GetX(), 7);
+    GTEST_ASSERT_EQ(obs4.GetX(), 8);
 
-    GTEST_ASSERT_EQ(obs1.y, 3);
-    GTEST_ASSERT_EQ(obs2.y, 4);
-    GTEST_ASSERT_EQ(obs3.y, 9);
-    GTEST_ASSERT_EQ(obs4.y, 10);
+    GTEST_ASSERT_EQ(obs1.GetY(), 3);
+    GTEST_ASSERT_EQ(obs2.GetY(), 4);
+    GTEST_ASSERT_EQ(obs3.GetY(), 9);
+    GTEST_ASSERT_EQ(obs4.GetY(), 10);
 
-    GTEST_ASSERT_EQ(obs1.radius, 5);
-    GTEST_ASSERT_EQ(obs2.radius, 6);
-    GTEST_ASSERT_EQ(obs3.radius, 11);
-    GTEST_ASSERT_EQ(obs4.radius, 12);
+    GTEST_ASSERT_EQ(obs1.GetRadius(), 5);
+    GTEST_ASSERT_EQ(obs2.GetRadius(), 6);
+    GTEST_ASSERT_EQ(obs3.GetRadius(), 11);
+    GTEST_ASSERT_EQ(obs4.GetRadius(), 12);
 }
 
 TEST(ARRTS_Obstacles, AddSingleThenMultipleObstacle_CheckNum)
@@ -207,20 +207,20 @@ TEST(ARRTS_Obstacles, AddSingleThenMultipleObstacle_CheckVals)
     Obstacle obs3 = service.GetObstacle(2);
     Obstacle obs4 = service.GetObstacle(3);
 
-    GTEST_ASSERT_EQ(obs1.x, 1);
-    GTEST_ASSERT_EQ(obs2.x, 4);
-    GTEST_ASSERT_EQ(obs3.x, 5);
-    GTEST_ASSERT_EQ(obs4.x, 6);
+    GTEST_ASSERT_EQ(obs1.GetX(), 1);
+    GTEST_ASSERT_EQ(obs2.GetX(), 4);
+    GTEST_ASSERT_EQ(obs3.GetX(), 5);
+    GTEST_ASSERT_EQ(obs4.GetX(), 6);
 
-    GTEST_ASSERT_EQ(obs1.y, 2);
-    GTEST_ASSERT_EQ(obs2.y, 7);
-    GTEST_ASSERT_EQ(obs3.y, 8);
-    GTEST_ASSERT_EQ(obs4.y, 9);
+    GTEST_ASSERT_EQ(obs1.GetY(), 2);
+    GTEST_ASSERT_EQ(obs2.GetY(), 7);
+    GTEST_ASSERT_EQ(obs3.GetY(), 8);
+    GTEST_ASSERT_EQ(obs4.GetY(), 9);
 
-    GTEST_ASSERT_EQ(obs1.radius, 3);
-    GTEST_ASSERT_EQ(obs2.radius, 10);
-    GTEST_ASSERT_EQ(obs3.radius, 11);
-    GTEST_ASSERT_EQ(obs4.radius, 12);
+    GTEST_ASSERT_EQ(obs1.GetRadius(), 3);
+    GTEST_ASSERT_EQ(obs2.GetRadius(), 10);
+    GTEST_ASSERT_EQ(obs3.GetRadius(), 11);
+    GTEST_ASSERT_EQ(obs4.GetRadius(), 12);
 }
 
 TEST(ARRTS_Obstacles, AddMultipleThenSingleObstacle_CheckNum)
@@ -248,20 +248,20 @@ TEST(ARRTS_Obstacles, AddMultipleThenSingleObstacle_CheckVals)
     Obstacle obs3 = service.GetObstacle(2);
     Obstacle obs4 = service.GetObstacle(3);
 
-    GTEST_ASSERT_EQ(obs1.x, 4);
-    GTEST_ASSERT_EQ(obs2.x, 5);
-    GTEST_ASSERT_EQ(obs3.x, 6);
-    GTEST_ASSERT_EQ(obs4.x, 1);
+    GTEST_ASSERT_EQ(obs1.GetX(), 4);
+    GTEST_ASSERT_EQ(obs2.GetX(), 5);
+    GTEST_ASSERT_EQ(obs3.GetX(), 6);
+    GTEST_ASSERT_EQ(obs4.GetX(), 1);
 
-    GTEST_ASSERT_EQ(obs1.y, 7);
-    GTEST_ASSERT_EQ(obs2.y, 8);
-    GTEST_ASSERT_EQ(obs3.y, 9);
-    GTEST_ASSERT_EQ(obs4.y, 2);
+    GTEST_ASSERT_EQ(obs1.GetY(), 7);
+    GTEST_ASSERT_EQ(obs2.GetY(), 8);
+    GTEST_ASSERT_EQ(obs3.GetY(), 9);
+    GTEST_ASSERT_EQ(obs4.GetY(), 2);
 
-    GTEST_ASSERT_EQ(obs1.radius, 10);
-    GTEST_ASSERT_EQ(obs2.radius, 11);
-    GTEST_ASSERT_EQ(obs3.radius, 12);
-    GTEST_ASSERT_EQ(obs4.radius, 3);
+    GTEST_ASSERT_EQ(obs1.GetRadius(), 10);
+    GTEST_ASSERT_EQ(obs2.GetRadius(), 11);
+    GTEST_ASSERT_EQ(obs3.GetRadius(), 12);
+    GTEST_ASSERT_EQ(obs4.GetRadius(), 3);
 }
 
 TEST(ARRTS_Obstacles, AddFromFile_CheckNum)
@@ -283,17 +283,17 @@ TEST(ARRTS_Obstacles, AddFromFile_CheckVals)
     Obstacle obs2 = service.GetObstacle(11);
     Obstacle obs3 = service.GetObstacle(22);
 
-    GTEST_ASSERT_EQ(obs1.x, 80);
-    GTEST_ASSERT_EQ(obs2.x, 35);
-    GTEST_ASSERT_EQ(obs3.x, 60);
+    GTEST_ASSERT_EQ(obs1.GetX(), 80);
+    GTEST_ASSERT_EQ(obs2.GetX(), 35);
+    GTEST_ASSERT_EQ(obs3.GetX(), 60);
 
-    GTEST_ASSERT_EQ(obs1.y, 40);
-    GTEST_ASSERT_EQ(obs2.y, 80);
-    GTEST_ASSERT_EQ(obs3.y, 100);
+    GTEST_ASSERT_EQ(obs1.GetY(), 40);
+    GTEST_ASSERT_EQ(obs2.GetY(), 80);
+    GTEST_ASSERT_EQ(obs3.GetY(), 100);
 
-    GTEST_ASSERT_EQ(obs1.radius, 8);
-    GTEST_ASSERT_EQ(obs2.radius, 8);
-    GTEST_ASSERT_EQ(obs3.radius, 8);
+    GTEST_ASSERT_EQ(obs1.GetRadius(), 8);
+    GTEST_ASSERT_EQ(obs2.GetRadius(), 8);
+    GTEST_ASSERT_EQ(obs3.GetRadius(), 8);
 }
 
 TEST(ARRTS_Obstacles, GetFirstObstacleWhenNone)
@@ -331,8 +331,8 @@ TEST(Vehicle, AddOnePoint_CheckVal)
     Vehicle v;
     v.AddOffsetNode(1, 2);
     Point n = v.GetOffsetNode(0);
-    GTEST_ASSERT_EQ(n.x, 1);
-    GTEST_ASSERT_EQ(n.y, 2);
+    GTEST_ASSERT_EQ(n.GetX(), 1);
+    GTEST_ASSERT_EQ(n.GetY(), 2);
 }
 
 TEST(Vehicle, AddMultiplePoint_CheckNum)
@@ -355,13 +355,13 @@ TEST(Vehicle, AddMultiplePoint_CheckVals)
     Point n2 = v.GetOffsetNode(1);
     Point n3 = v.GetOffsetNode(2);
     
-    GTEST_ASSERT_EQ(n1.x, 1);
-    GTEST_ASSERT_EQ(n2.x, 2);
-    GTEST_ASSERT_EQ(n3.x, 3);
+    GTEST_ASSERT_EQ(n1.GetX(), 1);
+    GTEST_ASSERT_EQ(n2.GetX(), 2);
+    GTEST_ASSERT_EQ(n3.GetX(), 3);
 
-    GTEST_ASSERT_EQ(n1.y, 4);
-    GTEST_ASSERT_EQ(n2.y, 5);
-    GTEST_ASSERT_EQ(n3.y, 6);
+    GTEST_ASSERT_EQ(n1.GetY(), 4);
+    GTEST_ASSERT_EQ(n2.GetY(), 5);
+    GTEST_ASSERT_EQ(n3.GetY(), 6);
 }
 
 TEST(Vehicle, AddSingleThenSinglePoint_CheckNum)
@@ -381,11 +381,11 @@ TEST(Vehicle, AddSingleThenSinglePoint_CheckVals)
     Point n1 = v.GetOffsetNode(0);
     Point n2 = v.GetOffsetNode(1);
 
-    GTEST_ASSERT_EQ(n1.x, 1);
-    GTEST_ASSERT_EQ(n2.x, 3);
+    GTEST_ASSERT_EQ(n1.GetX(), 1);
+    GTEST_ASSERT_EQ(n2.GetX(), 3);
 
-    GTEST_ASSERT_EQ(n1.y, 2);
-    GTEST_ASSERT_EQ(n2.y, 4);
+    GTEST_ASSERT_EQ(n1.GetY(), 2);
+    GTEST_ASSERT_EQ(n2.GetY(), 4);
 }
 
 TEST(Vehicle, AddMultipleThenMultiplePoint_CheckNum)
@@ -415,15 +415,15 @@ TEST(Vehicle, AddMultipleThenMultiplePoint_CheckVals)
     Point n3 = v.GetOffsetNode(2);
     Point n4 = v.GetOffsetNode(3);
 
-    GTEST_ASSERT_EQ(n1.x, 1);
-    GTEST_ASSERT_EQ(n2.x, 2);
-    GTEST_ASSERT_EQ(n3.x, 5);
-    GTEST_ASSERT_EQ(n4.x, 6);
+    GTEST_ASSERT_EQ(n1.GetX(), 1);
+    GTEST_ASSERT_EQ(n2.GetX(), 2);
+    GTEST_ASSERT_EQ(n3.GetX(), 5);
+    GTEST_ASSERT_EQ(n4.GetX(), 6);
 
-    GTEST_ASSERT_EQ(n1.y, 3);
-    GTEST_ASSERT_EQ(n2.y, 4);
-    GTEST_ASSERT_EQ(n3.y, 7);
-    GTEST_ASSERT_EQ(n4.y, 8);
+    GTEST_ASSERT_EQ(n1.GetY(), 3);
+    GTEST_ASSERT_EQ(n2.GetY(), 4);
+    GTEST_ASSERT_EQ(n3.GetY(), 7);
+    GTEST_ASSERT_EQ(n4.GetY(), 8);
 }
 
 TEST(Vehicle, AddSingleThenMultiplePoint_CheckNum)
@@ -451,15 +451,15 @@ TEST(Vehicle, AddSingleThenMultiplePoint_CheckVals)
     Point n3 = v.GetOffsetNode(2);
     Point n4 = v.GetOffsetNode(3);
 
-    GTEST_ASSERT_EQ(n1.x, 1);
-    GTEST_ASSERT_EQ(n2.x, 4);
-    GTEST_ASSERT_EQ(n3.x, 5);
-    GTEST_ASSERT_EQ(n4.x, 6);
+    GTEST_ASSERT_EQ(n1.GetX(), 1);
+    GTEST_ASSERT_EQ(n2.GetX(), 4);
+    GTEST_ASSERT_EQ(n3.GetX(), 5);
+    GTEST_ASSERT_EQ(n4.GetX(), 6);
 
-    GTEST_ASSERT_EQ(n1.y, 2);
-    GTEST_ASSERT_EQ(n2.y, 7);
-    GTEST_ASSERT_EQ(n3.y, 8);
-    GTEST_ASSERT_EQ(n4.y, 9);
+    GTEST_ASSERT_EQ(n1.GetY(), 2);
+    GTEST_ASSERT_EQ(n2.GetY(), 7);
+    GTEST_ASSERT_EQ(n3.GetY(), 8);
+    GTEST_ASSERT_EQ(n4.GetY(), 9);
 }
 
 TEST(Vehicle, AddMultipleThenSinglePoint_CheckNum)
@@ -485,15 +485,15 @@ TEST(Vehicle, AddMultipleThenSinglePoint_CheckVals)
     Point n3 = v.GetOffsetNode(2);
     Point n4 = v.GetOffsetNode(3);
 
-    GTEST_ASSERT_EQ(n1.x, 4);
-    GTEST_ASSERT_EQ(n2.x, 5);
-    GTEST_ASSERT_EQ(n3.x, 6);
-    GTEST_ASSERT_EQ(n4.x, 1);
+    GTEST_ASSERT_EQ(n1.GetX(), 4);
+    GTEST_ASSERT_EQ(n2.GetX(), 5);
+    GTEST_ASSERT_EQ(n3.GetX(), 6);
+    GTEST_ASSERT_EQ(n4.GetX(), 1);
 
-    GTEST_ASSERT_EQ(n1.y, 7);
-    GTEST_ASSERT_EQ(n2.y, 8);
-    GTEST_ASSERT_EQ(n3.y, 9);
-    GTEST_ASSERT_EQ(n4.y, 2);
+    GTEST_ASSERT_EQ(n1.GetY(), 7);
+    GTEST_ASSERT_EQ(n2.GetY(), 8);
+    GTEST_ASSERT_EQ(n3.GetY(), 9);
+    GTEST_ASSERT_EQ(n4.GetY(), 2);
 }
 
 TEST(Vehicle, AddFromFile_CheckNum)
@@ -515,13 +515,13 @@ TEST(Vehicle, AddFromFile_CheckVals)
     Point n2 = v.GetOffsetNode(20);
     Point n3 = v.GetOffsetNode(36);
 
-    GTEST_ASSERT_EQ(n1.x, 0);
-    GTEST_ASSERT_EQ(n2.x, -1);
-    GTEST_ASSERT_EQ(n3.x, -0.8);
+    GTEST_ASSERT_EQ(n1.GetX(), 0);
+    GTEST_ASSERT_EQ(n2.GetX(), -1);
+    GTEST_ASSERT_EQ(n3.GetX(), -0.8);
 
-    GTEST_ASSERT_EQ(n1.y, 0);
-    GTEST_ASSERT_EQ(n2.y, 0);
-    GTEST_ASSERT_EQ(n3.y, -0.3);
+    GTEST_ASSERT_EQ(n1.GetY(), 0);
+    GTEST_ASSERT_EQ(n2.GetY(), 0);
+    GTEST_ASSERT_EQ(n3.GetY(), -0.3);
 }
 
 TEST(Vehicle, GetFirstPointWhenNone)
@@ -550,9 +550,9 @@ TEST(Vehicle, Initialize_CheckVals)
 {
     Vehicle v;
 
-    GTEST_ASSERT_EQ(v.GetState().x, 0);
-    GTEST_ASSERT_EQ(v.GetState().y, 0);
-    GTEST_ASSERT_EQ(v.GetState().theta, 0);
+    GTEST_ASSERT_EQ(v.GetState().GetX(), 0);
+    GTEST_ASSERT_EQ(v.GetState().GetY(), 0);
+    GTEST_ASSERT_EQ(v.GetState().GetTheta(), 0);
     GTEST_ASSERT_EQ(v.GetBoundingRadius(), 0);
     GTEST_ASSERT_EQ(v.GetNumNodes(), 0);
     EXPECT_TRUE(v.GetOffsetNodes() == NULL);
@@ -564,9 +564,9 @@ TEST(Vehicle, UpdateState_CheckVals)
     State p = { 1, 2, 3 };
     v.UpdateState(p);
 
-    GTEST_ASSERT_EQ(v.GetState().x, 1);
-    GTEST_ASSERT_EQ(v.GetState().y, 2);
-    GTEST_ASSERT_EQ(v.GetState().theta, 3);
+    GTEST_ASSERT_EQ(v.GetState().GetX(), 1);
+    GTEST_ASSERT_EQ(v.GetState().GetY(), 2);
+    GTEST_ASSERT_EQ(v.GetState().GetTheta(), 3);
     GTEST_ASSERT_EQ(v.GetBoundingRadius(), 0);
     GTEST_ASSERT_EQ(v.GetNumNodes(), 0);
     GTEST_ASSERT_EQ(v.GetNumNodes(), 0);
@@ -585,21 +585,21 @@ TEST(Vehicle, AddNodesUpdateStateNoRotation_CheckVals)
 
     double tol = 0.001;
 
-    GTEST_ASSERT_EQ(v.GetState().x, 1);
-    GTEST_ASSERT_EQ(v.GetState().y, 2);
-    GTEST_ASSERT_EQ(v.GetState().theta, 0);
+    GTEST_ASSERT_EQ(v.GetState().GetX(), 1);
+    GTEST_ASSERT_EQ(v.GetState().GetY(), 2);
+    GTEST_ASSERT_EQ(v.GetState().GetTheta(), 0);
 
     EXPECT_NEAR(v.GetBoundingRadius(), 0.707106, tol);
 
-    EXPECT_NEAR(v.GetNode(0).x, 0.5, tol);
-    EXPECT_NEAR(v.GetNode(1).x, 1.5, tol);
-    EXPECT_NEAR(v.GetNode(2).x, 1.5, tol);
-    EXPECT_NEAR(v.GetNode(3).x, 0.5, tol);
+    EXPECT_NEAR(v.GetNode(0).GetX(), 0.5, tol);
+    EXPECT_NEAR(v.GetNode(1).GetX(), 1.5, tol);
+    EXPECT_NEAR(v.GetNode(2).GetX(), 1.5, tol);
+    EXPECT_NEAR(v.GetNode(3).GetX(), 0.5, tol);
 
-    EXPECT_NEAR(v.GetNode(0).y, 1.5, tol);
-    EXPECT_NEAR(v.GetNode(1).y, 1.5, tol);
-    EXPECT_NEAR(v.GetNode(2).y, 2.5, tol);
-    EXPECT_NEAR(v.GetNode(3).y, 2.5, tol);
+    EXPECT_NEAR(v.GetNode(0).GetY(), 1.5, tol);
+    EXPECT_NEAR(v.GetNode(1).GetY(), 1.5, tol);
+    EXPECT_NEAR(v.GetNode(2).GetY(), 2.5, tol);
+    EXPECT_NEAR(v.GetNode(3).GetY(), 2.5, tol);
 
     GTEST_ASSERT_EQ(v.GetNumNodes(), 4);
 }
@@ -617,21 +617,21 @@ TEST(Vehicle, AddNodesUpdateStateWithPosRotation_CheckVals)
 
     double tol = 0.001;
 
-    GTEST_ASSERT_EQ(v.GetState().x, 1);
-    GTEST_ASSERT_EQ(v.GetState().y, 2);
-    GTEST_ASSERT_EQ(v.GetState().theta, M_PI / 4.0);
+    GTEST_ASSERT_EQ(v.GetState().GetX(), 1);
+    GTEST_ASSERT_EQ(v.GetState().GetY(), 2);
+    GTEST_ASSERT_EQ(v.GetState().GetTheta(), M_PI / 4.0);
 
     EXPECT_NEAR(v.GetBoundingRadius(), 0.707106, tol);
 
-    EXPECT_NEAR(v.GetNode(0).x, 1.00000, tol);
-    EXPECT_NEAR(v.GetNode(1).x, 1.70711, tol);
-    EXPECT_NEAR(v.GetNode(2).x, 1.00000, tol);
-    EXPECT_NEAR(v.GetNode(3).x, 0.29289, tol);
+    EXPECT_NEAR(v.GetNode(0).GetX(), 1.00000, tol);
+    EXPECT_NEAR(v.GetNode(1).GetX(), 1.70711, tol);
+    EXPECT_NEAR(v.GetNode(2).GetX(), 1.00000, tol);
+    EXPECT_NEAR(v.GetNode(3).GetX(), 0.29289, tol);
 
-    EXPECT_NEAR(v.GetNode(0).y, 1.29289, tol);
-    EXPECT_NEAR(v.GetNode(1).y, 2.00000, tol);
-    EXPECT_NEAR(v.GetNode(2).y, 2.70711, tol);
-    EXPECT_NEAR(v.GetNode(3).y, 2.00000, tol);
+    EXPECT_NEAR(v.GetNode(0).GetY(), 1.29289, tol);
+    EXPECT_NEAR(v.GetNode(1).GetY(), 2.00000, tol);
+    EXPECT_NEAR(v.GetNode(2).GetY(), 2.70711, tol);
+    EXPECT_NEAR(v.GetNode(3).GetY(), 2.00000, tol);
 
     GTEST_ASSERT_EQ(v.GetNumNodes(), 4);
 }
@@ -753,6 +753,6 @@ TEST(Obstacle, RectagleIntersect_DoesNotIntersect)
 
 int main(int argc, char* argv[])
 {
-    ::testing::InitGoogleTest(&argc, argv);
+    testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }
