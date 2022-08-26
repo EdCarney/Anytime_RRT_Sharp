@@ -1,15 +1,38 @@
 #include "workspaceGraph.hpp"
 
+Vehicle WorkspaceGraph::vehicle()
+{
+    return _vehicle;
+}
+
+void WorkspaceGraph::setVehicle(Vehicle v)
+{
+    _vehicle = v;
+}
+
+vector<Obstacle> WorkspaceGraph::obstacles()
+{
+    return _obstacles;
+}
+
+GoalState WorkspaceGraph::goalRegion()
+{
+    return _goalRegion;
+}
+
+Obstacle WorkspaceGraph::obstacles(int i)
+{
+    return _obstacles[i];
+}
+
 void WorkspaceGraph::_buildWorkspaceGraph()
 {
     printf("Constructing a default empty workspace graph.\n");
-    minX = 0.0;
-    minY = 0.0;
-    maxX = 0.0;
-    maxY = 0.0;
-    minTheta = 0.0;
-    maxTheta = 0.0;
-    goalRegionReached = false;
+    _minPoint = Point(0, 0);
+    _maxPoint = Point(0, 0);
+    _minTheta = 0.0;
+    _maxTheta = 0.0;
+    _goalRegionReached = false;
 }
 
 bool WorkspaceGraph::readObstaclesFromFile(const char* obstacleFile)
@@ -38,13 +61,13 @@ bool WorkspaceGraph::readObstaclesFromFile(const char* obstacleFile)
 
     printf("Number of obstacles is %d.\n", obstacleCount); // DEBUG STATEMENT TO CHECK # OF OBSTACLES
 
-    obstacles.resize(obstacleCount);
+    _obstacles.resize(obstacleCount);
     // assign values
     rewind(pFile);
     for (int i = 0; i < obstacleCount; i++)
     {
         fscanf(pFile, "%lf,%lf,%lf", &x, &y, &radius);
-        obstacles[i] = Obstacle(x, y, radius);
+        _obstacles[i] = Obstacle(x, y, radius);
     }
 
     // close the file
@@ -59,7 +82,7 @@ double WorkspaceGraph::computeObsVol()
 {
     double volume = 0.0;
 
-    for (Obstacle o : obstacles)
+    for (Obstacle o : _obstacles)
         volume += 3.14159 * pow(o.radius(), 2);
 
     return volume;
@@ -67,38 +90,35 @@ double WorkspaceGraph::computeObsVol()
 
 void WorkspaceGraph::addGoalRegion(double x, double y, double theta, double radius)
 {
-    goalRegion = GoalState(x, y, radius, theta);
+    _goalRegion = GoalState(x, y, radius, theta);
 }
 
 void WorkspaceGraph::updateGoalRegion(double x, double y, double theta, double radius)
 {
-    goalRegion = GoalState(x, y, radius, theta);
+    _goalRegion = GoalState(x, y, radius, theta);
 }
 
-void WorkspaceGraph::defineFreespace(double newMinX, double newMinY, double newMinTheta, double newMaxX,
-    double newMaxY, double newMaxTheta)
+void WorkspaceGraph::defineFreespace(double minX, double minY, double minTheta, double maxX, double maxY, double maxTheta)
 {
-    minX = newMinX;
-    minY = newMinY;
-    minTheta = newMinTheta;
-    maxX = newMaxX;
-    maxY = newMaxY;
-    maxTheta = newMaxTheta;
+    _minPoint = Point(minX, minY);
+    _maxPoint = Point(maxX, maxY);
+    _minTheta = minTheta;
+    _maxTheta = maxTheta;
 }
 
-ConfigspaceNode* WorkspaceGraph::checkSafety(ConfigspaceNode newNode, ConfigspaceNode * neighbors)
+vector<ConfigspaceNode> WorkspaceGraph::checkSafety(ConfigspaceNode newNode, ConfigspaceNode * neighbors)
 {
     // determine number of nodes in neighbors and set the
     // size of the safe neighbors array based on this
     int numNeighbors = 0;
     while (neighbors[numNeighbors].id()) { numNeighbors++; }
-    ConfigspaceNode* safeNeighbors = (ConfigspaceNode*)calloc(numNeighbors + 1, sizeof(ConfigspaceNode));
+
+    vector<ConfigspaceNode> safeNeighbors;
 
     // check the distance of each obstacle to the newNode
     // and the radius of each obstacle to determine possibility
     // of collision
     double nodeCircleRad, obsDist, midpointX, midpointY;
-    int safeNeighborCount = 0;
     bool safetyCheck = true;
 
     for (int i = 0; i < numNeighbors; i++)
@@ -112,7 +132,7 @@ ConfigspaceNode* WorkspaceGraph::checkSafety(ConfigspaceNode newNode, Configspac
         // check the given neighbor for all obstacles
         // only add it if collision is not a risk across
         // all obstacles
-        for (Obstacle o : obstacles)
+        for (Obstacle o : _obstacles)
         {
             if (o.intersects(pathObstacle))
             {
@@ -121,21 +141,19 @@ ConfigspaceNode* WorkspaceGraph::checkSafety(ConfigspaceNode newNode, Configspac
             }
         }
         if (safetyCheck)
-        {
-            safeNeighbors[safeNeighborCount] = neighbors[i];
-            safeNeighborCount++;
-        }
+            safeNeighbors.push_back(neighbors[i]);
     }
 
-    ResetArraySize<ConfigspaceNode>(&safeNeighbors, numNeighbors, safeNeighborCount + 1);
-    safeNeighbors[numNeighbors].setId(0);
+    safeNeighbors.push_back(ConfigspaceNode());
+    safeNeighbors.back().setId(0);
+
     return safeNeighbors;
 }
 
 bool WorkspaceGraph::obstacleInFreespace(double xObs, double yObs, double radiusObs)
 {
-    if ((xObs - radiusObs < maxX && xObs + radiusObs > minX) &&
-        (yObs - radiusObs < maxY && yObs + radiusObs > minY))
+    if ((xObs - radiusObs < maxX() && xObs + radiusObs > minX()) &&
+        (yObs - radiusObs < maxY() && yObs + radiusObs > minY()))
         return true;
     
     return false;
@@ -143,13 +161,13 @@ bool WorkspaceGraph::obstacleInFreespace(double xObs, double yObs, double radius
 
 void WorkspaceGraph::addObstacle(double x, double y, double radius)
 {
-    obstacles.push_back(Obstacle(x, y, radius));
+    _obstacles.push_back(Obstacle(x, y, radius));
 }
 
 bool WorkspaceGraph::atGate(ConfigspaceNode node)
 {
-    double dist = hypot((node.x() - goalRegion.x()), (node.y() - goalRegion.y()));
-    return dist <= goalRegion.radius();
+    double dist = hypot((node.x() - _goalRegion.x()), (node.y() - _goalRegion.y()));
+    return dist <= _goalRegion.radius();
 }
 
 ConfigspaceNode WorkspaceGraph::extendToNode(ConfigspaceNode parentNode, ConfigspaceNode newNode, double epsilon)
@@ -176,7 +194,7 @@ ConfigspaceNode WorkspaceGraph::extendToNode(ConfigspaceNode parentNode, Configs
 
 bool WorkspaceGraph::checkForCollision(ConfigspaceNode node)
 {
-    for (Obstacle o : obstacles)
+    for (Obstacle o : _obstacles)
         if (o.intersects(node))
             return true;
     return false;
@@ -192,8 +210,8 @@ bool WorkspaceGraph::checkAtGoal(ConfigspaceNode node)
 {
     // update vehicle state to temp node
     State s(node.x(), node.y(), node.theta);
-    vehicle.updateState(s);
+    _vehicle.updateState(s);
 
-    double distToGoal = hypot((vehicle.state().x() - goalRegion.x()), (vehicle.state().y() - goalRegion.y()));
-    return distToGoal < (goalRegion.radius() + vehicle.boundingRadius());
+    double distToGoal = hypot((_vehicle.state().x() - _goalRegion.x()), (_vehicle.state().y() - _goalRegion.y()));
+    return distToGoal < (_goalRegion.radius() + _vehicle.boundingRadius());
 }
