@@ -72,7 +72,7 @@ class ConfigspaceGraph : Rectangle
         int findNodePlacement(int nodeId);
 
         // print data from the graph for displaying
-        void printData(int probNum, ConfigspaceNode finalNode);
+        void printData(ConfigspaceNode finalNode, int probNum = 1);
 
         // finds the node closest to the given node
         // returns pointer to the closest node
