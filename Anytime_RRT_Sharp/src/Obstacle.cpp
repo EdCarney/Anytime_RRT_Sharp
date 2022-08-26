@@ -2,26 +2,26 @@
 
 Obstacle::Obstacle()
 {
-    buildObstacle();
+    _buildObstacle();
 }
 
-Obstacle::Obstacle(double xVal, double yVal, double r)
+Obstacle::Obstacle(double x, double y, double radius)
 {
-    buildObstacle();
-    _x = xVal;
-    _y = yVal;
-    _radius = r;
+    _buildObstacle();
+    _x = x;
+    _y = y;
+    _radius = radius;
 }
 
-Obstacle::Obstacle(Point pos, double r)
+Obstacle::Obstacle(Point pos, double radius)
 {
-    buildObstacle();
+    _buildObstacle();
     _x = pos.x();
     _y = pos.y();
-    _radius = r;
+    _radius = radius;
 }
 
-void Obstacle::buildObstacle()
+void Obstacle::_buildObstacle()
 {
     _x = 0.0;
     _y = 0.0;
@@ -51,19 +51,4 @@ bool Obstacle::Intersects(Rectangle rect)
     bool inYLimits = minY < rect.maxY() && maxY > rect.minY();
 
     return inXLimits && inYLimits;
-}
-
-double Obstacle::GetX()
-{
-    return _x;
-}
-
-double Obstacle::GetY()
-{
-    return _y;
-}
-
-double Obstacle::GetRadius()
-{
-    return _radius;
 }

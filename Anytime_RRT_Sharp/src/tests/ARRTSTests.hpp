@@ -65,9 +65,9 @@ TEST(ARRTS_Obstacles, AddOneObstacle_CheckVal)
     ArrtsService service;
     service.AddObstacle(1, 2, 3);
     Obstacle obs = service.GetObstacle(0);
-    GTEST_ASSERT_EQ(obs.GetX(), 1);
-    GTEST_ASSERT_EQ(obs.GetY(), 2);
-    GTEST_ASSERT_EQ(obs.GetRadius(), 3);
+    GTEST_ASSERT_EQ(obs.x(), 1);
+    GTEST_ASSERT_EQ(obs.y(), 2);
+    GTEST_ASSERT_EQ(obs.radius(), 3);
 }
 
 TEST(ARRTS_Obstacles, AddMultipleObstacle_CheckNum)
@@ -92,17 +92,17 @@ TEST(ARRTS_Obstacles, AddMultipleObstacle_CheckVals)
     Obstacle obs2 = service.GetObstacle(1);
     Obstacle obs3 = service.GetObstacle(2);
     
-    GTEST_ASSERT_EQ(obs1.GetX(), 1);
-    GTEST_ASSERT_EQ(obs2.GetX(), 2);
-    GTEST_ASSERT_EQ(obs3.GetX(), 3);
+    GTEST_ASSERT_EQ(obs1.x(), 1);
+    GTEST_ASSERT_EQ(obs2.x(), 2);
+    GTEST_ASSERT_EQ(obs3.x(), 3);
 
-    GTEST_ASSERT_EQ(obs1.GetY(), 4);
-    GTEST_ASSERT_EQ(obs2.GetY(), 5);
-    GTEST_ASSERT_EQ(obs3.GetY(), 6);
+    GTEST_ASSERT_EQ(obs1.y(), 4);
+    GTEST_ASSERT_EQ(obs2.y(), 5);
+    GTEST_ASSERT_EQ(obs3.y(), 6);
 
-    GTEST_ASSERT_EQ(obs1.GetRadius(), 7);
-    GTEST_ASSERT_EQ(obs2.GetRadius(), 8);
-    GTEST_ASSERT_EQ(obs3.GetRadius(), 9);
+    GTEST_ASSERT_EQ(obs1.radius(), 7);
+    GTEST_ASSERT_EQ(obs2.radius(), 8);
+    GTEST_ASSERT_EQ(obs3.radius(), 9);
 }
 
 TEST(ARRTS_Obstacles, AddSingleThenSingleObstacle_CheckNum)
@@ -122,14 +122,14 @@ TEST(ARRTS_Obstacles, AddSingleThenSingleObstacle_CheckVals)
     Obstacle obs1 = service.GetObstacle(0);
     Obstacle obs2 = service.GetObstacle(1);
 
-    GTEST_ASSERT_EQ(obs1.GetX(), 1);
-    GTEST_ASSERT_EQ(obs2.GetX(), 4);
+    GTEST_ASSERT_EQ(obs1.x(), 1);
+    GTEST_ASSERT_EQ(obs2.x(), 4);
 
-    GTEST_ASSERT_EQ(obs1.GetY(), 2);
-    GTEST_ASSERT_EQ(obs2.GetY(), 5);
+    GTEST_ASSERT_EQ(obs1.y(), 2);
+    GTEST_ASSERT_EQ(obs2.y(), 5);
 
-    GTEST_ASSERT_EQ(obs1.GetRadius(), 3);
-    GTEST_ASSERT_EQ(obs2.GetRadius(), 6);
+    GTEST_ASSERT_EQ(obs1.radius(), 3);
+    GTEST_ASSERT_EQ(obs2.radius(), 6);
 }
 
 TEST(ARRTS_Obstacles, AddMultipleThenMultipleObstacle_CheckNum)
@@ -163,20 +163,20 @@ TEST(ARRTS_Obstacles, AddMultipleThenMultipleObstacle_CheckVals)
     Obstacle obs3 = service.GetObstacle(2);
     Obstacle obs4 = service.GetObstacle(3);
 
-    GTEST_ASSERT_EQ(obs1.GetX(), 1);
-    GTEST_ASSERT_EQ(obs2.GetX(), 2);
-    GTEST_ASSERT_EQ(obs3.GetX(), 7);
-    GTEST_ASSERT_EQ(obs4.GetX(), 8);
+    GTEST_ASSERT_EQ(obs1.x(), 1);
+    GTEST_ASSERT_EQ(obs2.x(), 2);
+    GTEST_ASSERT_EQ(obs3.x(), 7);
+    GTEST_ASSERT_EQ(obs4.x(), 8);
 
-    GTEST_ASSERT_EQ(obs1.GetY(), 3);
-    GTEST_ASSERT_EQ(obs2.GetY(), 4);
-    GTEST_ASSERT_EQ(obs3.GetY(), 9);
-    GTEST_ASSERT_EQ(obs4.GetY(), 10);
+    GTEST_ASSERT_EQ(obs1.y(), 3);
+    GTEST_ASSERT_EQ(obs2.y(), 4);
+    GTEST_ASSERT_EQ(obs3.y(), 9);
+    GTEST_ASSERT_EQ(obs4.y(), 10);
 
-    GTEST_ASSERT_EQ(obs1.GetRadius(), 5);
-    GTEST_ASSERT_EQ(obs2.GetRadius(), 6);
-    GTEST_ASSERT_EQ(obs3.GetRadius(), 11);
-    GTEST_ASSERT_EQ(obs4.GetRadius(), 12);
+    GTEST_ASSERT_EQ(obs1.radius(), 5);
+    GTEST_ASSERT_EQ(obs2.radius(), 6);
+    GTEST_ASSERT_EQ(obs3.radius(), 11);
+    GTEST_ASSERT_EQ(obs4.radius(), 12);
 }
 
 TEST(ARRTS_Obstacles, AddSingleThenMultipleObstacle_CheckNum)
@@ -204,20 +204,20 @@ TEST(ARRTS_Obstacles, AddSingleThenMultipleObstacle_CheckVals)
     Obstacle obs3 = service.GetObstacle(2);
     Obstacle obs4 = service.GetObstacle(3);
 
-    GTEST_ASSERT_EQ(obs1.GetX(), 1);
-    GTEST_ASSERT_EQ(obs2.GetX(), 4);
-    GTEST_ASSERT_EQ(obs3.GetX(), 5);
-    GTEST_ASSERT_EQ(obs4.GetX(), 6);
+    GTEST_ASSERT_EQ(obs1.x(), 1);
+    GTEST_ASSERT_EQ(obs2.x(), 4);
+    GTEST_ASSERT_EQ(obs3.x(), 5);
+    GTEST_ASSERT_EQ(obs4.x(), 6);
 
-    GTEST_ASSERT_EQ(obs1.GetY(), 2);
-    GTEST_ASSERT_EQ(obs2.GetY(), 7);
-    GTEST_ASSERT_EQ(obs3.GetY(), 8);
-    GTEST_ASSERT_EQ(obs4.GetY(), 9);
+    GTEST_ASSERT_EQ(obs1.y(), 2);
+    GTEST_ASSERT_EQ(obs2.y(), 7);
+    GTEST_ASSERT_EQ(obs3.y(), 8);
+    GTEST_ASSERT_EQ(obs4.y(), 9);
 
-    GTEST_ASSERT_EQ(obs1.GetRadius(), 3);
-    GTEST_ASSERT_EQ(obs2.GetRadius(), 10);
-    GTEST_ASSERT_EQ(obs3.GetRadius(), 11);
-    GTEST_ASSERT_EQ(obs4.GetRadius(), 12);
+    GTEST_ASSERT_EQ(obs1.radius(), 3);
+    GTEST_ASSERT_EQ(obs2.radius(), 10);
+    GTEST_ASSERT_EQ(obs3.radius(), 11);
+    GTEST_ASSERT_EQ(obs4.radius(), 12);
 }
 
 TEST(ARRTS_Obstacles, AddMultipleThenSingleObstacle_CheckNum)
@@ -245,20 +245,20 @@ TEST(ARRTS_Obstacles, AddMultipleThenSingleObstacle_CheckVals)
     Obstacle obs3 = service.GetObstacle(2);
     Obstacle obs4 = service.GetObstacle(3);
 
-    GTEST_ASSERT_EQ(obs1.GetX(), 4);
-    GTEST_ASSERT_EQ(obs2.GetX(), 5);
-    GTEST_ASSERT_EQ(obs3.GetX(), 6);
-    GTEST_ASSERT_EQ(obs4.GetX(), 1);
+    GTEST_ASSERT_EQ(obs1.x(), 4);
+    GTEST_ASSERT_EQ(obs2.x(), 5);
+    GTEST_ASSERT_EQ(obs3.x(), 6);
+    GTEST_ASSERT_EQ(obs4.x(), 1);
 
-    GTEST_ASSERT_EQ(obs1.GetY(), 7);
-    GTEST_ASSERT_EQ(obs2.GetY(), 8);
-    GTEST_ASSERT_EQ(obs3.GetY(), 9);
-    GTEST_ASSERT_EQ(obs4.GetY(), 2);
+    GTEST_ASSERT_EQ(obs1.y(), 7);
+    GTEST_ASSERT_EQ(obs2.y(), 8);
+    GTEST_ASSERT_EQ(obs3.y(), 9);
+    GTEST_ASSERT_EQ(obs4.y(), 2);
 
-    GTEST_ASSERT_EQ(obs1.GetRadius(), 10);
-    GTEST_ASSERT_EQ(obs2.GetRadius(), 11);
-    GTEST_ASSERT_EQ(obs3.GetRadius(), 12);
-    GTEST_ASSERT_EQ(obs4.GetRadius(), 3);
+    GTEST_ASSERT_EQ(obs1.radius(), 10);
+    GTEST_ASSERT_EQ(obs2.radius(), 11);
+    GTEST_ASSERT_EQ(obs3.radius(), 12);
+    GTEST_ASSERT_EQ(obs4.radius(), 3);
 }
 
 TEST(ARRTS_Obstacles, AddFromFile_CheckNum)
@@ -280,17 +280,17 @@ TEST(ARRTS_Obstacles, AddFromFile_CheckVals)
     Obstacle obs2 = service.GetObstacle(11);
     Obstacle obs3 = service.GetObstacle(22);
 
-    GTEST_ASSERT_EQ(obs1.GetX(), 80);
-    GTEST_ASSERT_EQ(obs2.GetX(), 35);
-    GTEST_ASSERT_EQ(obs3.GetX(), 60);
+    GTEST_ASSERT_EQ(obs1.x(), 80);
+    GTEST_ASSERT_EQ(obs2.x(), 35);
+    GTEST_ASSERT_EQ(obs3.x(), 60);
 
-    GTEST_ASSERT_EQ(obs1.GetY(), 40);
-    GTEST_ASSERT_EQ(obs2.GetY(), 80);
-    GTEST_ASSERT_EQ(obs3.GetY(), 100);
+    GTEST_ASSERT_EQ(obs1.y(), 40);
+    GTEST_ASSERT_EQ(obs2.y(), 80);
+    GTEST_ASSERT_EQ(obs3.y(), 100);
 
-    GTEST_ASSERT_EQ(obs1.GetRadius(), 8);
-    GTEST_ASSERT_EQ(obs2.GetRadius(), 8);
-    GTEST_ASSERT_EQ(obs3.GetRadius(), 8);
+    GTEST_ASSERT_EQ(obs1.radius(), 8);
+    GTEST_ASSERT_EQ(obs2.radius(), 8);
+    GTEST_ASSERT_EQ(obs3.radius(), 8);
 }
 
 TEST(ARRTS_Obstacles, GetFirstObstacleWhenNone)
