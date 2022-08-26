@@ -6,8 +6,8 @@
 TEST(ARRTS_StartState, SetAndGet)
 {
     ArrtsService service;
-    service.SetStartState(5, 6, 7);
-    State state = service.GetStartState();
+    service.setStartState(5, 6, 7);
+    State state = service.startState();
     GTEST_ASSERT_EQ(state.x(), 5);
     GTEST_ASSERT_EQ(state.y(), 6);
     GTEST_ASSERT_EQ(state.theta(), 7);
@@ -16,9 +16,9 @@ TEST(ARRTS_StartState, SetAndGet)
 TEST(ARRTS_StartState, SetUpdateAndGet)
 {
     ArrtsService service;
-    service.SetStartState(5, 6, 7);
-    service.SetStartState(8, 9, 10);
-    State state = service.GetStartState();
+    service.setStartState(5, 6, 7);
+    service.setStartState(8, 9, 10);
+    State state = service.startState();
     GTEST_ASSERT_EQ(state.x(), 8);
     GTEST_ASSERT_EQ(state.y(), 9);
     GTEST_ASSERT_EQ(state.theta(), 10);
@@ -31,8 +31,8 @@ TEST(ARRTS_StartState, SetUpdateAndGet)
 TEST(ARRTS_GoalState, SetAndGet)
 {
     ArrtsService service;
-    service.SetGoalState(5, 6, 7);
-    State state = service.GetGoalState();
+    service.setGoalState(5, 6, 7);
+    State state = service.goalState();
     GTEST_ASSERT_EQ(state.x(), 5);
     GTEST_ASSERT_EQ(state.y(), 6);
     GTEST_ASSERT_EQ(state.theta(), 7);
@@ -41,9 +41,9 @@ TEST(ARRTS_GoalState, SetAndGet)
 TEST(ARRTS_GoalState, SetUpdateAndGet)
 {
     ArrtsService service;
-    service.SetGoalState(5, 6, 7);
-    service.SetGoalState(8, 9, 10);
-    State state = service.GetGoalState();
+    service.setGoalState(5, 6, 7);
+    service.setGoalState(8, 9, 10);
+    State state = service.goalState();
     GTEST_ASSERT_EQ(state.x(), 8);
     GTEST_ASSERT_EQ(state.y(), 9);
     GTEST_ASSERT_EQ(state.theta(), 10);
@@ -56,15 +56,15 @@ TEST(ARRTS_GoalState, SetUpdateAndGet)
 TEST(ARRTS_Obstacles, AddOneObstacle_CheckNum)
 {
     ArrtsService service;
-    service.AddObstacle(1, 1, 1);
-    GTEST_ASSERT_EQ(service.GetNumObstacles(), 1);
+    service.addObstacle(1, 1, 1);
+    GTEST_ASSERT_EQ(service.obstacles().size(), 1);
 }
 
 TEST(ARRTS_Obstacles, AddOneObstacle_CheckVal)
 {
     ArrtsService service;
-    service.AddObstacle(1, 2, 3);
-    Obstacle obs = service.GetObstacle(0);
+    service.addObstacle(1, 2, 3);
+    Obstacle obs = service.obstacles(0);
     GTEST_ASSERT_EQ(obs.x(), 1);
     GTEST_ASSERT_EQ(obs.y(), 2);
     GTEST_ASSERT_EQ(obs.radius(), 3);
@@ -76,8 +76,8 @@ TEST(ARRTS_Obstacles, AddMultipleObstacle_CheckNum)
     const double x[] = { 1, 2, 3 };
     const double y[] = { 1, 2, 3 };
     const double r[] = { 1, 2, 3 };
-    service.AddObstacles(x, y, r, 3);
-    GTEST_ASSERT_EQ(service.GetNumObstacles(), 3);
+    service.addObstacles(x, y, r, 3);
+    GTEST_ASSERT_EQ(service.obstacles().size(), 3);
 }
 
 TEST(ARRTS_Obstacles, AddMultipleObstacle_CheckVals)
@@ -86,11 +86,11 @@ TEST(ARRTS_Obstacles, AddMultipleObstacle_CheckVals)
     const double x[] = { 1, 2, 3 };
     const double y[] = { 4, 5, 6 };
     const double r[] = { 7, 8, 9 };
-    service.AddObstacles(x, y, r, 3);
+    service.addObstacles(x, y, r, 3);
 
-    Obstacle obs1 = service.GetObstacle(0);
-    Obstacle obs2 = service.GetObstacle(1);
-    Obstacle obs3 = service.GetObstacle(2);
+    Obstacle obs1 = service.obstacles(0);
+    Obstacle obs2 = service.obstacles(1);
+    Obstacle obs3 = service.obstacles(2);
     
     GTEST_ASSERT_EQ(obs1.x(), 1);
     GTEST_ASSERT_EQ(obs2.x(), 2);
@@ -108,19 +108,19 @@ TEST(ARRTS_Obstacles, AddMultipleObstacle_CheckVals)
 TEST(ARRTS_Obstacles, AddSingleThenSingleObstacle_CheckNum)
 {
     ArrtsService service;
-    service.AddObstacle(1, 2, 3);
-    service.AddObstacle(1, 2, 3);
-    GTEST_ASSERT_EQ(service.GetNumObstacles(), 2);
+    service.addObstacle(1, 2, 3);
+    service.addObstacle(1, 2, 3);
+    GTEST_ASSERT_EQ(service.obstacles().size(), 2);
 }
 
 TEST(ARRTS_Obstacles, AddSingleThenSingleObstacle_CheckVals)
 {
     ArrtsService service;
-    service.AddObstacle(1, 2, 3);
-    service.AddObstacle(4, 5, 6);
+    service.addObstacle(1, 2, 3);
+    service.addObstacle(4, 5, 6);
 
-    Obstacle obs1 = service.GetObstacle(0);
-    Obstacle obs2 = service.GetObstacle(1);
+    Obstacle obs1 = service.obstacles(0);
+    Obstacle obs2 = service.obstacles(1);
 
     GTEST_ASSERT_EQ(obs1.x(), 1);
     GTEST_ASSERT_EQ(obs2.x(), 4);
@@ -141,9 +141,9 @@ TEST(ARRTS_Obstacles, AddMultipleThenMultipleObstacle_CheckNum)
     const double x2[] = { 1, 2 };
     const double y2[] = { 1, 2 };
     const double r2[] = { 1, 2 };
-    service.AddObstacles(x1, y1, r1, 2);
-    service.AddObstacles(x2, y2, r2, 2);
-    GTEST_ASSERT_EQ(service.GetNumObstacles(), 4);
+    service.addObstacles(x1, y1, r1, 2);
+    service.addObstacles(x2, y2, r2, 2);
+    GTEST_ASSERT_EQ(service.obstacles().size(), 4);
 }
 
 TEST(ARRTS_Obstacles, AddMultipleThenMultipleObstacle_CheckVals)
@@ -155,13 +155,13 @@ TEST(ARRTS_Obstacles, AddMultipleThenMultipleObstacle_CheckVals)
     const double x2[] = { 7, 8 };
     const double y2[] = { 9, 10 };
     const double r2[] = { 11, 12 };
-    service.AddObstacles(x1, y1, r1, 2);
-    service.AddObstacles(x2, y2, r2, 2);
+    service.addObstacles(x1, y1, r1, 2);
+    service.addObstacles(x2, y2, r2, 2);
     
-    Obstacle obs1 = service.GetObstacle(0);
-    Obstacle obs2 = service.GetObstacle(1);
-    Obstacle obs3 = service.GetObstacle(2);
-    Obstacle obs4 = service.GetObstacle(3);
+    Obstacle obs1 = service.obstacles(0);
+    Obstacle obs2 = service.obstacles(1);
+    Obstacle obs3 = service.obstacles(2);
+    Obstacle obs4 = service.obstacles(3);
 
     GTEST_ASSERT_EQ(obs1.x(), 1);
     GTEST_ASSERT_EQ(obs2.x(), 2);
@@ -182,27 +182,27 @@ TEST(ARRTS_Obstacles, AddMultipleThenMultipleObstacle_CheckVals)
 TEST(ARRTS_Obstacles, AddSingleThenMultipleObstacle_CheckNum)
 {
     ArrtsService service;
-    service.AddObstacle(1, 2, 3);
+    service.addObstacle(1, 2, 3);
     const double x[] = { 1, 2, 3 };
     const double y[] = { 1, 2, 3 };
     const double r[] = { 1, 2, 3 };
-    service.AddObstacles(x, y, r, 3);
-    GTEST_ASSERT_EQ(service.GetNumObstacles(), 4);
+    service.addObstacles(x, y, r, 3);
+    GTEST_ASSERT_EQ(service.obstacles().size(), 4);
 }
 
 TEST(ARRTS_Obstacles, AddSingleThenMultipleObstacle_CheckVals)
 {
     ArrtsService service;
-    service.AddObstacle(1, 2, 3);
+    service.addObstacle(1, 2, 3);
     const double x[] = { 4, 5, 6 };
     const double y[] = { 7, 8, 9 };
     const double r[] = { 10, 11, 12 };
-    service.AddObstacles(x, y, r, 3);
+    service.addObstacles(x, y, r, 3);
     
-    Obstacle obs1 = service.GetObstacle(0);
-    Obstacle obs2 = service.GetObstacle(1);
-    Obstacle obs3 = service.GetObstacle(2);
-    Obstacle obs4 = service.GetObstacle(3);
+    Obstacle obs1 = service.obstacles(0);
+    Obstacle obs2 = service.obstacles(1);
+    Obstacle obs3 = service.obstacles(2);
+    Obstacle obs4 = service.obstacles(3);
 
     GTEST_ASSERT_EQ(obs1.x(), 1);
     GTEST_ASSERT_EQ(obs2.x(), 4);
@@ -226,9 +226,9 @@ TEST(ARRTS_Obstacles, AddMultipleThenSingleObstacle_CheckNum)
     const double x[] = { 1, 2, 3 };
     const double y[] = { 1, 2, 3 };
     const double r[] = { 1, 2, 3 };
-    service.AddObstacles(x, y, r, 3);
-    service.AddObstacle(1, 2, 3);
-    GTEST_ASSERT_EQ(service.GetNumObstacles(), 4);
+    service.addObstacles(x, y, r, 3);
+    service.addObstacle(1, 2, 3);
+    GTEST_ASSERT_EQ(service.obstacles().size(), 4);
 }
 
 TEST(ARRTS_Obstacles, AddMultipleThenSingleObstacle_CheckVals)
@@ -237,13 +237,13 @@ TEST(ARRTS_Obstacles, AddMultipleThenSingleObstacle_CheckVals)
     const double x[] = { 4, 5, 6 };
     const double y[] = { 7, 8, 9 };
     const double r[] = { 10, 11, 12 };
-    service.AddObstacles(x, y, r, 3);
-    service.AddObstacle(1, 2, 3);
+    service.addObstacles(x, y, r, 3);
+    service.addObstacle(1, 2, 3);
     
-    Obstacle obs1 = service.GetObstacle(0);
-    Obstacle obs2 = service.GetObstacle(1);
-    Obstacle obs3 = service.GetObstacle(2);
-    Obstacle obs4 = service.GetObstacle(3);
+    Obstacle obs1 = service.obstacles(0);
+    Obstacle obs2 = service.obstacles(1);
+    Obstacle obs3 = service.obstacles(2);
+    Obstacle obs4 = service.obstacles(3);
 
     GTEST_ASSERT_EQ(obs1.x(), 4);
     GTEST_ASSERT_EQ(obs2.x(), 5);
@@ -265,20 +265,20 @@ TEST(ARRTS_Obstacles, AddFromFile_CheckNum)
 {
     ArrtsService service;
     FILE* file = fopen("./test/obstacles.txt", "r");
-    service.AddObstaclesFromFile(file);
+    service.addObstaclesFromFile(file);
 
-    GTEST_ASSERT_EQ(service.GetNumObstacles(), 23);
+    GTEST_ASSERT_EQ(service.obstacles().size(), 23);
 }
 
 TEST(ARRTS_Obstacles, AddFromFile_CheckVals)
 {
     ArrtsService service;
     FILE* file = fopen("./test/obstacles.txt", "r");
-    service.AddObstaclesFromFile(file);
+    service.addObstaclesFromFile(file);
 
-    Obstacle obs1 = service.GetObstacle(0);
-    Obstacle obs2 = service.GetObstacle(11);
-    Obstacle obs3 = service.GetObstacle(22);
+    Obstacle obs1 = service.obstacles(0);
+    Obstacle obs2 = service.obstacles(11);
+    Obstacle obs3 = service.obstacles(22);
 
     GTEST_ASSERT_EQ(obs1.x(), 80);
     GTEST_ASSERT_EQ(obs2.x(), 35);
@@ -296,20 +296,20 @@ TEST(ARRTS_Obstacles, AddFromFile_CheckVals)
 TEST(ARRTS_Obstacles, GetFirstObstacleWhenNone)
 {
     ArrtsService service;
-    EXPECT_ANY_THROW(service.GetObstacle(0));
+    EXPECT_ANY_THROW(service.obstacles(0));
 }
 
 TEST(ARRTS_Obstacles, GetNegativeObstacleWhenNone)
 {
     ArrtsService service;
-    EXPECT_ANY_THROW(service.GetObstacle(-1));
+    EXPECT_ANY_THROW(service.obstacles(-1));
 }
 
 TEST(ARRTS_Obstacles, GetSecondObstacleWhenOne)
 {
     ArrtsService service;
-    service.AddObstacle(1, 2, 3);
-    EXPECT_ANY_THROW(service.GetObstacle(1));
+    service.addObstacle(1, 2, 3);
+    EXPECT_ANY_THROW(service.obstacles(1));
 }
 
 #pragma endregion //ARRTS_Obstacles
