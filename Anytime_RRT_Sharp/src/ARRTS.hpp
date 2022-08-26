@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <stdexcept>
 #include <string>
+#include <vector>
 #include "cppshrhelp.hpp"
 #include "Geometry.hpp"
 #include "Obstacle.hpp"
@@ -15,32 +16,26 @@ using namespace std;
 class DLL_EXPORT ArrtsService
 {
     private:
-        Obstacle* obstacles;
-        State startState;
-        State goalState;
-        Point* vehicleOutline;
-
-        int numObstacles;
-        int numVehiclePoints;
+        vector<Obstacle> _obstacles;
+        vector<Point> _vehicleOutline;
+        State _startState;
+        State _goalState;
 
     public:
-        ArrtsService();
+        void setGoalState(double x, double y, double theta);
+        State goalState();
 
-        void SetGoalState(double x, double y, double theta);
-        State GetGoalState();
+        void setStartState(double x, double y, double theta);
+        State startState();
 
-        void SetStartState(double x, double y, double theta);
-        State GetStartState();
-
-        void AddObstacle(double x, double y, double r);
-        void AddObstacles(const double* x, const double* y, const double* r, int numObs);
-        void AddObstaclesFromFile(FILE* file);
-        Obstacle* GetObstacles();
-        Obstacle GetObstacle(int i);
-        int GetNumObstacles();
+        void addObstacle(double x, double y, double r);
+        void addObstacles(const double* x, const double* y, const double* r, int numObs);
+        void addObstaclesFromFile(FILE* file);
+        vector<Obstacle> obstacles();
+        Obstacle obstacles(int i);
 
         // runs ARRTS algorithm
-        State* CalculatePath(double standoffRange, double positionBuffer, double freespaceBuffer);
+        State* calculatePath(double standoffRange, double positionBuffer, double freespaceBuffer);
 };
 
 #endif
