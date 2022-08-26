@@ -2,7 +2,8 @@
 #include <math.h>
 #include <vector>
 #include "Geometry.hpp"
-#include "Utility.hpp"
+
+using namespace std;
 
 #ifndef VEHICLE_H
 #define VEHICLE_H
