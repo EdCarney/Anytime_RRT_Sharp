@@ -99,7 +99,7 @@ int main()
 	Vehicle v(vehiclePointXPosition, vehiclePointYPosition, numVehiclePoints);
 	G_workspace.vehicle = v;
 
-	printf("ObsVol: %f, NumObs: %d, Freespace: [%f, %f, %f, %f]\n", obsVol, G_workspace.numObstacles, xMin, xMax, yMin, yMax);
+	printf("ObsVol: %f, NumObs: %lu, Freespace: [%f, %f, %f, %f]\n", obsVol, G_workspace.obstacles.size(), xMin, xMax, yMin, yMax);
 	printf("UAV Location: %f, %f, %f\n", G_workspace.goalRegion.x(), G_workspace.goalRegion.y(), G_workspace.goalRegion.radius());
 	printf("Root Node:    %f, %f, %f\n", G_configspace.nodes[0].x(), G_configspace.nodes[0].y(), G_configspace.nodes[0].theta);
 

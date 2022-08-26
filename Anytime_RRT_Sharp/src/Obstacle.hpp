@@ -12,9 +12,9 @@ class Obstacle : public Circle
         Obstacle();
         Obstacle(double x, double y, double radius);
         Obstacle(Point p, double radius);
-        bool Intersects(Point p);
-        bool Intersects(Circle c);
-        bool Intersects(Rectangle r);
+        bool intersects(Point p);
+        bool intersects(Circle c);
+        bool intersects(Rectangle r);
 };
 
 #endif
