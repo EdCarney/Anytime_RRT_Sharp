@@ -290,7 +290,7 @@ ConfigspaceNode ConfigspaceGraph::findBestNeighbor(ConfigspaceNode newNode, vect
 ConfigspaceNode ConfigspaceGraph::addNode(ConfigspaceNode node)
 {
     node.setId(++numNodeInd);
-	printf("Adding Node %d at (%f, %f, %f)\n", node.id(), node.x(), node.y(), node.theta);
+	//printf("Adding Node %d at (%f, %f, %f)\n", node.id(), node.x(), node.y(), node.theta);
     nodes.push_back(node);
     return node;
 }
