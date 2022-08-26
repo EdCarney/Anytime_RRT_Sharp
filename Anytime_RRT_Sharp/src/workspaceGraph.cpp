@@ -208,8 +208,8 @@ bool WorkspaceGraph::checkAtGoal(ConfigspaceNode node)
 {
 	// update vehicle state to temp node
 	State s(node.GetX(), node.GetY(), node.theta);
-	vehicle.UpdateState(s);
+	vehicle.updateState(s);
 
-	double distToGoal = hypot((vehicle.GetState().GetX() - goalRegion.GetX()), (vehicle.GetState().GetY() - goalRegion.GetY()));
-	return distToGoal < (goalRegion.GetRadius() + vehicle.GetBoundingRadius());
+	double distToGoal = hypot((vehicle.state().GetX() - goalRegion.GetX()), (vehicle.state().GetY() - goalRegion.GetY()));
+	return distToGoal < (goalRegion.GetRadius() + vehicle.boundingRadius());
 }
