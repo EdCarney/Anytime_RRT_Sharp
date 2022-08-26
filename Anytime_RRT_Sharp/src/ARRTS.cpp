@@ -1,47 +1,37 @@
 #include "ARRTS.hpp"
 
-ArrtsService::ArrtsService()
+void ArrtsService::setGoalState(double x, double y, double theta)
 {
-    numObstacles = 0;
-    numVehiclePoints = 0;
-    obstacles = NULL;
-    vehicleOutline = NULL;
+    _goalState = { x, y, theta };
 }
 
-void ArrtsService::SetGoalState(double x, double y, double theta)
+State ArrtsService::goalState()
 {
-    goalState = { x, y, theta };
+    return _goalState;
 }
 
-State ArrtsService::GetGoalState()
+void ArrtsService::setStartState(double x, double y, double theta)
 {
-    return goalState;
+    _startState = { x, y, theta };
 }
 
-void ArrtsService::SetStartState(double x, double y, double theta)
+State ArrtsService::startState()
 {
-    startState = { x, y, theta };
+    return _startState;
 }
 
-State ArrtsService::GetStartState()
+void ArrtsService::addObstacle(double x, double y, double radius)
 {
-    return startState;
+    _obstacles.push_back(Obstacle(x, y, radius));
 }
 
-void ArrtsService::AddObstacle(double x, double y, double r)
+void ArrtsService::addObstacles(const double* x, const double* y, const double* radius, int numObs)
 {
-    ResetArraySize<Obstacle>(&obstacles, numObstacles, numObstacles + 1);
-    obstacles[numObstacles++] = Obstacle(x, y, r);
-}
-
-void ArrtsService::AddObstacles(const double* x, const double* y, const double* r, int numObs)
-{
-    ResetArraySize<Obstacle>(&obstacles, numObstacles, numObstacles + numObs);
     for (int i = 0; i < numObs; ++i)
-        obstacles[numObstacles++] = Obstacle(x[i], y[i], r[i]);
+        _obstacles.push_back(Obstacle(x[i], y[i], radius[i]));
 }
 
-void ArrtsService::AddObstaclesFromFile(FILE* file)
+void ArrtsService::addObstaclesFromFile(FILE* file)
 {
     if (file == NULL)
         throw runtime_error("NULL file pointer in AddObstaclesFromFile");
@@ -69,28 +59,23 @@ void ArrtsService::AddObstaclesFromFile(FILE* file)
     fclose(file);
 
     // add points
-    AddObstacles(x, y, r, obsCount);
+    addObstacles(x, y, r, obsCount);
 }
 
-Obstacle* ArrtsService::GetObstacles()
+vector<Obstacle> ArrtsService::obstacles()
 {
-    return obstacles;
+    return _obstacles;
 }
 
-Obstacle ArrtsService::GetObstacle(int i)
+Obstacle ArrtsService::obstacles(int i)
 {
-    if (i >= numObstacles || i < 0)
+    if (i >= _obstacles.size() || i < 0)
         throw runtime_error("Attempt to read index beyond array limits in GetObstacle");
 
-    return obstacles[i];
+    return _obstacles[i];
 }
 
-int ArrtsService::GetNumObstacles()
-{
-    return numObstacles;
-}
-
-State* ArrtsService::CalculatePath(double standoffRange, double positionBuffer, double freespaceBuffer)
+State* ArrtsService::calculatePath(double standoffRange, double positionBuffer, double freespaceBuffer)
 {
 
 }
