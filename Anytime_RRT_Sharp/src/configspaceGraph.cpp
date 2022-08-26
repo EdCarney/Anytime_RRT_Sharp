@@ -168,7 +168,7 @@ void ConfigspaceGraph::trimTreeChildren(vector<ConfigspaceNode> removeNodes, int
         removeGraphNodes(removeNodes);
 }
 
-void ConfigspaceGraph::printData(int probNum, ConfigspaceNode finalNode)
+void ConfigspaceGraph::printData(ConfigspaceNode finalNode, int probNum)
 {
     std::ofstream nodeFile, edgeFile, searchTreeFile, outputPathFile, highFidelityPath;
 

@@ -51,7 +51,6 @@ int main()
     int dimension = 2;
     int goalBiasCount = 100;
     int maxCount = 10000;
-    int tempItr = 1;
 
     ConfigspaceNode gateNode, tempNode, parentNode, newNode;
     vector<ConfigspaceNode> safeNearestNeighbors, remainingNodes;
@@ -170,7 +169,7 @@ int main()
     printf("Total number of points: %lu\n", G_configspace.nodes.size());
     printf("Final node at: (%f, %f)\n", finalNode.x(), finalNode.y());
     printf("Final cost is: %f\n", finalNode.cost);
-    G_configspace.printData(tempItr, finalNode);
+    G_configspace.printData(finalNode);
 
     return 0;
 }
