@@ -2,207 +2,207 @@
 
 Point::Point()
 {
-    x = 0;
-    y = 0;
+    _x = 0;
+    _y = 0;
 }
 
-Point::Point(double xVal, double yVal)
+Point::Point(double x, double y)
 {
-    x = xVal;
-    y = yVal;
+    _x = x;
+    _y = y;
 }
 
-double Point::GetX()
+double Point::x()
 {
-    return x;
+    return _x;
 }
 
-double Point::GetY()
+double Point::y()
 {
-    return y;
+    return _y;
 }
 
 Circle::Circle()
 {
-    x = 0;
-    y = 0;
-    radius = 0;
+    _x = 0;
+    _y = 0;
+    _radius = 0;
 }
 
-Circle::Circle(Point p, double r)
+Circle::Circle(Point p, double radius)
 {
-    x = p.GetX();
-    y = p.GetY();
-    radius = r;
+    _x = p.x();
+    _y = p.y();
+    _radius = radius;
 }
 
-Circle::Circle(double xVal, double yVal, double rVal)
+Circle::Circle(double x, double y, double radius)
 {
-    x = xVal;
-    y = yVal;
-    radius = rVal;
+    _x = x;
+    _y = y;
+    _radius = radius;
 }
 
-double Circle::GetRadius()
+double Circle::radius()
 {
-    return radius;
+    return _radius;
 }
 
 Rectangle::Rectangle()
 {
-    minPoint = Point();
-    maxPoint = Point();
+    _minPoint = Point();
+    _maxPoint = Point();
 }
 
-Rectangle::Rectangle(Point minP, Point maxP)
+Rectangle::Rectangle(Point minPoint, Point maxPoint)
 {
-    minPoint = minP;
-    maxPoint = maxP;
+    _minPoint = minPoint;
+    _maxPoint = maxPoint;
 }
 
 Rectangle::Rectangle(double minX, double minY, double maxX, double maxY)
 {
-    minPoint = Point(minX, minY);
-    maxPoint = Point(maxX, maxY);
+    _minPoint = Point(minX, minY);
+    _maxPoint = Point(maxX, maxY);
 }
 
-Point Rectangle::GetMinPoint()
+Point Rectangle::minPoint()
 {
-    return minPoint;
+    return _minPoint;
 }
 
-Point Rectangle::GetMaxPoint()
+Point Rectangle::maxPoint()
 {
-    return maxPoint;
+    return _maxPoint;
 }
 
-double Rectangle::GetMinX()
+double Rectangle::minX()
 {
-    return minPoint.GetX();
+    return _minPoint.x();
 }
 
-double Rectangle::GetMinY()
+double Rectangle::minY()
 {
-    return minPoint.GetY();
+    return _minPoint.y();
 }
 
-double Rectangle::GetMaxX()
+double Rectangle::maxX()
 {
-    return maxPoint.GetX();
+    return _maxPoint.x();
 }
 
-double Rectangle::GetMaxY()
+double Rectangle::maxY()
 {
-    return maxPoint.GetY();
+    return _maxPoint.y();
 }
 
 State::State()
 {
-    x = 0;
-    y = 0;
-    theta = 0;
+    _x = 0;
+    _y = 0;
+    _theta = 0;
 }
 
-State::State(Point p, double thetaVal)
+State::State(Point p, double theta)
 {
-    x = p.GetX();
-    y = p.GetY();
-    theta = thetaVal;
+    _x = p.x();
+    _y = p.y();
+    _theta = theta;
 }
 
-State::State(double xVal, double yVal, double thetaVal)
+State::State(double x, double y, double theta)
 {
-    x = xVal;
-    y = yVal;
-    theta = thetaVal;
+    _x = x;
+    _y = y;
+    _theta = theta;
 }
 
-double State::GetTheta()
+double State::theta()
 {
-    return theta;
+    return _theta;
 }
 
 GoalState::GoalState()
 {
-    x = 0;
-    y = 0;
-    radius = 0;
-    theta = 0;
+    _x = 0;
+    _y = 0;
+    _radius = 0;
+    _theta = 0;
 }
 
-GoalState::GoalState(double xVal, double yVal, double rVal, double thetaVal)
+GoalState::GoalState(double x, double y, double radius, double theta)
 {
-    x = xVal;
-    y = yVal;
-    radius = rVal;
-    theta = thetaVal;
+    _x = x;
+    _y = y;
+    _radius = radius;
+    _theta = theta;
 }
 
-double GoalState::GetTheta()
+double GoalState::theta()
 {
-    return theta;
+    return _theta;
 }
 
-double GoalState::GetRadius()
+double GoalState::radius()
 {
-    return radius;
+    return _radius;
 }
 
 GraphNode::GraphNode()
 {
-    buildGraphNode();
+    _buildGraphNode();
 }
 
-GraphNode::GraphNode(Point p, int idVal, int parentIdVal)
+GraphNode::GraphNode(Point p, int id, int parentId)
 {
-    buildGraphNode(p, idVal, parentIdVal);
+    _buildGraphNode(p, id, parentId);
 }
 
-GraphNode::GraphNode(double xVal, double yVal, int idVal, int parentIdVal)
+GraphNode::GraphNode(double x, double y, int id, int parentId)
 {
-    buildGraphNode(xVal, yVal, idVal, parentIdVal);
+    _buildGraphNode(x, y, id, parentId);
 }
 
-void GraphNode::buildGraphNode()
+void GraphNode::_buildGraphNode()
 {
-    x = 0;
-    y = 0;
-    id = 0;
-    parentNodeId = 0;
+    _x = 0;
+    _y = 0;
+    _id = 0;
+    _parentId = 0;
 }
 
-void GraphNode::buildGraphNode(Point p, int idVal, int parentId)
+void GraphNode::_buildGraphNode(Point p, int id, int parentId)
 {
-    x = p.GetX();
-    y = p.GetY();
-    id = idVal;
-    parentNodeId = parentId;
+    _x = p.x();
+    _y = p.y();
+    _id = id;
+    _parentId = parentId;
 }
 
-void GraphNode::buildGraphNode(double xVal, double yVal, int idVal, int parentId)
+void GraphNode::_buildGraphNode(double x, double y, int id, int parentId)
 {
-    x = xVal;
-    y = yVal;
-    id = idVal;
-    parentNodeId = parentId;
+    _x = x;
+    _y = y;
+    _id = id;
+    _parentId = parentId;
 }
 
-int GraphNode::GetId()
+int GraphNode::id()
 {
-    return id;
+    return _id;
 }
 
-int GraphNode::GetParentId()
+int GraphNode::parentId()
 {
-    return parentNodeId;
+    return _parentId;
 }
 
-void GraphNode::SetId(int idVal)
+void GraphNode::setId(int id)
 {
-    id = idVal;
+    _id = id;
 }
 
-void GraphNode::SetParentId(int parentIdVal)
+void GraphNode::setParentId(int parentId)
 {
-    parentNodeId = parentIdVal;
+    _parentId = parentId;
 }
