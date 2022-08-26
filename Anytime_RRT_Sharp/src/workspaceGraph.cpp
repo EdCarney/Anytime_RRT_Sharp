@@ -75,7 +75,7 @@ double WorkspaceGraph::computeObsVol()
 	double volume = 0.0;
 	
 	for (int i = 0; i < numObstacles; i++)
-		volume += 3.14159 * pow(obstacles[i].GetRadius(), 2);
+		volume += 3.14159 * pow(obstacles[i].radius(), 2);
 
 	return volume;
 }

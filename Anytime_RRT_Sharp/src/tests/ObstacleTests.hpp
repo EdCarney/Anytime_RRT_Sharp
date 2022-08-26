@@ -4,26 +4,26 @@
 TEST(Obstacle, DefaultInitialize_CheckVals)
 {
     Obstacle o;
-    GTEST_ASSERT_EQ(o.GetX(), 0);
-    GTEST_ASSERT_EQ(o.GetY(), 0);
-    GTEST_ASSERT_EQ(o.GetRadius(), 0);
+    GTEST_ASSERT_EQ(o.x(), 0);
+    GTEST_ASSERT_EQ(o.y(), 0);
+    GTEST_ASSERT_EQ(o.radius(), 0);
 }
 
 TEST(Obstacle, InitializeWithPointAndRad_CheckVals)
 {
     Point p = { 1, 2 };
     Obstacle o(p, 3);
-    GTEST_ASSERT_EQ(o.GetX(), 1);
-    GTEST_ASSERT_EQ(o.GetY(), 2);
-    GTEST_ASSERT_EQ(o.GetRadius(), 3);
+    GTEST_ASSERT_EQ(o.x(), 1);
+    GTEST_ASSERT_EQ(o.y(), 2);
+    GTEST_ASSERT_EQ(o.radius(), 3);
 }
 
 TEST(Obstacle, InitializeWithIndividualVals_CheckVals)
 {
     Obstacle o(1, 2, 3);
-    GTEST_ASSERT_EQ(o.GetX(), 1);
-    GTEST_ASSERT_EQ(o.GetY(), 2);
-    GTEST_ASSERT_EQ(o.GetRadius(), 3);
+    GTEST_ASSERT_EQ(o.x(), 1);
+    GTEST_ASSERT_EQ(o.y(), 2);
+    GTEST_ASSERT_EQ(o.radius(), 3);
 }
 
 TEST(Obstacle, PointIntersect_DoesIntersect)
