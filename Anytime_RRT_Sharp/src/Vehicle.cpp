@@ -13,34 +13,27 @@ Vehicle::Vehicle(const double* x, const double *y, int numPoints)
 
 void Vehicle::buildVehicle()
 {
-    nodes = NULL;
-    offsetNodes = NULL;
-    numNodes = 0;
     state = { 0.0, 0.0, 0.0 };
     boundingRadius = 0.0;
 }
 
 void Vehicle::calculateBoundingRadius()
 {
-    double maxRadius = 0, tempMaxRadius = 0;
-    for (int i = 0; i < numNodes; ++i)
-    {
-        tempMaxRadius = hypot(offsetNodes[i].GetX() - centroid.GetX(), offsetNodes[i].GetY() - centroid.GetY());
-        if (tempMaxRadius > maxRadius)
-            maxRadius = tempMaxRadius;
-    }
+    double maxRadius = 0;
+    for (Point p : offsetNodes)
+        maxRadius = max(maxRadius, hypot(p.GetX() - centroid.GetX(), p.GetY() - centroid.GetY()));
     boundingRadius = maxRadius;
 }
 
 void Vehicle::calculateCentroid()
 {
     double xSum = 0, ySum = 0;
-    for (int i = 0; i < numNodes; ++i)
+    for (Point p : nodes)
     {
-        xSum += nodes[i].GetX();
-        ySum += nodes[i].GetY();
+        xSum += p.GetX();
+        ySum += p.GetY();
     }
-    centroid = { xSum / numNodes, ySum / numNodes };
+    centroid = { xSum / nodes.size(), ySum / nodes.size() };
 }
 
 void Vehicle::updateOffsetParams()
@@ -57,7 +50,7 @@ void Vehicle::UpdateState(State newState)
     double x, y;
 
     // update body nodes based on deltas
-    for (int i = 0; i < numNodes; i++)
+    for (int i = 0; i < nodes.size(); i++)
     {
         x = state.GetX() + cos(state.GetTheta()) * offsetNodes[i].GetX() - sin(state.GetTheta()) * offsetNodes[i].GetY();
         y = state.GetY() + sin(state.GetTheta()) * offsetNodes[i].GetX() + cos(state.GetTheta()) * offsetNodes[i].GetY();
@@ -67,18 +60,16 @@ void Vehicle::UpdateState(State newState)
 
 void Vehicle::AddOffsetNode(double x, double y)
 {
-    ResetArraySize<Point>(&nodes, numNodes, numNodes + 1);
-    ResetArraySize<Point>(&offsetNodes, numNodes, numNodes + 1);
-    offsetNodes[numNodes++] = { x, y };
+    offsetNodes.push_back(Point(x, y));
+    nodes.resize(offsetNodes.size());
     updateOffsetParams();
 }
 
 void Vehicle::AddOffsetNodes(const double* x, const double* y, int numPoints)
 {
-    ResetArraySize<Point>(&nodes, numNodes, numNodes + numPoints);
-    ResetArraySize<Point>(&offsetNodes, numNodes, numNodes + numPoints);
     for (int i = 0; i < numPoints; ++i)
-        offsetNodes[numNodes++] = { x[i], y[i] };
+        offsetNodes.push_back(Point(x[i], y[i]));
+    nodes.resize(offsetNodes.size());
     updateOffsetParams();
 }
 
@@ -113,12 +104,15 @@ void Vehicle::AddOffsetNodesFromFile(FILE* file)
 
 Point* Vehicle::GetNodes()
 {
-    return nodes;
+    auto retVal = (Point*) calloc(nodes.size(), sizeof(Point));
+    for (int i = 0; i < nodes.size(); ++i)
+        retVal[i] = Point(nodes[i].GetX(), nodes[i].GetY());
+    return nodes.size() > 0 ? retVal : NULL;
 }
 
 Point Vehicle::GetNode(int i)
 {
-    if (i >= numNodes || i < 0)
+    if (i >= nodes.size() || i < 0)
         throw runtime_error("Attempt to read index beyond array limits in GetNode");
 
     return nodes[i];
@@ -126,12 +120,15 @@ Point Vehicle::GetNode(int i)
 
 Point* Vehicle::GetOffsetNodes()
 {
-    return offsetNodes;
+    auto retVal = (Point*) calloc(offsetNodes.size(), sizeof(Point));
+    for (int i = 0; i < offsetNodes.size(); ++i)
+        retVal[i] = Point(offsetNodes[i].GetX(), offsetNodes[i].GetY());
+    return offsetNodes.size() > 0 ? retVal : NULL;
 }
 
 Point Vehicle::GetOffsetNode(int i)
 {
-    if (i >= numNodes || i < 0)
+    if (i >= offsetNodes.size() || i < 0)
         throw runtime_error("Attempt to read index beyond array limits in GetOffsetNode");
 
     return nodes[i];
@@ -144,7 +141,7 @@ State Vehicle::GetState()
 
 int Vehicle::GetNumNodes()
 {
-    return numNodes;
+    return nodes.size();
 }
 
 double Vehicle::GetBoundingRadius()
