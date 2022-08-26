@@ -6,82 +6,82 @@
 class DLL_EXPORT Point
 {
     protected:
-        double x, y;
+        double _x, _y;
 
     public:
         Point();
-        Point(double xVal, double yVal);
-        double GetX();
-        double GetY();
+        Point(double x, double y);
+        double x();
+        double y();
 };
 
 class DLL_EXPORT Circle : public Point
 {
     protected:
-        double radius;
+        double _radius;
 
     public:
         Circle();
-        Circle(Point p, double r);
-        Circle(double xVal, double yVal, double rVal);
-        double GetRadius();
+        Circle(Point p, double radius);
+        Circle(double x, double y, double radius);
+        double radius();
 };
 
 class DLL_EXPORT Rectangle
 {
-    Point minPoint, maxPoint;
+    Point _minPoint, _maxPoint;
 
     public:
         Rectangle();
-        Rectangle(Point minP, Point maxP);
+        Rectangle(Point minPoint, Point maxPoint);
         Rectangle(double minX, double minY, double maxX, double maxY);
-        Point GetMinPoint();
-        Point GetMaxPoint();
-        double GetMinX();
-        double GetMinY();
-        double GetMaxX();
-        double GetMaxY();
+        Point minPoint();
+        Point maxPoint();
+        double minX();
+        double minY();
+        double maxX();
+        double maxY();
 };
 
 class DLL_EXPORT State : public Point
 {
     protected:
-        double theta;
+        double _theta;
 
     public:
         State();
-        State(Point p, double thetaVal);
-        State(double xVal, double yVal, double thetaVal);
-        double GetTheta();
+        State(Point p, double theta);
+        State(double x, double y, double theta);
+        double theta();
 };
 
 class DLL_EXPORT GoalState : public Point
 {
-    double theta, radius;
+    double _theta, _radius;
 
     public:
         GoalState();
-        GoalState(double xVal, double yVal, double rVal, double thetaVal);
-        double GetTheta();
-        double GetRadius();
+        GoalState(double x, double y, double radius, double theta);
+        double theta();
+        double radius();
 };
 
 class DLL_EXPORT GraphNode : public Point
 {
     protected:
-        int id, parentNodeId;
-        void buildGraphNode();
-        void buildGraphNode(Point p, int idVal, int parentId);
-        void buildGraphNode(double xVal, double yVal, int idVal, int parentIdVal);
+        int _id, _parentId;
+        void _buildGraphNode();
+        void _buildGraphNode(Point p, int id, int parentId);
+        void _buildGraphNode(double x, double y, int id, int parentId);
 
     public:
         GraphNode();
-        GraphNode(Point p, int idVal, int parentId);
-        GraphNode(double xVal, double yVal, int idVal, int parentIdVal);
-        int GetId();
-        void SetId(int idVal);
-        int GetParentId();
-        void SetParentId(int parentIdVal);
+        GraphNode(Point p, int id, int parentId);
+        GraphNode(double x, double y, int id, int parentId);
+        int id();
+        void setId(int id);
+        int parentId();
+        void setParentId(int parentId);
 };
 
 #endif

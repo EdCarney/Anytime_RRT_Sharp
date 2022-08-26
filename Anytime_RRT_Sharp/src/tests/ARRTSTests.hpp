@@ -8,9 +8,9 @@ TEST(ARRTS_StartState, SetAndGet)
     ArrtsService service;
     service.SetStartState(5, 6, 7);
     State state = service.GetStartState();
-    GTEST_ASSERT_EQ(state.GetX(), 5);
-    GTEST_ASSERT_EQ(state.GetY(), 6);
-    GTEST_ASSERT_EQ(state.GetTheta(), 7);
+    GTEST_ASSERT_EQ(state.x(), 5);
+    GTEST_ASSERT_EQ(state.y(), 6);
+    GTEST_ASSERT_EQ(state.theta(), 7);
 }
 
 TEST(ARRTS_StartState, SetUpdateAndGet)
@@ -19,9 +19,9 @@ TEST(ARRTS_StartState, SetUpdateAndGet)
     service.SetStartState(5, 6, 7);
     service.SetStartState(8, 9, 10);
     State state = service.GetStartState();
-    GTEST_ASSERT_EQ(state.GetX(), 8);
-    GTEST_ASSERT_EQ(state.GetY(), 9);
-    GTEST_ASSERT_EQ(state.GetTheta(), 10);
+    GTEST_ASSERT_EQ(state.x(), 8);
+    GTEST_ASSERT_EQ(state.y(), 9);
+    GTEST_ASSERT_EQ(state.theta(), 10);
 }
 
 #pragma endregion //ARRTS_StartState
@@ -33,9 +33,9 @@ TEST(ARRTS_GoalState, SetAndGet)
     ArrtsService service;
     service.SetGoalState(5, 6, 7);
     State state = service.GetGoalState();
-    GTEST_ASSERT_EQ(state.GetX(), 5);
-    GTEST_ASSERT_EQ(state.GetY(), 6);
-    GTEST_ASSERT_EQ(state.GetTheta(), 7);
+    GTEST_ASSERT_EQ(state.x(), 5);
+    GTEST_ASSERT_EQ(state.y(), 6);
+    GTEST_ASSERT_EQ(state.theta(), 7);
 }
 
 TEST(ARRTS_GoalState, SetUpdateAndGet)
@@ -44,9 +44,9 @@ TEST(ARRTS_GoalState, SetUpdateAndGet)
     service.SetGoalState(5, 6, 7);
     service.SetGoalState(8, 9, 10);
     State state = service.GetGoalState();
-    GTEST_ASSERT_EQ(state.GetX(), 8);
-    GTEST_ASSERT_EQ(state.GetY(), 9);
-    GTEST_ASSERT_EQ(state.GetTheta(), 10);
+    GTEST_ASSERT_EQ(state.x(), 8);
+    GTEST_ASSERT_EQ(state.y(), 9);
+    GTEST_ASSERT_EQ(state.theta(), 10);
 }
 
 #pragma endregion //ARRTS_GoalState
