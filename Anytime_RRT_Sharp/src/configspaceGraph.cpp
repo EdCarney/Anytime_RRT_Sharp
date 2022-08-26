@@ -25,7 +25,7 @@ void ConfigspaceGraph::buildGraph()
     freeSpaceMeasure = 0;
     zeta = 0;
     dim = 0;
-    nodes = vector<ConfigspaceNode>(0);
+    nodes.reserve(5000);
 }
 
 void ConfigspaceGraph::defineFreespace(double minX, double minY, double newMinTheta, double maxX, double maxY, double newMaxTheta, int dimension, double obstacleVol)
@@ -287,12 +287,11 @@ ConfigspaceNode ConfigspaceGraph::findBestNeighbor(ConfigspaceNode newNode, vect
 	return bestNeighbor;
 }
 
-ConfigspaceNode ConfigspaceGraph::addNode(ConfigspaceNode node)
+void ConfigspaceGraph::addNode(ConfigspaceNode node)
 {
     node.setId(++numNodeInd);
 	//printf("Adding Node %d at (%f, %f, %f)\n", node.id(), node.x(), node.y(), node.theta);
     nodes.push_back(node);
-    return node;
 }
 
 void ConfigspaceGraph::propagateCost(ConfigspaceNode updatedNode)
@@ -303,8 +302,10 @@ void ConfigspaceGraph::propagateCost(ConfigspaceNode updatedNode)
 
 void ConfigspaceGraph::propagateCost(vector<ConfigspaceNode> updatedNodes)
 {
-    int updateNodesCount = 0;
     vector<ConfigspaceNode> tempNodesToUpdate, nodesToUpdate;
+
+    if (updatedNodes.empty())
+        return;
 
     for (ConfigspaceNode un : updatedNodes)
     {
@@ -317,9 +318,8 @@ void ConfigspaceGraph::propagateCost(vector<ConfigspaceNode> updatedNodes)
             }
         }
     }
-
-    if (!nodesToUpdate.empty())
-        propagateCost(nodesToUpdate);
+ 
+    propagateCost(nodesToUpdate);
 }
 
 void ConfigspaceGraph::replaceNode(ConfigspaceNode oldNode, ConfigspaceNode newNode)

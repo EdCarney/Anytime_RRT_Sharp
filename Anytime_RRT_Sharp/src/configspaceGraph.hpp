@@ -41,7 +41,7 @@ class ConfigspaceGraph : Rectangle
 
         // adds a node to the graph
         // NOTE: this should be used for all other nodes
-        ConfigspaceNode addNode(ConfigspaceNode node);
+        void addNode(ConfigspaceNode node);
 
         // removes a node from a given array of nodes specified
         // as a pointer array
