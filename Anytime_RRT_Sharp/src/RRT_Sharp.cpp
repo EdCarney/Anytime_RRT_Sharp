@@ -29,9 +29,9 @@ int main()
 	const double uavGoalRadius = 2.5;
 
 	// vehicle rigid body information
-	const double vehiclePointXPosition[] = { -0.5, 0.5, 0.5, -0.5 };
-	const double vehiclePointYPosition[] = { -0.5, -0.5, 0.5, 0.5 };
-	int numVehiclePoints = sizeof(vehiclePointXPosition) / sizeof(double);
+	const double vehicleX[] = { -0.5, 0.5, 0.5, -0.5 };
+	const double vehicleY[] = { -0.5, -0.5, 0.5, 0.5 };
+	int numVehiclePoints = sizeof(vehicleX) / sizeof(double);
 
 	// initialize variables for the graph limits
 	double xMin = 0.0, yMin = 0.0, xMax = 0.0, yMax = 0.0;
@@ -96,22 +96,23 @@ int main()
 	G_configspace.addNode(gateNode);
 
 	// add vehicle to the graph
-	Vehicle v(vehiclePointXPosition, vehiclePointYPosition, numVehiclePoints);
-	G_workspace.vehicle = v;
+	G_workspace.setVehicle(Vehicle(vehicleX, vehicleY, numVehiclePoints));
 
-	printf("ObsVol: %f, NumObs: %lu, Freespace: [%f, %f, %f, %f]\n", obsVol, G_workspace.obstacles.size(), xMin, xMax, yMin, yMax);
-	printf("UAV Location: %f, %f, %f\n", G_workspace.goalRegion.x(), G_workspace.goalRegion.y(), G_workspace.goalRegion.radius());
+	printf("ObsVol: %f, NumObs: %lu, Freespace: [%f, %f, %f, %f]\n", obsVol, G_workspace.obstacles().size(), xMin, xMax, yMin, yMax);
+	printf("UAV Location: %f, %f, %f\n", G_workspace.goalRegion().x(), G_workspace.goalRegion().y(), G_workspace.goalRegion().radius());
 	printf("Root Node:    %f, %f, %f\n", G_configspace.nodes[0].x(), G_configspace.nodes[0].y(), G_configspace.nodes[0].theta);
 
 	//------------------------------------------------------------------------//
 	//------------------------start the RRT# iterations-----------------------//
 	//------------------------------------------------------------------------//
 
+	bool goalRegionReached = false;
+
 	// do the RRT# thing
-	while(!G_workspace.goalRegionReached || count < maxCount)
+	while(!goalRegionReached || count < maxCount)
 	{
 		// create a new node (not yet connected to the graph)
-		tempNode = (count % goalBiasCount != 0) ? G_configspace.generateRandomNode() : G_configspace.generateBiasedNode(G_workspace.goalRegion.x(), G_workspace.goalRegion.y());
+		tempNode = (count % goalBiasCount != 0) ? G_configspace.generateRandomNode() : G_configspace.generateBiasedNode(G_workspace.goalRegion().x(), G_workspace.goalRegion().y());
 
 		// find the closest graph node and set it as the parent
 		parentNode = G_configspace.findClosestNode(tempNode);
@@ -151,8 +152,8 @@ int main()
 
 				// if we haven't reached the goal yet and the added node is in the
 				// goal region, then set goalRegionReached to true
-				if (!G_workspace.goalRegionReached && G_workspace.checkAtGoal(tempNode))
-					G_workspace.goalRegionReached = true;
+				if (!goalRegionReached && G_workspace.checkAtGoal(tempNode))
+					goalRegionReached = true;
 
 				// do the rewiring while there are nodes left in remainingNodes
 				rewireRemainingNodes(G_configspace, G_workspace, remainingNodes, tempNode);
@@ -179,25 +180,25 @@ int main()
 tuple<double, double, double, double> calculateGraphLimits(WorkspaceGraph G_workspace, ConfigspaceNode gateNode, double buffer)
 {
 	double xMin, xMax, yMin, yMax;
-	if (gateNode.x() < G_workspace.goalRegion.x())
+	if (gateNode.x() < G_workspace.goalRegion().x())
 	{
 		xMin = gateNode.x() - buffer;
-		xMax = G_workspace.goalRegion.x() + buffer;
+		xMax = G_workspace.goalRegion().x() + buffer;
 	}
 	else
 	{
-		xMin = G_workspace.goalRegion.x() - buffer;
+		xMin = G_workspace.goalRegion().x() - buffer;
 		xMax = gateNode.x() + buffer;
 	}
 
-	if (gateNode.y() < G_workspace.goalRegion.y())
+	if (gateNode.y() < G_workspace.goalRegion().y())
 	{
 		yMin = gateNode.y() - buffer;
-		yMax = G_workspace.goalRegion.y() + buffer;
+		yMax = G_workspace.goalRegion().y() + buffer;
 	}
 	else
 	{
-		yMin = G_workspace.goalRegion.y() - buffer;
+		yMin = G_workspace.goalRegion().y() - buffer;
 		yMax = gateNode.y() + buffer;
 	}
 	return make_tuple(xMin, xMax, yMin, yMax);

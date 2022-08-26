@@ -6,7 +6,6 @@
 #include "cppshrhelp.hpp"
 #include "Geometry.hpp"
 #include "Obstacle.hpp"
-#include "Utility.hpp"
 
 using namespace std;
 

@@ -29,7 +29,8 @@ class DLL_EXPORT Circle : public Point
 
 class DLL_EXPORT Rectangle
 {
-    Point _minPoint, _maxPoint;
+    protected:
+        Point _minPoint, _maxPoint;
 
     public:
         Rectangle();
