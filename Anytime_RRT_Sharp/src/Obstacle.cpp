@@ -28,19 +28,19 @@ void Obstacle::_buildObstacle()
     _radius = 0.0;
 }
 
-bool Obstacle::Intersects(Point point)
+bool Obstacle::intersects(Point point)
 {
     double dist = hypot(point.x() - _x, point.y() - _y);
     return dist <= _radius;
 }
 
-bool Obstacle::Intersects(Circle circle)
+bool Obstacle::intersects(Circle circle)
 {
     double dist = hypot(circle.x() - _x, circle.y() - _y);
     return dist <= _radius + circle.radius();
 }
 
-bool Obstacle::Intersects(Rectangle rect)
+bool Obstacle::intersects(Rectangle rect)
 {
     double minX = _x - _radius;
     double maxX = _x + _radius;
