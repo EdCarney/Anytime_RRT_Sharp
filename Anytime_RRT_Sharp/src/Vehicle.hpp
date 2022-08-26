@@ -1,5 +1,6 @@
 #include <cstddef>
 #include <math.h>
+#include <vector>
 #include "Geometry.hpp"
 #include "Utility.hpp"
 
@@ -8,10 +9,9 @@
 
 class Vehicle
 {
-    int numNodes;                   // number of nodes representing the vehicle
-    Point* nodes;                    // an array of all nodes for the vehicle
-    Point* offsetNodes;              // an array of offset values loaded on vehicle initialization
-    Point centroid;                  // centroid of vehicle relative to the offset nodes
+    vector<Point> nodes;            // an array of all nodes for the vehicle
+    vector<Point> offsetNodes;      // an array of offset values loaded on vehicle initialization
+    Point centroid;                 // centroid of vehicle relative to the offset nodes
     State state;                    // state (x, y, theta) of the vehicle
     double boundingRadius;          // the radius of a ball circumscribing the vehicle; used for quick collision checking
     void updateOffsetParams();      // updates centroid and bounding radius from offset nodes
