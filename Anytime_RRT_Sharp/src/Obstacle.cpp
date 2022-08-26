@@ -8,62 +8,62 @@ Obstacle::Obstacle()
 Obstacle::Obstacle(double xVal, double yVal, double r)
 {
     buildObstacle();
-    x = xVal;
-    y = yVal;
-    radius = r;
+    _x = xVal;
+    _y = yVal;
+    _radius = r;
 }
 
 Obstacle::Obstacle(Point pos, double r)
 {
     buildObstacle();
-    x = pos.GetX();
-    y = pos.GetY();
-    radius = r;
+    _x = pos.x();
+    _y = pos.y();
+    _radius = r;
 }
 
 void Obstacle::buildObstacle()
 {
-    x = 0.0;
-    y = 0.0;
-    radius = 0.0;
+    _x = 0.0;
+    _y = 0.0;
+    _radius = 0.0;
 }
 
 bool Obstacle::Intersects(Point point)
 {
-    double dist = hypot(point.GetX() - x, point.GetY() - y);
-    return dist <= radius;
+    double dist = hypot(point.x() - _x, point.y() - _y);
+    return dist <= _radius;
 }
 
 bool Obstacle::Intersects(Circle circle)
 {
-    double dist = hypot(circle.GetX() - x, circle.GetY() - y);
-    return dist <= radius + circle.GetRadius();
+    double dist = hypot(circle.x() - _x, circle.y() - _y);
+    return dist <= _radius + circle.radius();
 }
 
 bool Obstacle::Intersects(Rectangle rect)
 {
-    double minX = x - radius;
-    double maxX = x + radius;
-    double minY = y - radius;
-    double maxY = y + radius;
+    double minX = _x - _radius;
+    double maxX = _x + _radius;
+    double minY = _y - _radius;
+    double maxY = _y + _radius;
 
-    bool inXLimits = minX < rect.GetMaxX() && maxX > rect.GetMinX();
-    bool inYLimits = minY < rect.GetMaxY() && maxY > rect.GetMinY();
+    bool inXLimits = minX < rect.maxX() && maxX > rect.minX();
+    bool inYLimits = minY < rect.maxY() && maxY > rect.minY();
 
     return inXLimits && inYLimits;
 }
 
 double Obstacle::GetX()
 {
-    return x;
+    return _x;
 }
 
 double Obstacle::GetY()
 {
-    return y;
+    return _y;
 }
 
 double Obstacle::GetRadius()
 {
-    return radius;
+    return _radius;
 }

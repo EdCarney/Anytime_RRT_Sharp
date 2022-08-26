@@ -2,7 +2,7 @@
 
 ConfigspaceNode::ConfigspaceNode()
 {
-	buildGraphNode();
+	_buildGraphNode();
 	cost = 0;
 	iterationPoints = NULL;
 	numIterationPoints = 0;
@@ -10,7 +10,7 @@ ConfigspaceNode::ConfigspaceNode()
 
 ConfigspaceNode::ConfigspaceNode(double xVal, double yVal, int idVal, int parentIdVal, double costVal)
 {
-	buildGraphNode(xVal, yVal, idVal, parentIdVal);
+	_buildGraphNode(xVal, yVal, idVal, parentIdVal);
 	cost = costVal;
 }
 
@@ -91,7 +91,7 @@ void ConfigspaceGraph::removeEdge(ConfigspaceNode parentToRemove, ConfigspaceNod
 
 	for (int i = 0; i < numEdges; i++)
 	{
-		if (edges[i].startNode.GetId() != parentToRemove.GetId() || edges[i].endNode.GetId() != childToRemove.GetId())
+		if (edges[i].startNode.id() != parentToRemove.id() || edges[i].endNode.id() != childToRemove.id())
 		{
 			newEdges[newEdgesCount] = edges[i];
 			newEdgesCount++;
@@ -108,7 +108,7 @@ ConfigspaceNode* ConfigspaceGraph::removeNode(ConfigspaceNode *nodeArray, Config
 	// new and old nodes
 	ConfigspaceNode* newNodeArray;
 	int numOldNodes = 0, numNewNodes = 0, newNodeArrayInd = 0;
-	while (nodeArray[numOldNodes].GetId()) { numOldNodes++; }
+	while (nodeArray[numOldNodes].id()) { numOldNodes++; }
 	numNewNodes = numOldNodes - 1;
 
 	// use sizes to set the size of the new array (need extra
@@ -117,14 +117,14 @@ ConfigspaceNode* ConfigspaceGraph::removeNode(ConfigspaceNode *nodeArray, Config
 
 	for (int i = 0; i < numOldNodes; i++)
 	{
-		if (nodeArray[i].GetId() != nodeToRemove.GetId())
+		if (nodeArray[i].id() != nodeToRemove.id())
 		{
 			newNodeArray[newNodeArrayInd] = nodeArray[i];
 			newNodeArrayInd++;
 		}
 	}
 
-	newNodeArray[numNewNodes].SetId(0);
+	newNodeArray[numNewNodes].setId(0);
 	return newNodeArray;
 }
 
@@ -136,7 +136,7 @@ void ConfigspaceGraph::removeGraphNodes(ConfigspaceNode *nodesToRemove)
 	bool keepFlag = true;
 
 	// get number of nodes to be removed
-	while (nodesToRemove[numRemoveNodes].GetId()) { numRemoveNodes++; }
+	while (nodesToRemove[numRemoveNodes].id()) { numRemoveNodes++; }
 
 	// use sizes to set the size of the new node array
 	newNodes = (ConfigspaceNode*)calloc(numNodes - numRemoveNodes, sizeof(ConfigspaceNode));
@@ -149,7 +149,7 @@ void ConfigspaceGraph::removeGraphNodes(ConfigspaceNode *nodesToRemove)
 		// check if the current node is one of the nodes to be deleted,
 		// if it is, toggle the keepFlag flag
 		for (int j = 0; j < numRemoveNodes; j++)
-			if (nodes[i].GetId() == nodesToRemove[j].GetId())
+			if (nodes[i].id() == nodesToRemove[j].id())
 				keepFlag = false;
 
 		// if the keepFlag flag is still good, then add the node to the
@@ -168,7 +168,7 @@ void ConfigspaceGraph::removeGraphNodes(ConfigspaceNode *nodesToRemove)
 			// check if the current edge has a start node that is one of the
 			// nodes to be removed, if it is, toggle the flag
 			for (int j = 0; j < numRemoveNodes; j++)
-				if (edges[i].endNode.GetId() == nodesToRemove[j].GetId()) { keepFlag = false; }
+				if (edges[i].endNode.id() == nodesToRemove[j].id()) { keepFlag = false; }
 
 			// if the keepFlag flag is still good, then add the node to the
 			// new array of nodes
@@ -219,7 +219,7 @@ void ConfigspaceGraph::createNode(double x, double y, double theta, double t)
 ConfigspaceNode ConfigspaceGraph::findNodeId(int nodeId)
 {
 	for (int i = 0; i < numNodes; i++)
-		if (nodes[i].GetId() == nodeId)
+		if (nodes[i].id() == nodeId)
 			return nodes[i];
 	return ConfigspaceNode();
 }
@@ -227,7 +227,7 @@ ConfigspaceNode ConfigspaceGraph::findNodeId(int nodeId)
 int ConfigspaceGraph::findNodePlacement(int nodeId)
 {
 	for (int i = 0; i < numNodes; i++)
-		if (nodes[i].GetId() == nodeId)
+		if (nodes[i].id() == nodeId)
 			return i;
 	return -1;
 }
@@ -278,11 +278,11 @@ double ConfigspaceGraph::computeRadius(double epsilon)
 void ConfigspaceGraph::trimTreeChildren(ConfigspaceNode *removeNodes, int saveNodeId)
 {
 	int removeNodesCount = 0;
-	while (removeNodes[removeNodesCount].GetId())
+	while (removeNodes[removeNodesCount].id())
 		removeNodesCount++;
 
 	ConfigspaceNode* nodesToRemove = (ConfigspaceNode*)calloc(1, sizeof(ConfigspaceNode));
-	nodesToRemove[0].SetId(0);
+	nodesToRemove[0].setId(0);
 	int nodeCount = 0;
 
 	// get all nodes that have the removeNodes as a parent node
@@ -290,7 +290,7 @@ void ConfigspaceGraph::trimTreeChildren(ConfigspaceNode *removeNodes, int saveNo
 	{
 		for (int j = 0; j < numNodes; j++)
 		{
-			if (removeNodes[i].GetId() == nodes[j].GetParentId())
+			if (removeNodes[i].id() == nodes[j].parentId())
 			{
 				ConfigspaceNode *tempNodesToRemove = (ConfigspaceNode*)calloc(nodeCount + 1, sizeof(ConfigspaceNode));
 				std::memcpy(tempNodesToRemove, nodesToRemove, (nodeCount) * sizeof(ConfigspaceNode));
@@ -308,7 +308,7 @@ void ConfigspaceGraph::trimTreeChildren(ConfigspaceNode *removeNodes, int saveNo
 	std::memcpy(tempNodesToRemove, nodesToRemove, (nodeCount) * sizeof(ConfigspaceNode));
 	free(nodesToRemove);
 	nodesToRemove = tempNodesToRemove;
-	nodesToRemove[nodeCount].SetId(0);
+	nodesToRemove[nodeCount].setId(0);
 
 	// if there are any nodes that have any of the remove nodes as a parent node,
 	// then continue until there are no more children
@@ -317,7 +317,7 @@ void ConfigspaceGraph::trimTreeChildren(ConfigspaceNode *removeNodes, int saveNo
 
 	// after all children are obtained, start deleting them in the order of the
 	// youngest children first (but save the node if it is the initital node)
-	if (removeNodes[0].GetId() != saveNodeId)
+	if (removeNodes[0].id() != saveNodeId)
 		removeGraphNodes(removeNodes);
 
 	free(nodesToRemove);
@@ -338,36 +338,36 @@ void ConfigspaceGraph::printData(int probNum, ConfigspaceNode finalNode)
 	nodeFile << numNodes << "\n";
 
 	for (int i = 0; i < numNodes - 1; ++i)
-		nodeFile << nodes[i].GetX() << ", " << nodes[i].GetY() << ", " << nodes[i].theta << ", " << nodes[i].GetId() << "\n";
+		nodeFile << nodes[i].x() << ", " << nodes[i].y() << ", " << nodes[i].theta << ", " << nodes[i].id() << "\n";
 
-	nodeFile << nodes[numNodes - 1].GetX() << ", " << nodes[numNodes - 1].GetY() << ", "
-		<< nodes[numNodes - 1].theta << ", " << nodes[numNodes - 1].GetId() << "\n";
+	nodeFile << nodes[numNodes - 1].x() << ", " << nodes[numNodes - 1].y() << ", "
+		<< nodes[numNodes - 1].theta << ", " << nodes[numNodes - 1].id() << "\n";
 
 	// print out edge file
 	edgeFile << numEdges << "\n";
 
 	for (int i = 0; i < numEdges; ++i)
-		edgeFile << edges[i].startNode.GetId() << ", " << edges[i].endNode.GetId() << "\n";
+		edgeFile << edges[i].startNode.id() << ", " << edges[i].endNode.id() << "\n";
 
 	// print out search tree file
 	for (int i = 0; i < numEdges; ++i)
 	{
-		searchTreeFile << edges[i].startNode.GetId() << ", " << edges[i].startNode.GetX() << ", " << edges[i].startNode.GetY()
-			<< ", " << edges[i].endNode.GetId() << ", " << edges[i].endNode.GetX() << ", " << edges[i].endNode.GetY() << "\n";
+		searchTreeFile << edges[i].startNode.id() << ", " << edges[i].startNode.x() << ", " << edges[i].startNode.y()
+			<< ", " << edges[i].endNode.id() << ", " << edges[i].endNode.x() << ", " << edges[i].endNode.y() << "\n";
 	}
 
 	// print out output path
 	ConfigspaceNode currentNode = finalNode;
 
-	outputPathFile << currentNode.GetX() << ", " << currentNode.GetY() << ", " << currentNode.theta << "\n";
-	currentNode = findNodeId(currentNode.GetParentId());
+	outputPathFile << currentNode.x() << ", " << currentNode.y() << ", " << currentNode.theta << "\n";
+	currentNode = findNodeId(currentNode.parentId());
 
-	while (currentNode.GetParentId())
+	while (currentNode.parentId())
 	{
-		outputPathFile << currentNode.GetX() << ", " << currentNode.GetY() << ", " << currentNode.theta << "\n";
-		currentNode = findNodeId(currentNode.GetParentId());
+		outputPathFile << currentNode.x() << ", " << currentNode.y() << ", " << currentNode.theta << "\n";
+		currentNode = findNodeId(currentNode.parentId());
 	}
-	outputPathFile << nodes[0].GetX() << ", " << nodes[0].GetY() << ", " << nodes[0].theta << "\n";
+	outputPathFile << nodes[0].x() << ", " << nodes[0].y() << ", " << nodes[0].theta << "\n";
 
 	printf("Printing nodes to nodes_%d.txt.\n", probNum);
 	printf("Printing edges to edges_%d.txt.\n", probNum);
@@ -387,11 +387,11 @@ ConfigspaceNode ConfigspaceGraph::findClosestNode(ConfigspaceNode node)
 	// use euclidean distance of given node from existing nodes
 	double shortestDist, dist;
 	int closestEntry = 0;
-	shortestDist = hypot(nodes[0].GetX() - node.GetX(), nodes[0].GetY() - node.GetY());
+	shortestDist = hypot(nodes[0].x() - node.x(), nodes[0].y() - node.y());
 
 	for (int i = 1; i < numNodes; i++)
 	{
-		dist = hypot(nodes[i].GetX() - node.GetX(), nodes[i].GetY() - node.GetY());;
+		dist = hypot(nodes[i].x() - node.x(), nodes[i].y() - node.y());;
 		if (dist < shortestDist)
 		{
 			shortestDist = dist;
@@ -404,7 +404,7 @@ ConfigspaceNode ConfigspaceGraph::findClosestNode(ConfigspaceNode node)
 
 double ConfigspaceGraph::computeCost(ConfigspaceNode node_1, ConfigspaceNode node_2)
 {
-	return hypot((node_1.GetX() - node_2.GetX()), (node_1.GetY() - node_2.GetY()));
+	return hypot((node_1.x() - node_2.x()), (node_1.y() - node_2.y()));
 }
 
 ConfigspaceNode * ConfigspaceGraph::findNeighbors(ConfigspaceNode centerNode, double radius, int k)
@@ -419,8 +419,8 @@ ConfigspaceNode * ConfigspaceGraph::findNeighbors(ConfigspaceNode centerNode, do
 	// neighbors set if they are within the radius
 	for (int i = 0; i < numNodes; ++i)
 	{
-		dist = hypot((centerNode.GetX() - nodes[i].GetX()), (centerNode.GetY() - nodes[i].GetY()));
-		if (dist < radius && centerNode.GetParentId() != nodes[i].GetId())
+		dist = hypot((centerNode.x() - nodes[i].x()), (centerNode.y() - nodes[i].y()));
+		if (dist < radius && centerNode.parentId() != nodes[i].id())
 		{
 			neighbors[n++] = nodes[i];
 			if (n >= k)
@@ -436,12 +436,12 @@ ConfigspaceNode * ConfigspaceGraph::findNeighbors(ConfigspaceNode centerNode, do
 		tempNeighbors = (ConfigspaceNode*)calloc(n + 1, sizeof(ConfigspaceNode));
 		std::memcpy(tempNeighbors, neighbors, n * sizeof(ConfigspaceNode));
 		free(neighbors);
-		tempNeighbors[n].SetId(0);
+		tempNeighbors[n].setId(0);
 		return tempNeighbors;
 	}
 	else
 	{
-		neighbors[k].SetId(0);
+		neighbors[k].setId(0);
 		return neighbors;
 	}
 }
@@ -456,7 +456,7 @@ ConfigspaceNode ConfigspaceGraph::findBestNeighbor(ConfigspaceNode newNode, Conf
 	bestNeighbor = safeNeighbors[0];
 	bestCost = bestNeighbor.cost + computeCost(newNode, bestNeighbor);
 
-	while (safeNeighbors[numSafeNeighbors].GetId())
+	while (safeNeighbors[numSafeNeighbors].id())
 	{
 		tempBestCost = safeNeighbors[numSafeNeighbors].cost + computeCost(newNode, safeNeighbors[numSafeNeighbors]);
 		if (tempBestCost < bestCost)
@@ -486,9 +486,9 @@ ConfigspaceNode ConfigspaceGraph::addNode(ConfigspaceNode addedNode)
 		nodes = (ConfigspaceNode*)calloc(1, sizeof(ConfigspaceNode));
 	}
 
-	ConfigspaceNode parentNode = findNodeId(addedNode.GetParentId());
+	ConfigspaceNode parentNode = findNodeId(addedNode.parentId());
 
-	nodes[numNodes] = ConfigspaceNode(addedNode.GetX(), addedNode.GetY(), ++numNodeInd, addedNode.GetParentId(), parentNode.cost + computeCost(addedNode, parentNode));
+	nodes[numNodes] = ConfigspaceNode(addedNode.x(), addedNode.y(), ++numNodeInd, addedNode.parentId(), parentNode.cost + computeCost(addedNode, parentNode));
 	nodes[numNodes].theta = addedNode.theta;
 	nodes[numNodes].iterationPoints = addedNode.iterationPoints;
 	nodes[numNodes].numIterationPoints = addedNode.numIterationPoints;
@@ -502,13 +502,13 @@ void ConfigspaceGraph::propagateCost(ConfigspaceNode * updatedNodes)
 	ConfigspaceNode* tempNodesToUpdate = NULL;
 
 	// get total number of nodes
-	while (updatedNodes[updateNodesCount].GetId())
+	while (updatedNodes[updateNodesCount].id())
 		++updateNodesCount;
 
 	// allocate space for nodes to update cost for
 	ConfigspaceNode* nodesToUpdate = (ConfigspaceNode*)calloc(1, sizeof(ConfigspaceNode));
 
-	nodesToUpdate[0].SetId(0);
+	nodesToUpdate[0].setId(0);
 	int nodeCount = 0;
 
 	// go through each updated node and update the cost for any of its
@@ -517,14 +517,14 @@ void ConfigspaceGraph::propagateCost(ConfigspaceNode * updatedNodes)
 	{
 		for (int j = 0; j < numNodes; ++j)
 		{
-			if (updatedNodes[i].GetId() == nodes[j].GetParentId())
+			if (updatedNodes[i].id() == nodes[j].parentId())
 			{
 				tempNodesToUpdate = (ConfigspaceNode*)calloc(nodeCount + 2, sizeof(ConfigspaceNode));
 				std::memcpy(tempNodesToUpdate, nodesToUpdate, (nodeCount) * sizeof(ConfigspaceNode));
 				free(nodesToUpdate);
 				nodesToUpdate = tempNodesToUpdate;
 				nodesToUpdate[nodeCount] = nodes[j];
-				nodesToUpdate[++nodeCount].SetId(0);
+				nodesToUpdate[++nodeCount].setId(0);
 				nodes[j].cost = updatedNodes[i].cost + computeCost(nodes[j], updatedNodes[i]);
 			}
 		}
@@ -539,6 +539,6 @@ void ConfigspaceGraph::propagateCost(ConfigspaceNode * updatedNodes)
 
 void ConfigspaceGraph::replaceNode(ConfigspaceNode oldNode, ConfigspaceNode newNode)
 {
-	int oldNodePlace = findNodePlacement(oldNode.GetId());
+	int oldNodePlace = findNodePlacement(oldNode.id());
 	nodes[oldNodePlace] = newNode;
 }
