@@ -34,7 +34,7 @@ class DLL_EXPORT ArrtsService
         Obstacle obstacles(int i);
 
         // runs ARRTS algorithm
-        State* calculatePath(double standoffRange, double positionBuffer, double freespaceBuffer);
+        vector<State> calculatePath(double standoffRange, double positionBuffer, double freespaceBuffer);
 };
 
 #endif

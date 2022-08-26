@@ -177,13 +177,16 @@ ConfigspaceNode WorkspaceGraph::extendToNode(ConfigspaceNode parentNode, Configs
 
     if (dist >= epsilon)
     {
+        printf("CONNECTING\n");
         double xVal = parentNode.x() + ((newNode.x() - parentNode.x()) / dist) * epsilon;
         double yVal = parentNode.y() + ((newNode.y() - parentNode.y()) / dist) * epsilon;
-        currentNode = ConfigspaceNode(xVal, yVal, 0, parentNode.id(), 0);
+        currentNode = ConfigspaceNode(xVal, yVal, 0, parentNode.id(), 0, 0);
+        printf("CurrentNode %d at (%f, %f, %f)\n", currentNode.id(), currentNode.x(), currentNode.y(), currentNode.theta);
     }
     else
     {
-        currentNode = ConfigspaceNode(newNode.x(), newNode.y(), 0, parentNode.id(), 0);
+        printf("NOT CONNECTING\n");
+        currentNode = ConfigspaceNode(newNode.x(), newNode.y(), 0, parentNode.id(), 0, 0);
     }
 
     if (checkForCollision(currentNode))

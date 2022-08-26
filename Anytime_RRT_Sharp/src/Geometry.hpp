@@ -85,4 +85,17 @@ class DLL_EXPORT GraphNode : public Point
         void setParentId(int parentId);
 };
 
+class DLL_EXPORT Edge
+{
+    protected:
+        GraphNode _start;
+        GraphNode _end;
+
+    public:
+        Edge();
+        Edge(GraphNode start, GraphNode end);
+        GraphNode start();
+        GraphNode end();
+};
+
 #endif

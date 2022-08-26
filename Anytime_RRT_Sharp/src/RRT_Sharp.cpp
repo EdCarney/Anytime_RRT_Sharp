@@ -54,7 +54,7 @@ int main()
     int tempItr = 1;
 
     ConfigspaceNode gateNode, tempNode, parentNode, newNode;
-    ConfigspaceNode *safeNearestNeighbors = NULL, *remainingNodes = NULL;
+    vector<ConfigspaceNode> safeNearestNeighbors, remainingNodes;
 
     int k = 10, count = 0;
     double circleRadius = 0.0, epsilon = 5.0;
@@ -112,14 +112,14 @@ int main()
     while(!goalRegionReached || count < maxCount)
     {
         // create a new node (not yet connected to the graph)
-        tempNode = (count % goalBiasCount != 0) ? G_configspace.generateRandomNode() : G_configspace.generateBiasedNode(G_workspace.goalRegion().x(), G_workspace.goalRegion().y());
+        tempNode = (count++ % goalBiasCount != 0) ? G_configspace.generateRandomNode() : G_configspace.generateBiasedNode(G_workspace.goalRegion().x(), G_workspace.goalRegion().y());
+
+		printf("TempNode %d at (%f, %f, %f)\n", tempNode.id(), tempNode.x(), tempNode.y(), tempNode.theta);
 
         // find the closest graph node and set it as the parent
         parentNode = G_configspace.findClosestNode(tempNode);
 
-        // free memory from previous iteration
-        remainingNodes = (ConfigspaceNode*)calloc(1, sizeof(ConfigspaceNode));
-        remainingNodes[0].setId(0);
+		printf("ParentNode %d at (%f, %f, %f)\n", parentNode.id(), parentNode.x(), parentNode.y(), parentNode.theta);
 
         // skip if the parent node is already in the goal region
         if (!G_workspace.checkAtGoal(parentNode))
@@ -128,6 +128,8 @@ int main()
             // (this includes a collision check); then compute cost
             newNode = G_workspace.extendToNode(parentNode, tempNode, epsilon);
             newNode.cost = parentNode.cost + G_configspace.computeCost(parentNode, newNode);
+
+			printf("NewNode: %d, ParentNode: %d\n", newNode.id(), parentNode.id());
 
             // if there is a collision, newNode id will be set to its parent's id
             if (newNode.id() != parentNode.id())
@@ -138,12 +140,16 @@ int main()
                 safeNearestNeighbors = G_configspace.findNeighbors(newNode, circleRadius, k);
 
                 // if there were no safe neighbors then the first node id will be zero
-                if (safeNearestNeighbors[0].id())
+                if (!safeNearestNeighbors.empty())
                 {
+				printf("HERE 1\n");
                     // reset the remaining nodes to the safe neighbors minus the one we connected to
-                    free(remainingNodes);
                     remainingNodes = tryConnectToBestNeighbor(G_configspace, G_workspace, safeNearestNeighbors, newNode, parentNode);
-                    free(safeNearestNeighbors);
+				printf("HERE 2\n");
+
+                    safeNearestNeighbors.clear();
+				printf("HERE 3\n");
+
                 }
 
                 // add new node and edge to the config graph
@@ -159,23 +165,22 @@ int main()
                 rewireRemainingNodes(G_configspace, G_workspace, remainingNodes, tempNode);
             }
         }
-        free(remainingNodes);
-        ++count;
+		remainingNodes.clear();
     }
 
     // find the best node in the goal region
     ConfigspaceNode finalNode = findBestNode(G_configspace, G_workspace);
 
     // print all the results to files
-    printf("Total number of points: %d\n", G_configspace.numNodes);
+    printf("Total number of points: %lu\n", G_configspace.nodes.size());
     printf("Final node at: (%f, %f)\n", finalNode.x(), finalNode.y());
     printf("Final cost is: %f\n", finalNode.cost);
     G_configspace.printData(tempItr, finalNode);
 
     return 0;
-
-    #pragma endregion Primary code for the Anytime RRT# implementation
 }
+
+#pragma endregion Primary code for the Anytime RRT# implementation
 
 tuple<double, double, double, double> calculateGraphLimits(WorkspaceGraph G_workspace, ConfigspaceNode gateNode, double buffer)
 {
@@ -206,29 +211,33 @@ tuple<double, double, double, double> calculateGraphLimits(WorkspaceGraph G_work
 
 ConfigspaceNode findBestNode(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_workspace)
 {
-    double tempCost = 0, finalCost = 100000;
+    double tempCost = 0, finalCost = INFINITY;
     ConfigspaceNode finalNode;
-    for (int i = 0; i < G_configspace.numNodes; ++i)
+    
+    for (ConfigspaceNode n : G_configspace.nodes)
     {
-        if (G_workspace.checkAtGoal(G_configspace.nodes[i]))
+        if (G_workspace.checkAtGoal(n))
         {
-            tempCost = G_configspace.nodes[i].cost;
-            if (tempCost < finalCost)
+            tempCost = n.cost;
+            if (tempCost)
             {
                 finalCost = tempCost;
-                finalNode = G_configspace.nodes[i];
+                finalNode = n;
             }
         }
     }
     return finalNode;
 }
 
-ConfigspaceNode* tryConnectToBestNeighbor(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_workspace, ConfigspaceNode* safeNearestNeighbors, ConfigspaceNode& newNode, ConfigspaceNode& parentNode)
+vector<ConfigspaceNode> tryConnectToBestNeighbor(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_workspace, vector<ConfigspaceNode> safeNearestNeighbors, ConfigspaceNode& newNode, ConfigspaceNode& parentNode)
 {
     // find the best safe neighbor and connect newNode and the bestNeighbor
     // assign the resulting node to tempNode
+	printf("HERE a\n");
     ConfigspaceNode bestNeighbor = G_configspace.findBestNeighbor(newNode, safeNearestNeighbors);
+	printf("HERE b\n");
     ConfigspaceNode tempNode = G_workspace.connectNodes(bestNeighbor, newNode);
+	printf("HERE c\n");
 
     // compute the cost of tempNode using the best neighbor
     tempNode.cost = bestNeighbor.cost + G_configspace.computeCost(bestNeighbor, tempNode);
@@ -244,42 +253,33 @@ ConfigspaceNode* tryConnectToBestNeighbor(ConfigspaceGraph& G_configspace, Works
     return G_configspace.removeNode(safeNearestNeighbors, bestNeighbor);
 }
 
-void rewireRemainingNodes(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_workspace, ConfigspaceNode* remainingNodes, ConfigspaceNode addedNode)
+void rewireRemainingNodes(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_workspace, vector<ConfigspaceNode> remainingNodes, ConfigspaceNode addedNode)
 {
     ConfigspaceNode remainingNodeParent, newNode;
 
-    // do the rewiring while there are nodes left in remainingNodes
-    int remainingCount = 0;
-
-    while (remainingNodes[remainingCount].id() > 0)
+    for (ConfigspaceNode rn : remainingNodes)
     {
         // check if it is cheaper for the current remaining node to use the added node as
-        // its parent node 
-        if (!compareNodes(remainingNodes[remainingCount], addedNode, G_configspace))
+        // its parent node
+        if (!compareNodes(rn, addedNode, G_configspace))
         {
             // if it's cheaper, then create the new node, set the new cost, and set
             // the parent (now the added node)
-            newNode = G_workspace.connectNodes(addedNode, remainingNodes[remainingCount]);
-            newNode.cost = addedNode.cost + G_configspace.computeCost(remainingNodes[remainingCount], addedNode);
+            newNode = G_workspace.connectNodes(addedNode, rn);
+            newNode.cost = addedNode.cost + G_configspace.computeCost(rn, addedNode);
             newNode.setParentId(addedNode.id());
 
             // get the old parent of the current remaining node, remove the old
             // edge, add the new edge, and replace the old remaining node
-            remainingNodeParent = G_configspace.findNodeId(remainingNodes[remainingCount].parentId());
-            G_configspace.removeEdge(remainingNodeParent, remainingNodes[remainingCount]);
+            remainingNodeParent = G_configspace.findNodeId(rn.parentId());
+            G_configspace.removeEdge(remainingNodeParent, rn);
             G_configspace.addEdge(addedNode, newNode);
-            G_configspace.replaceNode(remainingNodes[remainingCount], newNode);
+            G_configspace.replaceNode(rn, newNode);
 
             // propagate the cost update from using the new node down the tree
             // (this requires adding the new node to a small pointer array)
-            ConfigspaceNode* updatedNode = (ConfigspaceNode*)calloc(2, sizeof(ConfigspaceNode));
-            updatedNode[0] = newNode;
-            updatedNode[1].setId(0);
-
-            G_configspace.propagateCost(updatedNode);
-            free(updatedNode);
+            G_configspace.propagateCost(newNode);
         }
-        ++remainingCount;
     }
 }
 
@@ -294,9 +294,5 @@ ConfigspaceNode calcGateNode(double xPosition, double yPosition, double gateOrie
 {
     double x = xPosition + standOffRange * cos(gateOrientation - M_PI);
     double y = yPosition + standOffRange * sin(gateOrientation - M_PI);;
-
-    ConfigspaceNode gateNode(x, y, 0, 0, 0);
-    gateNode.theta = gateOrientation;
-
-    return gateNode;
+    return ConfigspaceNode(x, y, 0, 0, 0, gateOrientation);
 }
