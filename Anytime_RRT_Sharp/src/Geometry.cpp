@@ -206,3 +206,25 @@ void GraphNode::setParentId(int parentId)
 {
     _parentId = parentId;
 }
+
+Edge::Edge()
+{
+    _start = GraphNode();
+    _end = GraphNode();
+}
+
+Edge::Edge(GraphNode start, GraphNode end)
+{
+    _start = start;
+    _end = end;
+}
+
+GraphNode Edge::start()
+{
+    return _start;
+}
+
+GraphNode Edge::end()
+{
+    return _end;
+}

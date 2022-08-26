@@ -1,130 +1,117 @@
 #include <math.h>
 #include <fstream>
 #include <cstring>
+#include <vector>
 #include "cppshrhelp.hpp"
 #include "Geometry.hpp"
+
+using namespace std;
 
 #ifndef CONFIGSPACE_H
 #define CONFIGSPACE_H
 
 class ConfigspaceNode : public GraphNode
 {
-	public:
-		ConfigspaceNode();
-		ConfigspaceNode(double xVal, double yVal, int idVal, int parentIdVal, double costVal);
-		double theta;
-		double cost;		// cost-to-go for this node
+    public:
+        ConfigspaceNode();
+        ConfigspaceNode(double x, double y, int id, int parentId, double costVal, double thetaVal);
+        double theta;
+        double cost;        // cost-to-go for this node
 
-		// iteration point parameters
-		// used for collision checking
-		ConfigspaceNode* iterationPoints;
-		int numIterationPoints;
+        // iteration point parameters
+        // used for collision checking
+        vector<ConfigspaceNode> iterationPoints;
 };
 
-struct Edge
+class ConfigspaceGraph : Rectangle
 {
-	ConfigspaceNode startNode;		// the start node for the edge
-	ConfigspaceNode endNode;		// the end node for the edge
-};
+    void buildGraph();
+    void deleteGraph();
 
-class ConfigspaceGraph
-{
-public:
+    public:
+        int numNodeInd;                    // used to set the node id; is NOT modified by pruning
 
-	int numNodes;					// total number of nodes in the graph; is modified based on pruning 
-	int numNodeInd;					// used to set the node id; is NOT modified by pruning
-	int numEdges;					// total number of edges in the graph
+        vector<ConfigspaceNode> nodes;            // an array containing all nodes
+        vector<Edge> edges;                    // an array containing all edges
+        double minTheta, maxTheta;        // limits of the orientation theta
+        double freeSpaceMeasure;        // a measure of the free space in the graph
+        double zeta;                    // the volume of a unit ball in the free space
+        double gamma_star;                // optimality constraint calculated from percollation theory
+        int dim;                        // dimension of the free space
 
-	ConfigspaceNode* nodes;			// an array containing all nodes
-	Edge* edges;					// an array containing all edges
+        // creates a node for the graph with position (x,y)
+        // NOTE: this should only be used for the start node
+        void createNode(double x, double y, double theta, double t);
 
-	double minX, minY, maxX, maxY;	// limits of the graph freespace
-	double minTheta, maxTheta;		// limits of the orientation theta
-	double freeSpaceMeasure;		// a measure of the free space in the graph
-	double zeta;					// the volume of a unit ball in the free space
-	double gamma_star;				// optimality constraint calculated from percollation theory
-	int dim;						// dimension of the free space
+        // adds a node to the graph
+        // NOTE: this should be used for all other nodes
+        ConfigspaceNode addNode(ConfigspaceNode node);
 
-private:
-	void buildGraph();
-	void deleteGraph();
+        // removes a node from a given array of nodes specified
+        // as a pointer array
+        vector<ConfigspaceNode> removeNode(vector<ConfigspaceNode> nodeArray, ConfigspaceNode nodeToRemove);
 
-public:
+        // removes a set of nodes from the graph (i.e. the nodes array)
+        void removeGraphNodes(vector<ConfigspaceNode> nodesToRemove);
 
-	// creates a node for the graph with position (x,y)
-	// NOTE: this should only be used for the start node
-	void createNode(double x, double y, double theta, double t);
+        // function to replace a node in the current graph node array
+        void replaceNode(ConfigspaceNode oldNode, ConfigspaceNode newNode);
 
-	// adds a node to the graph
-	// NOTE: this should be used for all other nodes
-	ConfigspaceNode addNode(ConfigspaceNode node);
+        // creates an edge between nodes
+        void addEdge(ConfigspaceNode parentNode, ConfigspaceNode newNode);
 
-	// removes a node from a given array of nodes specified
-	// as a pointer array
-	ConfigspaceNode* removeNode(ConfigspaceNode* nodeArray, ConfigspaceNode nodeToRemove);
+        // removes an edge between nodes
+        void removeEdge(ConfigspaceNode parentNode, ConfigspaceNode childNode);
+        void removeEdgesWithEndNode(ConfigspaceNode node);
 
-	// removes a set of nodes from the graph (i.e. the nodes array)
-	void removeGraphNodes(ConfigspaceNode *nodesToRemove);
+        // defines freespace for problem
+        // used when extending to a new node
+        void defineFreespace(double minX, double minY, double minTheta, double maxX,
+            double maxY, double maxTheta, int dimension, double obstacleVol);
 
-	// function to replace a node in the current graph node array
-	void replaceNode(ConfigspaceNode oldNode, ConfigspaceNode newNode);
+        // find node from an ID
+        ConfigspaceNode findNodeId(int nodeId);
 
-	// creates an edge between nodes
-	void addEdge(ConfigspaceNode parentNode, ConfigspaceNode newNode);
+        // find node array placement from an ID
+        int findNodePlacement(int nodeId);
 
-	// removes an edge between nodes
-	void removeEdge(ConfigspaceNode parentToRemove, ConfigspaceNode childToRemove);
+        // print data from the graph for displaying
+        void printData(int probNum, ConfigspaceNode finalNode);
 
-	// defines freespace for problem
-	// used when extending to a new node
-	void defineFreespace(double minX, double minY, double minTheta, double maxX,
-		double maxY, double maxTheta, int dimension, double obstacleVol);
+        // finds the node closest to the given node
+        // returns pointer to the closest node
+        ConfigspaceNode findClosestNode(ConfigspaceNode node);
 
-	// find node from an ID
-	ConfigspaceNode findNodeId(int nodeId);
+        // generates a random node in the graph freespace
+        ConfigspaceNode generateRandomNode();
 
-	// find node array placement from an ID
-	int findNodePlacement(int nodeId);
+        // generates a random node in the graph freespace
+        ConfigspaceNode generateBiasedNode(double biasedX, double biasedY);
 
-	// print data from the graph for displaying
-	void printData(int probNum, ConfigspaceNode finalNode);
+        // calculate the cost between two nodes
+        double computeCost(ConfigspaceNode node_1, ConfigspaceNode node_2);
 
-	// finds the node closest to the given node
-	// returns pointer to the closest node
-	ConfigspaceNode findClosestNode(ConfigspaceNode node);
+        // calculate the radius of the ball to consider for the k-nearest neighbor
+        double computeRadius(double epsilon);
 
-	// generates a random node in the graph freespace
-	ConfigspaceNode generateRandomNode();
+        // get the k-nearest neighbors from the current node
+        // will not return the centerNode's parent node in the array
+        vector<ConfigspaceNode> findNeighbors(ConfigspaceNode centerNode, double radius, int k);
 
-	// generates a random node in the graph freespace
-	ConfigspaceNode generateBiasedNode(double biasedX, double biasedY);
+        // find the best node of the provided list of safe nodes to attempt to
+        // connect to for RRT*
+        ConfigspaceNode findBestNeighbor(ConfigspaceNode newNode, vector<ConfigspaceNode> safeNeighbors);
 
-	// calculate the cost between two nodes
-	double computeCost(ConfigspaceNode node_1, ConfigspaceNode node_2);
+        // propagate cost updates to a node to all of its children
+        void propagateCost(vector<ConfigspaceNode> updatedNodes);
+		void propagateCost(ConfigspaceNode updatedNode);
 
-	// calculate the radius of the ball to consider for the k-nearest neighbor
-	double computeRadius(double epsilon);
+        // recursively deletes a given set of nodes from the graph, starting
+        // with the nodes' children first
+        void trimTreeChildren(vector<ConfigspaceNode> removeNodes, int saveNodeId);
 
-	// get the k-nearest neighbors from the current node
-	// will not return the centerNode's parent node in the array
-	ConfigspaceNode* findNeighbors(ConfigspaceNode centerNode, double radius, int k);
-
-	// find the best node of the provided list of safe nodes to attempt to
-	// connect to for RRT*
-	ConfigspaceNode findBestNeighbor(ConfigspaceNode newNode, ConfigspaceNode* safeNeighbors);
-
-	// propagate cost updates to a node to all of its children
-	void propagateCost(ConfigspaceNode* updatedNode);
-
-	// recursively deletes a given set of nodes from the graph, starting
-	// with the nodes' children first
-	void trimTreeChildren(ConfigspaceNode *removeNodes, int saveNodeId);
-
-	// default constructor
-	ConfigspaceGraph() { buildGraph(); }
-
-	// default destructor
-	~ConfigspaceGraph() { deleteGraph(); }
+        // default constructor
+        ConfigspaceGraph() { buildGraph(); }
 };
 
 #endif // CONFIGSPACE_H
