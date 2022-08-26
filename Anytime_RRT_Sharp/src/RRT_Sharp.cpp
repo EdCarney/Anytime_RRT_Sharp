@@ -53,10 +53,10 @@ int main()
     int maxCount = 10000;
 
     ConfigspaceNode gateNode, tempNode, parentNode, newNode;
-    vector<ConfigspaceNode> safeNearestNeighbors, remainingNodes;
+    vector<ConfigspaceNode> safeNearestNeighbors(0), remainingNodes(0);
 
     int k = 10, count = 0;
-    double circleRadius = 0.0, epsilon = 5.0;
+    double circleRadius = 0.0, epsilon = 10.0;
 
     #pragma endregion Initializes all necessary variables (could be read-in from file)
 
@@ -143,23 +143,23 @@ int main()
                 {
                     // reset the remaining nodes to the safe neighbors minus the one we connected to
                     remainingNodes = tryConnectToBestNeighbor(G_configspace, G_workspace, safeNearestNeighbors, newNode, parentNode);
-                    safeNearestNeighbors.clear();
                 }
 
                 // add new node and edge to the config graph
-                tempNode = G_configspace.addNode(newNode);
-                G_configspace.addEdge(parentNode, tempNode);
+                G_configspace.addNode(newNode);
+                newNode = G_configspace.nodes.back();
+                G_configspace.addEdge(parentNode, newNode);
 
                 // if we haven't reached the goal yet and the added node is in the
                 // goal region, then set goalRegionReached to true
-                if (!goalRegionReached && G_workspace.checkAtGoal(tempNode))
+                if (!goalRegionReached && G_workspace.checkAtGoal(newNode))
                     goalRegionReached = true;
 
                 // do the rewiring while there are nodes left in remainingNodes
-                rewireRemainingNodes(G_configspace, G_workspace, remainingNodes, tempNode);
+                rewireRemainingNodes(G_configspace, G_workspace, remainingNodes, newNode);
+                remainingNodes.clear();
             }
         }
-		remainingNodes.clear();
     }
 
     // find the best node in the goal region
