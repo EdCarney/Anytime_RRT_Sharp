@@ -17,10 +17,6 @@ class ConfigspaceNode : public GraphNode
         ConfigspaceNode(double x, double y, int id, int parentId, double costVal, double thetaVal);
         double theta;
         double cost;        // cost-to-go for this node
-
-        // iteration point parameters
-        // used for collision checking
-        vector<ConfigspaceNode> iterationPoints;
 };
 
 class ConfigspaceGraph : Rectangle

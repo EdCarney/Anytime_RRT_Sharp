@@ -50,7 +50,7 @@ int main()
     double obsVol = 0.0;
     int dimension = 2;
     int goalBiasCount = 100;
-    int maxCount = 7000;
+    int maxCount = 10000;
     int tempItr = 1;
 
     ConfigspaceNode gateNode, tempNode, parentNode, newNode;
@@ -114,12 +114,12 @@ int main()
         // create a new node (not yet connected to the graph)
         tempNode = (count++ % goalBiasCount != 0) ? G_configspace.generateRandomNode() : G_configspace.generateBiasedNode(G_workspace.goalRegion().x(), G_workspace.goalRegion().y());
 
-		printf("TempNode %d at (%f, %f, %f)\n", tempNode.id(), tempNode.x(), tempNode.y(), tempNode.theta);
+		//TempNode %d at (%f, %f, %f)\n", tempNode.id(), tempNode.x(), tempNode.y(), tempNode.theta);
 
         // find the closest graph node and set it as the parent
         parentNode = G_configspace.findClosestNode(tempNode);
 
-		printf("ParentNode %d at (%f, %f, %f)\n", parentNode.id(), parentNode.x(), parentNode.y(), parentNode.theta);
+		//printf("ParentNode %d at (%f, %f, %f)\n", parentNode.id(), parentNode.x(), parentNode.y(), parentNode.theta);
 
         // skip if the parent node is already in the goal region
         if (!G_workspace.checkAtGoal(parentNode))
@@ -129,7 +129,7 @@ int main()
             newNode = G_workspace.extendToNode(parentNode, tempNode, epsilon);
             newNode.cost = parentNode.cost + G_configspace.computeCost(parentNode, newNode);
 
-			printf("NewNode: %d, ParentNode: %d\n", newNode.id(), parentNode.id());
+			//printf("NewNode: %d, ParentNode: %d\n", newNode.id(), parentNode.id());
 
             // if there is a collision, newNode id will be set to its parent's id
             if (newNode.id() != parentNode.id())
@@ -142,14 +142,9 @@ int main()
                 // if there were no safe neighbors then the first node id will be zero
                 if (!safeNearestNeighbors.empty())
                 {
-				printf("HERE 1\n");
                     // reset the remaining nodes to the safe neighbors minus the one we connected to
                     remainingNodes = tryConnectToBestNeighbor(G_configspace, G_workspace, safeNearestNeighbors, newNode, parentNode);
-				printf("HERE 2\n");
-
                     safeNearestNeighbors.clear();
-				printf("HERE 3\n");
-
                 }
 
                 // add new node and edge to the config graph
@@ -233,11 +228,8 @@ vector<ConfigspaceNode> tryConnectToBestNeighbor(ConfigspaceGraph& G_configspace
 {
     // find the best safe neighbor and connect newNode and the bestNeighbor
     // assign the resulting node to tempNode
-	printf("HERE a\n");
     ConfigspaceNode bestNeighbor = G_configspace.findBestNeighbor(newNode, safeNearestNeighbors);
-	printf("HERE b\n");
     ConfigspaceNode tempNode = G_workspace.connectNodes(bestNeighbor, newNode);
-	printf("HERE c\n");
 
     // compute the cost of tempNode using the best neighbor
     tempNode.cost = bestNeighbor.cost + G_configspace.computeCost(bestNeighbor, tempNode);
