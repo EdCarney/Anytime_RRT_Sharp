@@ -22,6 +22,28 @@ double Point::y()
     return _y;
 }
 
+Line::Line()
+{
+    _p1 = Point();
+    _p2 = Point();
+}
+
+Line::Line(Point p1, Point p2)
+{
+    _p1 = p1;
+    _p2 = p2;
+}
+
+Point Line::p1()
+{
+    return _p1;
+}
+
+Point Line::p2()
+{
+    return _p2;
+}
+
 Circle::Circle()
 {
     _x = 0;
@@ -169,6 +191,14 @@ void GraphNode::_buildGraphNode()
     _y = 0;
     _id = 0;
     _parentId = 0;
+}
+
+void GraphNode::_buildGraphNode(GraphNode n)
+{
+    _x = n.x();
+    _y = n.y();
+    _id = n.id();
+    _parentId = n.parentId();
 }
 
 void GraphNode::_buildGraphNode(Point p, int id, int parentId)

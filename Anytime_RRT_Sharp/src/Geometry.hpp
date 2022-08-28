@@ -15,6 +15,18 @@ class DLL_EXPORT Point
         double y();
 };
 
+class DLL_EXPORT Line
+{
+    protected:
+        Point _p1, _p2;
+
+    public:
+        Line();
+        Line(Point p1, Point p2);
+        Point p1();
+        Point p2();
+};
+
 class DLL_EXPORT Circle : public Point
 {
     protected:
@@ -72,6 +84,7 @@ class DLL_EXPORT GraphNode : public Point
     protected:
         int _id, _parentId;
         void _buildGraphNode();
+        void _buildGraphNode(GraphNode n);
         void _buildGraphNode(Point p, int id, int parentId);
         void _buildGraphNode(double x, double y, int id, int parentId);
 
