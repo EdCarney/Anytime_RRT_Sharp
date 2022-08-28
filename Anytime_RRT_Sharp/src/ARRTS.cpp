@@ -75,7 +75,7 @@ Obstacle ArrtsService::obstacles(int i)
     return _obstacles[i];
 }
 
-State* ArrtsService::calculatePath(double standoffRange, double positionBuffer, double freespaceBuffer)
+vector<State> ArrtsService::calculatePath(double standoffRange, double positionBuffer, double freespaceBuffer)
 {
-
+    return vector<State>(0);
 }
