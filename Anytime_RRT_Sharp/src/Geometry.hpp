@@ -4,6 +4,11 @@
 #ifndef GEOMETRY_H
 #define GEOMETRY_H
 
+struct HasArea
+{
+    virtual double area() = 0;
+};
+
 class DLL_EXPORT Point
 {
     protected:
@@ -36,16 +41,19 @@ class DLL_EXPORT Line
         double c();
 };
 
-class DLL_EXPORT Circle : public Point
+class DLL_EXPORT Circle : public Point, public HasArea
 {
     protected:
         double _radius;
+        double _area;
+        double _calculateArea();
 
     public:
         Circle();
         Circle(Point p, double radius);
         Circle(double x, double y, double radius);
         double radius();
+        double area();
 };
 
 class DLL_EXPORT Rectangle

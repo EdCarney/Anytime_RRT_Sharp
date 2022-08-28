@@ -81,7 +81,7 @@ double WorkspaceGraph::computeObsVol()
     double volume = 0.0;
 
     for (Obstacle o : _obstacles)
-        volume += 3.14159 * pow(o.radius(), 2);
+        volume += o.area();
 
     return volume;
 }
