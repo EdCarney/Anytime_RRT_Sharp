@@ -34,6 +34,23 @@ bool Obstacle::intersects(Point point)
     return dist <= _radius;
 }
 
+bool Obstacle::intersects(Line l)
+{
+    // line slope
+    double m = (l.p2().y() - l.p1().y()) / (l.p2().x() - l.p1().x());
+
+    // standard form values
+    double a = 1;
+    double b = -m;
+    double c = l.p1().y() - m * l.p1().x();
+
+    // get perpendicular distance from circle center
+    // to line (https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line)
+    double dist = abs(a * _x + b * _y + c) / sqrt(a * a + b * b);
+
+    return dist <= _radius;
+}
+
 bool Obstacle::intersects(Circle circle)
 {
     double dist = hypot(circle.x() - _x, circle.y() - _y);
