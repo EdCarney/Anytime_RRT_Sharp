@@ -82,6 +82,7 @@ Circle::Circle()
     _x = 0;
     _y = 0;
     _radius = 0;
+    _area = 0;
 }
 
 Circle::Circle(Point p, double radius)
@@ -89,6 +90,7 @@ Circle::Circle(Point p, double radius)
     _x = p.x();
     _y = p.y();
     _radius = radius;
+    _area = _calculateArea();
 }
 
 Circle::Circle(double x, double y, double radius)
@@ -96,11 +98,22 @@ Circle::Circle(double x, double y, double radius)
     _x = x;
     _y = y;
     _radius = radius;
+    _area = _calculateArea();
+}
+
+double Circle::_calculateArea()
+{
+    return M_PI * _radius * _radius;
 }
 
 double Circle::radius()
 {
     return _radius;
+}
+
+double Circle::area()
+{
+    return _area;
 }
 
 Rectangle::Rectangle()
