@@ -30,7 +30,7 @@ void Obstacle::_buildObstacle()
 
 bool Obstacle::intersects(Point point)
 {
-    double dist = hypot(point.x() - _x, point.y() - _y);
+    double dist = this->distanceTo(point);
     return dist <= _radius;
 }
 
@@ -44,7 +44,7 @@ bool Obstacle::intersects(Line l)
 
 bool Obstacle::intersects(Circle circle)
 {
-    double dist = hypot(circle.x() - _x, circle.y() - _y);
+    double dist = this->distanceTo(circle);
     return dist <= _radius + circle.radius();
 }
 

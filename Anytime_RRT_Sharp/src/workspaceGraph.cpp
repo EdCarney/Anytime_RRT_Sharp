@@ -86,12 +86,7 @@ double WorkspaceGraph::computeObsVol()
     return volume;
 }
 
-void WorkspaceGraph::addGoalRegion(double x, double y, double theta, double radius)
-{
-    _goalRegion = GoalState(x, y, radius, theta);
-}
-
-void WorkspaceGraph::updateGoalRegion(double x, double y, double theta, double radius)
+void WorkspaceGraph::setGoalRegion(double x, double y, double theta, double radius)
 {
     _goalRegion = GoalState(x, y, radius, theta);
 }
@@ -133,19 +128,19 @@ void WorkspaceGraph::addObstacle(double x, double y, double radius)
 
 bool WorkspaceGraph::atGate(GraphNode node)
 {
-    double dist = hypot((node.x() - _goalRegion.x()), (node.y() - _goalRegion.y()));
+    double dist = node.distanceTo(_goalRegion);
     return dist <= _goalRegion.radius();
 }
 
-ConfigspaceNode WorkspaceGraph::extendToNode(GraphNode parentNode, GraphNode newNode, double epsilon)
+ConfigspaceNode WorkspaceGraph::extendToNode(GraphNode parentNode, GraphNode newNode, double maxDist)
 {
     ConfigspaceNode currentNode;
-    double dist = hypot((parentNode.x() - newNode.x()), (parentNode.y() - newNode.y()));
+    double dist = parentNode.distanceTo(newNode);
 
-    if (dist >= epsilon)
+    if (dist >= maxDist)
     {
-        double xVal = parentNode.x() + ((newNode.x() - parentNode.x()) / dist) * epsilon;
-        double yVal = parentNode.y() + ((newNode.y() - parentNode.y()) / dist) * epsilon;
+        double xVal = parentNode.x() + ((newNode.x() - parentNode.x()) / dist) * maxDist;
+        double yVal = parentNode.y() + ((newNode.y() - parentNode.y()) / dist) * maxDist;
         currentNode = ConfigspaceNode(xVal, yVal, 0, parentNode.id(), 0, 0);
     }
     else
@@ -187,6 +182,6 @@ bool WorkspaceGraph::checkAtGoal(ConfigspaceNode node)
     State s(node.x(), node.y(), node.theta);
     _vehicle.updateState(s);
 
-    double distToGoal = hypot((_vehicle.state().x() - _goalRegion.x()), (_vehicle.state().y() - _goalRegion.y()));
+    double distToGoal = _vehicle.state().distanceTo(_goalRegion);
     return distToGoal < (_goalRegion.radius() + _vehicle.boundingRadius());
 }
