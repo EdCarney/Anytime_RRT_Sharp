@@ -19,12 +19,19 @@ class DLL_EXPORT Line
 {
     protected:
         Point _p1, _p2;
+        double _slope;
+        // standard form values
+        double _a, _b, _c;
 
     public:
         Line();
         Line(Point p1, Point p2);
         Point p1();
         Point p2();
+        double slope();
+        double a();
+        double b();
+        double c();
 };
 
 class DLL_EXPORT Circle : public Point
