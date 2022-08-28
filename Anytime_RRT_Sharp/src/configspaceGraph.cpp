@@ -43,12 +43,12 @@ void ConfigspaceGraph::defineFreespace(double minX, double minY, double newMinTh
     gamma_star = 2 * pow((1.0 + 1.0 / dim) * (freeSpaceMeasure / (zeta * dim)), 1.0 / float(dim));
 }
 
-void ConfigspaceGraph::addEdge(ConfigspaceNode parentNode, ConfigspaceNode newNode)
+void ConfigspaceGraph::addEdge(GraphNode parentNode, GraphNode newNode)
 {
     edges.push_back(Edge(parentNode, newNode));
 }
 
-void ConfigspaceGraph::removeEdge(ConfigspaceNode parentNode, ConfigspaceNode childNode)
+void ConfigspaceGraph::removeEdge(GraphNode parentNode, GraphNode childNode)
 {
     for (auto itr = edges.begin(); itr < edges.end(); itr++)
     {
@@ -60,7 +60,7 @@ void ConfigspaceGraph::removeEdge(ConfigspaceNode parentNode, ConfigspaceNode ch
     }
 }
 
-void ConfigspaceGraph::removeEdgesWithEndNode(ConfigspaceNode node)
+void ConfigspaceGraph::removeEdgesWithEndNode(GraphNode node)
 {
     for (auto itr = edges.begin(); itr < edges.end(); itr++)
         if (itr->end().id() == node.id())
@@ -152,7 +152,7 @@ void ConfigspaceGraph::trimTreeChildren(vector<ConfigspaceNode> removeNodes, int
     vector<ConfigspaceNode> nodesToRemove;
 
     // get all nodes that have the removeNodes as a parent node
-    for (ConfigspaceNode rn : removeNodes)
+    for (GraphNode rn : removeNodes)
         for (ConfigspaceNode n : nodes)
             if (rn.id() == n.parentId())
                 nodesToRemove.push_back(n);
@@ -228,7 +228,7 @@ void ConfigspaceGraph::printData(ConfigspaceNode finalNode, int probNum)
     outputPathFile.close();
 }
 
-ConfigspaceNode ConfigspaceGraph::findClosestNode(ConfigspaceNode node)
+ConfigspaceNode ConfigspaceGraph::findClosestNode(GraphNode node)
 {
     // initialize distance with first node
     // use euclidean distance of given node from existing nodes
@@ -247,12 +247,12 @@ ConfigspaceNode ConfigspaceGraph::findClosestNode(ConfigspaceNode node)
     return nodes[closestEntry];
 }
 
-double ConfigspaceGraph::computeCost(ConfigspaceNode node_1, ConfigspaceNode node_2)
+double ConfigspaceGraph::computeCost(GraphNode node_1, GraphNode node_2)
 {
     return hypot((node_1.x() - node_2.x()), (node_1.y() - node_2.y()));
 }
 
-vector<ConfigspaceNode> ConfigspaceGraph::findNeighbors(ConfigspaceNode centerNode, double radius, int k)
+vector<ConfigspaceNode> ConfigspaceGraph::findNeighbors(GraphNode centerNode, double radius, int k)
 {
     double dist;
     vector<ConfigspaceNode> neighbors(0);
