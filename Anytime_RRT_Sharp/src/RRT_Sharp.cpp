@@ -56,7 +56,7 @@ int main()
     ConfigspaceNode gateNode, tempNode, parentNode, newNode;
     vector<ConfigspaceNode> safeNearestNeighbors(0), remainingNodes(0);
 
-    int k = 10, count = 0;
+    int k = 10, count = 0, tempId = 0;
     double circleRadius = 0.0, epsilon = 10.0;
 
     #pragma endregion Initializes all necessary variables (could be read-in from file)
@@ -100,7 +100,7 @@ int main()
 
     printf("ObsVol: %f, NumObs: %lu, Freespace: [%f, %f, %f, %f]\n", obsVol, G_workspace.obstacles().size(), xMin, xMax, yMin, yMax);
     printf("UAV Location: %f, %f, %f\n", G_workspace.goalRegion().x(), G_workspace.goalRegion().y(), G_workspace.goalRegion().radius());
-    printf("Root Node:    %f, %f, %f\n", G_configspace.nodes[0].x(), G_configspace.nodes[0].y(), G_configspace.nodes[0].theta);
+    printf("Root Node:    %f, %f, %f\n", G_configspace.nodes[1].x(), G_configspace.nodes[1].y(), G_configspace.nodes[1].theta);
 
     //------------------------------------------------------------------------//
     //------------------------start the RRT# iterations-----------------------//
@@ -117,12 +117,8 @@ int main()
         // create a new node (not yet connected to the graph)
         tempNode = (count++ % goalBiasCount != 0) ? G_configspace.generateRandomNode() : G_configspace.generateBiasedNode(G_workspace.goalRegion().x(), G_workspace.goalRegion().y());
 
-		//TempNode %d at (%f, %f, %f)\n", tempNode.id(), tempNode.x(), tempNode.y(), tempNode.theta);
-
         // find the closest graph node and set it as the parent
         parentNode = G_configspace.findClosestNode(tempNode);
-
-		//printf("ParentNode %d at (%f, %f, %f)\n", parentNode.id(), parentNode.x(), parentNode.y(), parentNode.theta);
 
         // skip if the parent node is already in the goal region
         if (!G_workspace.checkAtGoal(parentNode))
@@ -131,8 +127,6 @@ int main()
             // (this includes a collision check); then compute cost
             newNode = G_workspace.extendToNode(parentNode, tempNode, epsilon);
             newNode.cost = parentNode.cost + G_configspace.computeCost(parentNode, newNode);
-
-			//printf("NewNode: %d, ParentNode: %d\n", newNode.id(), parentNode.id());
 
             // if there is a collision, newNode id will be set to its parent's id
             if (newNode.id() != parentNode.id())
@@ -150,8 +144,8 @@ int main()
                 }
 
                 // add new node and edge to the config graph
-                G_configspace.addNode(newNode);
-                newNode = G_configspace.nodes.back();
+                tempId = G_configspace.addNode(newNode);
+                newNode = G_configspace.nodes[tempId];
                 G_configspace.addEdge(parentNode, newNode);
 
                 // if we haven't reached the goal yet and the added node is in the
@@ -216,15 +210,15 @@ ConfigspaceNode findBestNode(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_
     double tempCost = 0, finalCost = INFINITY;
     ConfigspaceNode finalNode;
     
-    for (ConfigspaceNode n : G_configspace.nodes)
+    for (auto itr = G_configspace.nodes.begin(); itr != G_configspace.nodes.end(); ++itr)
     {
-        if (G_workspace.checkAtGoal(n))
+        if (G_workspace.checkAtGoal(itr->second))
         {
-            tempCost = n.cost;
+            tempCost = itr->second.cost;
             if (tempCost)
             {
                 finalCost = tempCost;
-                finalNode = n;
+                finalNode = itr->second;
             }
         }
     }
@@ -266,12 +260,11 @@ void rewireRemainingNodes(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_wor
             // the parent (now the added node)
             newNode = G_workspace.connectNodes(addedNode, rn);
             newNode.cost = addedNode.cost + G_configspace.computeCost(rn, addedNode);
-            newNode.setParentId(addedNode.id());
 
             // get the old parent of the current remaining node, remove the old
             // edge, add the new edge, and replace the old remaining node
             remainingNodeParent = G_configspace.findNodeId(rn.parentId());
-            G_configspace.removeEdge(remainingNodeParent, rn);
+            G_configspace.removeEdge(remainingNodeParent.id(), rn.id());
             G_configspace.addEdge(addedNode, newNode);
             G_configspace.replaceNode(rn, newNode);
 
