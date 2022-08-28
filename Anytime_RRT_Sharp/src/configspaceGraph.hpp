@@ -1,3 +1,4 @@
+#include <unordered_map>
 #include <math.h>
 #include <fstream>
 #include <cstring>
@@ -24,10 +25,20 @@ class ConfigspaceGraph : Rectangle
     void buildGraph();
     void deleteGraph();
 
+    unordered_map<int, vector<int>> parentChildMap;
+
+    vector<ConfigspaceNode> getAllChildren(int id);
+    void addParentChildRelation(GraphNode node);
+    void removeParentChildRelation(GraphNode node);
+
+    void removeNode(unordered_map<int, ConfigspaceNode> nodeMap, ConfigspaceNode nodeToRemove);
+    void removeEdgesWithEndNode(GraphNode node);
+
     public:
         int numNodeInd;                    // used to set the node id; is NOT modified by pruning
 
-        vector<ConfigspaceNode> nodes;            // an array containing all nodes
+        unordered_map<int, ConfigspaceNode> nodes;
+        //vector<ConfigspaceNode> nodes;            // an array containing all nodes
         vector<Edge> edges;                    // an array containing all edges
         double minTheta, maxTheta;        // limits of the orientation theta
         double freeSpaceMeasure;        // a measure of the free space in the graph
@@ -35,30 +46,23 @@ class ConfigspaceGraph : Rectangle
         double gamma_star;                // optimality constraint calculated from percollation theory
         int dim;                        // dimension of the free space
 
-        // creates a node for the graph with position (x,y)
-        // NOTE: this should only be used for the start node
-        void createNode(double x, double y, double theta, double t);
-
         // adds a node to the graph
         // NOTE: this should be used for all other nodes
-        void addNode(ConfigspaceNode node);
+        int addNode(ConfigspaceNode node);
 
         // removes a node from a given array of nodes specified
         // as a pointer array
-        vector<ConfigspaceNode> removeNode(vector<ConfigspaceNode> nodeArray, ConfigspaceNode nodeToRemove);
+        vector<ConfigspaceNode> removeNode(vector<ConfigspaceNode> nodeVec, ConfigspaceNode nodeToRemove);
 
         // removes a set of nodes from the graph (i.e. the nodes array)
         void removeGraphNodes(vector<ConfigspaceNode> nodesToRemove);
+        void removeEdge(int parentId, int childId);
 
         // function to replace a node in the current graph node array
         void replaceNode(ConfigspaceNode oldNode, ConfigspaceNode newNode);
 
         // creates an edge between nodes
         void addEdge(GraphNode parentNode, GraphNode newNode);
-
-        // removes an edge between nodes
-        void removeEdge(GraphNode parentNode, GraphNode childNode);
-        void removeEdgesWithEndNode(GraphNode node);
 
         // defines freespace for problem
         // used when extending to a new node
@@ -67,9 +71,6 @@ class ConfigspaceGraph : Rectangle
 
         // find node from an ID
         ConfigspaceNode findNodeId(int nodeId);
-
-        // find node array placement from an ID
-        int findNodePlacement(int nodeId);
 
         // print data from the graph for displaying
         void printData(ConfigspaceNode finalNode, int probNum = 1);
