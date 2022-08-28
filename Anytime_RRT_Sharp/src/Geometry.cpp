@@ -22,6 +22,11 @@ double Point::y()
     return _y;
 }
 
+double Point::distanceTo(Point p)
+{
+    return hypot(_x - p.x(), _y - p.y());
+}
+
 Line::Line()
 {
     _p1 = Point();
