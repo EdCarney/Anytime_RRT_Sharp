@@ -1,6 +1,7 @@
 #include "RRT_Sharp.hpp"
 
 using namespace std;
+using namespace std::chrono;
 
 int main()
 {
@@ -108,6 +109,9 @@ int main()
     bool goalRegionReached = false;
 
     // do the RRT# thing
+
+    auto start = high_resolution_clock::now();
+
     while(!goalRegionReached || count < maxCount)
     {
         // create a new node (not yet connected to the graph)
@@ -162,6 +166,9 @@ int main()
         }
     }
 
+    auto stop = high_resolution_clock::now();
+    auto duration = duration_cast<milliseconds>(stop - start);
+
     // find the best node in the goal region
     ConfigspaceNode finalNode = findBestNode(G_configspace, G_workspace);
 
@@ -169,6 +176,7 @@ int main()
     printf("Total number of points: %lu\n", G_configspace.nodes.size());
     printf("Final node at: (%f, %f)\n", finalNode.x(), finalNode.y());
     printf("Final cost is: %f\n", finalNode.cost);
+    printf("Total runtime is %lld ms\n", duration.count());
     G_configspace.printData(finalNode);
 
     return 0;
