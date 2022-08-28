@@ -1,4 +1,4 @@
-#include "workspaceGraph.hpp"
+#include "WorkspaceGraph.hpp"
 
 Vehicle WorkspaceGraph::vehicle()
 {

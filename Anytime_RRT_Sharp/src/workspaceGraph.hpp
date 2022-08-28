@@ -1,5 +1,5 @@
 #include <vector>
-#include "configspaceGraph.hpp"
+#include "ConfigspaceGraph.hpp"
 #include "Geometry.hpp"
 #include "Obstacle.hpp"
 #include "Vehicle.hpp"

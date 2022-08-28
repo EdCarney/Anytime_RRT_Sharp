@@ -4,8 +4,10 @@
 #include <string>
 #include <vector>
 #include "cppshrhelp.hpp"
+//#include "ConfigspaceGraph.hpp"
 #include "Geometry.hpp"
 #include "Obstacle.hpp"
+//#include "WorkspaceGraph.hpp"
 
 using namespace std;
 
@@ -19,6 +21,8 @@ class DLL_EXPORT ArrtsService
         vector<Point> _vehicleOutline;
         State _startState;
         State _goalState;
+        // ConfigspaceGraph _configspaceGraph;
+        // WorkspaceGraph _workspaceGraph;
 
     public:
         void setGoalState(double x, double y, double theta);

@@ -1,4 +1,4 @@
-#include "configspaceGraph.hpp"
+#include "ConfigspaceGraph.hpp"
 
 ConfigspaceNode::ConfigspaceNode()
 {
