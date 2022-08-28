@@ -54,11 +54,11 @@ class ConfigspaceGraph : Rectangle
         void replaceNode(ConfigspaceNode oldNode, ConfigspaceNode newNode);
 
         // creates an edge between nodes
-        void addEdge(ConfigspaceNode parentNode, ConfigspaceNode newNode);
+        void addEdge(GraphNode parentNode, GraphNode newNode);
 
         // removes an edge between nodes
-        void removeEdge(ConfigspaceNode parentNode, ConfigspaceNode childNode);
-        void removeEdgesWithEndNode(ConfigspaceNode node);
+        void removeEdge(GraphNode parentNode, GraphNode childNode);
+        void removeEdgesWithEndNode(GraphNode node);
 
         // defines freespace for problem
         // used when extending to a new node
@@ -76,7 +76,7 @@ class ConfigspaceGraph : Rectangle
 
         // finds the node closest to the given node
         // returns pointer to the closest node
-        ConfigspaceNode findClosestNode(ConfigspaceNode node);
+        ConfigspaceNode findClosestNode(GraphNode node);
 
         // generates a random node in the graph freespace
         ConfigspaceNode generateRandomNode();
@@ -85,14 +85,14 @@ class ConfigspaceGraph : Rectangle
         ConfigspaceNode generateBiasedNode(double biasedX, double biasedY);
 
         // calculate the cost between two nodes
-        double computeCost(ConfigspaceNode node_1, ConfigspaceNode node_2);
+        double computeCost(GraphNode node_1, GraphNode node_2);
 
         // calculate the radius of the ball to consider for the k-nearest neighbor
         double computeRadius(double epsilon);
 
         // get the k-nearest neighbors from the current node
         // will not return the centerNode's parent node in the array
-        vector<ConfigspaceNode> findNeighbors(ConfigspaceNode centerNode, double radius, int k);
+        vector<ConfigspaceNode> findNeighbors(GraphNode centerNode, double radius, int k);
 
         // find the best node of the provided list of safe nodes to attempt to
         // connect to for RRT*
