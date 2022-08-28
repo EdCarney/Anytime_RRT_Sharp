@@ -10,8 +10,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 configure_file(ARRTSConfig.h.in ARRTSConfig.h)
 
 # add libraries
-add_library(ConfigspaceGraph configspaceGraph.cpp)
-add_library(WorkspaceGraph workspaceGraph.cpp)
+add_library(ConfigspaceGraph ConfigspaceGraph.cpp)
+add_library(WorkspaceGraph WorkspaceGraph.cpp)
 add_library(Vehicle Vehicle.cpp)
 add_library(Obstacle Obstacle.cpp)
 add_library(Geometry Geometry.cpp)
