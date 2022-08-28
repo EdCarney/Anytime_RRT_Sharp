@@ -1,4 +1,5 @@
 #include <tuple>
+#include <chrono>
 #include "configspaceGraph.hpp"
 #include "workspaceGraph.hpp"
 
