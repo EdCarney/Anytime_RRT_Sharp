@@ -22,15 +22,9 @@ class WorkspaceGraph : Rectangle
         Vehicle vehicle();
         void setVehicle(Vehicle v);
         GoalState goalRegion();
+        void setGoalRegion(double x, double y, double theta, double radius);
         vector<Obstacle> obstacles();
         Obstacle obstacles(int i);
-
-        // sets the goal region for the graph
-        // this is treated similar to an obstacle
-        void addGoalRegion(double x, double y, double theta, double radius);
-
-        // updates the position and configuration of the graph goal region
-        void updateGoalRegion(double x, double y, double theta, double radius);
 
         // defines freespace for problem
         // used when extending to a new node
@@ -42,7 +36,7 @@ class WorkspaceGraph : Rectangle
 
         // attempts to build a path from a parent configuration node to a new configuration node
         // uses interpolation with a step size of delta and a maximum extension of epsilon
-        ConfigspaceNode extendToNode(GraphNode parentNode, GraphNode newNode, double epsilon);
+        ConfigspaceNode extendToNode(GraphNode parentNode, GraphNode newNode, double maxDist);
 
         // attempt to connect two nodes; used for rewiring the graph for RRT*
         // will attempt to go from parent node to new node until the difference is less then some epsilon
