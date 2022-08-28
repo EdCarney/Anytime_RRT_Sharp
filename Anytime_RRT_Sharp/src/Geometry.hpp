@@ -1,3 +1,4 @@
+#include <math.h>
 #include "cppshrhelp.hpp"
 
 #ifndef GEOMETRY_H
@@ -13,6 +14,7 @@ class DLL_EXPORT Point
         Point(double x, double y);
         double x();
         double y();
+        double distanceTo(Point p);
 };
 
 class DLL_EXPORT Line
