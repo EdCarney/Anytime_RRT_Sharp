@@ -13,6 +13,7 @@ class Obstacle : public Circle
         Obstacle(double x, double y, double radius);
         Obstacle(Point p, double radius);
         bool intersects(Point p);
+        bool intersects(Line l);
         bool intersects(Circle c);
         bool intersects(Rectangle r);
 };
