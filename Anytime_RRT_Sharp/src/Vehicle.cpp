@@ -21,7 +21,7 @@ void Vehicle::_calculateBoundingRadius()
 {
     double maxRadius = 0;
     for (Point p : _offsetNodes)
-        maxRadius = max(maxRadius, hypot(p.x() - _centroid.x(), p.y() - _centroid.y()));
+        maxRadius = max(maxRadius, p.distanceTo(_centroid));
     _boundingRadius = maxRadius;
 }
 

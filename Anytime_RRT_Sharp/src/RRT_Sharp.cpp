@@ -68,7 +68,7 @@ int main()
     ConfigspaceGraph G_configspace;
 
     // set the goal region (i.e. the UAV starting location)
-    G_workspace.addGoalRegion(uavStartX, uavStartY, uavStartTheta, uavGoalRadius);
+    G_workspace.setGoalRegion(uavStartX, uavStartY, uavStartTheta, uavGoalRadius);
 
     // function to determine goal node based on approximate gate information
     gateNode = calcGateNode(rootXPosition, rootYPosition, rootApproach, standOffRange);
