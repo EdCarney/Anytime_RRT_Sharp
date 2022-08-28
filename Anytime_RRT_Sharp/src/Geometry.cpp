@@ -26,12 +26,20 @@ Line::Line()
 {
     _p1 = Point();
     _p2 = Point();
+    _slope = 0;
+    _a = 0;
+    _b = 0;
+    _c = 0;
 }
 
 Line::Line(Point p1, Point p2)
 {
     _p1 = p1;
     _p2 = p2;
+    _slope = (p2.y() - p1.y()) / (p2.x() - p1.x());
+    _a = 1;
+    _b = -_slope;
+    _c = p1.y() - _slope * p1.x();
 }
 
 Point Line::p1()
@@ -42,6 +50,26 @@ Point Line::p1()
 Point Line::p2()
 {
     return _p2;
+}
+
+double Line::slope()
+{
+    return _slope;
+}
+
+double Line::a()
+{
+    return _a;
+}
+
+double Line::b()
+{
+    return _b;
+}
+
+double Line::c()
+{
+    return _c;
 }
 
 Circle::Circle()
