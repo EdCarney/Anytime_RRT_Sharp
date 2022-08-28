@@ -30,8 +30,6 @@ void WorkspaceGraph::_buildWorkspaceGraph()
     printf("Constructing a default empty workspace graph.\n");
     _minPoint = Point(0, 0);
     _maxPoint = Point(0, 0);
-    _minTheta = 0.0;
-    _maxTheta = 0.0;
     _goalRegionReached = false;
 }
 
@@ -98,56 +96,25 @@ void WorkspaceGraph::updateGoalRegion(double x, double y, double theta, double r
     _goalRegion = GoalState(x, y, radius, theta);
 }
 
-void WorkspaceGraph::defineFreespace(double minX, double minY, double minTheta, double maxX, double maxY, double maxTheta)
+void WorkspaceGraph::defineFreespace(double minX, double minY, double maxX, double maxY)
 {
     _minPoint = Point(minX, minY);
     _maxPoint = Point(maxX, maxY);
-    _minTheta = minTheta;
-    _maxTheta = maxTheta;
 }
 
-vector<ConfigspaceNode> WorkspaceGraph::checkSafety(ConfigspaceNode newNode, ConfigspaceNode * neighbors)
+vector<ConfigspaceNode> WorkspaceGraph::checkSafety(ConfigspaceNode newNode, vector<ConfigspaceNode> neighbors)
 {
-    // determine number of nodes in neighbors and set the
-    // size of the safe neighbors array based on this
-    int numNeighbors = 0;
-    while (neighbors[numNeighbors].id()) { numNeighbors++; }
-
-    vector<ConfigspaceNode> safeNeighbors;
-
-    // check the distance of each obstacle to the newNode
-    // and the radius of each obstacle to determine possibility
-    // of collision
-    double nodeCircleRad, obsDist, midpointX, midpointY;
-    bool safetyCheck = true;
-
-    for (int i = 0; i < numNeighbors; i++)
+    // check if line from node to neighbor intersects any obstacle
+    for (auto itr = neighbors.begin(); itr < neighbors.end(); ++itr)
     {
-        nodeCircleRad = hypot((newNode.x() - neighbors[i].x()), (newNode.y() - neighbors[i].y())) / 2;
-        midpointX = (newNode.x() + neighbors[i].x()) / 2;
-        midpointY = (newNode.y() + neighbors[i].y()) / 2;
-        Obstacle pathObstacle(midpointX, midpointY, nodeCircleRad);
-        safetyCheck = true;
-
-        // check the given neighbor for all obstacles
-        // only add it if collision is not a risk across
-        // all obstacles
-        for (Obstacle o : _obstacles)
+        if (_pathIntersectsObstacle(newNode, *itr))
         {
-            if (o.intersects(pathObstacle))
-            {
-                safetyCheck = false;
-                break;
-            }
+            neighbors.erase(itr);
+            break;
         }
-        if (safetyCheck)
-            safeNeighbors.push_back(neighbors[i]);
     }
 
-    safeNeighbors.push_back(ConfigspaceNode());
-    safeNeighbors.back().setId(0);
-
-    return safeNeighbors;
+    return neighbors;
 }
 
 bool WorkspaceGraph::obstacleInFreespace(double xObs, double yObs, double radiusObs)
@@ -164,41 +131,46 @@ void WorkspaceGraph::addObstacle(double x, double y, double radius)
     _obstacles.push_back(Obstacle(x, y, radius));
 }
 
-bool WorkspaceGraph::atGate(ConfigspaceNode node)
+bool WorkspaceGraph::atGate(GraphNode node)
 {
     double dist = hypot((node.x() - _goalRegion.x()), (node.y() - _goalRegion.y()));
     return dist <= _goalRegion.radius();
 }
 
-ConfigspaceNode WorkspaceGraph::extendToNode(ConfigspaceNode parentNode, ConfigspaceNode newNode, double epsilon)
+ConfigspaceNode WorkspaceGraph::extendToNode(GraphNode parentNode, GraphNode newNode, double epsilon)
 {
     ConfigspaceNode currentNode;
     double dist = hypot((parentNode.x() - newNode.x()), (parentNode.y() - newNode.y()));
 
     if (dist >= epsilon)
     {
-        //printf("CONNECTING\n");
         double xVal = parentNode.x() + ((newNode.x() - parentNode.x()) / dist) * epsilon;
         double yVal = parentNode.y() + ((newNode.y() - parentNode.y()) / dist) * epsilon;
         currentNode = ConfigspaceNode(xVal, yVal, 0, parentNode.id(), 0, 0);
-        //printf("CurrentNode %d at (%f, %f, %f)\n", currentNode.id(), currentNode.x(), currentNode.y(), currentNode.theta);
     }
     else
     {
-        //printf("NOT CONNECTING\n");
         currentNode = ConfigspaceNode(newNode.x(), newNode.y(), 0, parentNode.id(), 0, 0);
     }
 
-    if (checkForCollision(currentNode))
+    if (_nodeIntersectsObstacle(currentNode) || _pathIntersectsObstacle(parentNode, currentNode))
         currentNode.setId(parentNode.id());
 
     return currentNode;
 }
 
-bool WorkspaceGraph::checkForCollision(ConfigspaceNode node)
+bool WorkspaceGraph::_nodeIntersectsObstacle(GraphNode node)
 {
     for (Obstacle o : _obstacles)
         if (o.intersects(node))
+            return true;
+    return false;
+}
+
+bool WorkspaceGraph::_pathIntersectsObstacle(GraphNode parent, GraphNode child)
+{
+    for (Obstacle o : _obstacles)
+        if (o.intersects(Line(parent, child)))
             return true;
     return false;
 }

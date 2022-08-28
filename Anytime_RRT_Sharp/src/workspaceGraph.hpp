@@ -13,8 +13,9 @@ class WorkspaceGraph : Rectangle
     vector<Obstacle> _obstacles;
     Vehicle _vehicle;
     void _buildWorkspaceGraph();
-    double _minTheta, _maxTheta;
     bool _goalRegionReached;
+    bool _nodeIntersectsObstacle(GraphNode node);
+    bool _pathIntersectsObstacle(GraphNode parent, GraphNode child);
 
     public:
 
@@ -33,19 +34,15 @@ class WorkspaceGraph : Rectangle
 
         // defines freespace for problem
         // used when extending to a new node
-        void defineFreespace(double minX, double minY, double minTheta, double maxX, double maxY, double maxTheta);
+        void defineFreespace(double minX, double minY, double maxX, double maxY);
 
         // checks if specified node is in the goal region
         // returns true if it is and false otherwise
         bool checkAtGoal(ConfigspaceNode node);
 
-        // checks if any vehicle collides with any obstacle at the provided configuration point
-        // returns true if there is a collision and false otherwise
-        bool checkForCollision(ConfigspaceNode node);
-
         // attempts to build a path from a parent configuration node to a new configuration node
         // uses interpolation with a step size of delta and a maximum extension of epsilon
-        ConfigspaceNode extendToNode(ConfigspaceNode parentNode, ConfigspaceNode newNode, double epsilon);
+        ConfigspaceNode extendToNode(GraphNode parentNode, GraphNode newNode, double epsilon);
 
         // attempt to connect two nodes; used for rewiring the graph for RRT*
         // will attempt to go from parent node to new node until the difference is less then some epsilon
@@ -54,7 +51,7 @@ class WorkspaceGraph : Rectangle
 
         // will check if an obstacle is within the vicinity of the new node and any of
         // its neighbors; will return an array of safe nodes
-        vector<ConfigspaceNode> checkSafety(ConfigspaceNode newNode, ConfigspaceNode* neighbors);
+        vector<ConfigspaceNode> checkSafety(ConfigspaceNode newNode, vector<ConfigspaceNode> neighbors);
 
         // checks if an obstacle (defined by position and radius) lies within the current freespace
         bool obstacleInFreespace(double xObs, double yObs, double radiusObs);
@@ -69,7 +66,7 @@ class WorkspaceGraph : Rectangle
         double computeObsVol();
 
         // checks if the vehicle goal region intersects the gate
-        bool atGate(ConfigspaceNode node);
+        bool atGate(GraphNode node);
 
         // default constructor
         WorkspaceGraph() { _buildWorkspaceGraph(); }
