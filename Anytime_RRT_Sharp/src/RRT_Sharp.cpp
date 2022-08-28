@@ -54,7 +54,7 @@ int main()
     int maxCount = 10000;
 
     ConfigspaceNode gateNode, tempNode, parentNode, newNode;
-    vector<ConfigspaceNode> safeNearestNeighbors(0), remainingNodes(0);
+    vector<ConfigspaceNode> neighbors, safeNeighbors, remainingNodes;
 
     int k = 10, count = 0, tempId = 0;
     double circleRadius = 0.0, epsilon = 10.0;
@@ -77,7 +77,7 @@ int main()
     // and the robot
     tie(xMin, xMax, yMin, yMax) = calculateGraphLimits(G_workspace, gateNode, buffer);
 
-    G_workspace.defineFreespace(xMin, yMin, thetaMin, xMax, yMax, thetaMax);
+    G_workspace.defineFreespace(xMin, yMin, xMax, yMax);
 
     // set the obstacles for this iteration (we don't need to consider all obstacles
     // for every iteration); use the above defined freespace limits
@@ -134,13 +134,14 @@ int main()
                 // compute ball radius and find k safe neighbor nodes (i.e. no collision)
                 // within that ball
                 circleRadius = G_configspace.computeRadius(epsilon);
-                safeNearestNeighbors = G_configspace.findNeighbors(newNode, circleRadius, k);
+                neighbors = G_configspace.findNeighbors(newNode, circleRadius, k);
+                safeNeighbors = G_workspace.checkSafety(newNode, neighbors);
 
                 // if there were no safe neighbors then the first node id will be zero
-                if (!safeNearestNeighbors.empty())
+                if (!safeNeighbors.empty())
                 {
                     // reset the remaining nodes to the safe neighbors minus the one we connected to
-                    remainingNodes = tryConnectToBestNeighbor(G_configspace, G_workspace, safeNearestNeighbors, newNode, parentNode);
+                    remainingNodes = tryConnectToBestNeighbor(G_configspace, G_workspace, safeNeighbors, newNode, parentNode);
                 }
 
                 // add new node and edge to the config graph
