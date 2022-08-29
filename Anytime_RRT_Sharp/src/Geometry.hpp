@@ -26,7 +26,7 @@ class DLL_EXPORT Line
 {
     protected:
         Point _p1, _p2;
-        double _slope;
+        double _slope, _length;
         // standard form values
         double _a, _b, _c;
 
@@ -39,6 +39,8 @@ class DLL_EXPORT Line
         double a();
         double b();
         double c();
+        double length();
+        double dotProduct(Line line);
 };
 
 class DLL_EXPORT Circle : public Point, public HasArea
