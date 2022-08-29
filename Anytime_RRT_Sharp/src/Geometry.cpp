@@ -31,6 +31,7 @@ Line::Line()
 {
     _p1 = Point();
     _p2 = Point();
+    _length = 0;
     _slope = 0;
     _a = 0;
     _b = 0;
@@ -41,6 +42,7 @@ Line::Line(Point p1, Point p2)
 {
     _p1 = p1;
     _p2 = p2;
+    _length = p1.distanceTo(p2);
     _slope = (p2.y() - p1.y()) / (p2.x() - p1.x());
     _a = 1;
     _b = -_slope;
@@ -75,6 +77,21 @@ double Line::b()
 double Line::c()
 {
     return _c;
+}
+
+double Line::length()
+{
+    return _length;
+}
+
+double Line::dotProduct(Line line)
+{
+    double dx1 = _p2.x() - _p1.x();
+    double dy1 = _p2.y() - _p1.y();
+    double dx2 = line.p2().x() - line.p1().x();
+    double dy2 = line.p2().y() - line.p1().y();
+
+    return dx1 * dx2 + dy1 * dy2;
 }
 
 Circle::Circle()
