@@ -80,13 +80,6 @@ void ConfigspaceGraph::removeEdge(int parentId, int childId)
     }
 }
 
-void ConfigspaceGraph::removeEdgesWithEndNode(GraphNode node)
-{
-    for (auto itr = edges.begin(); itr < edges.end(); ++itr)
-        if (itr->end().id() == node.id())
-            edges.erase(itr);
-}
-
 vector<ConfigspaceNode> ConfigspaceGraph::removeNode(vector<ConfigspaceNode> nodeVec, ConfigspaceNode nodeToRemove)
 {
     for (auto itr = nodeVec.begin(); itr < nodeVec.end(); ++itr)
@@ -99,21 +92,6 @@ vector<ConfigspaceNode> ConfigspaceGraph::removeNode(vector<ConfigspaceNode> nod
     }
 
     return nodeVec;
-}
-
-void ConfigspaceGraph::removeGraphNodes(vector<ConfigspaceNode> nodesToRemove)
-{
-    for (ConfigspaceNode n : nodesToRemove)
-    {
-        nodes.erase(n.id());
-        removeParentChildRelation(n);
-        removeEdgesWithEndNode(n);
-    }
-}
-
-ConfigspaceNode ConfigspaceGraph::findNodeId(int id)
-{
-    return nodes[id];
 }
 
 ConfigspaceNode ConfigspaceGraph::generateRandomNode()
@@ -150,28 +128,6 @@ double ConfigspaceGraph::computeRadius(double epsilon)
     circleRadius = percDist < epsilon ? percDist : epsilon;
 
     return circleRadius;
-}
-
-void ConfigspaceGraph::trimTreeChildren(vector<ConfigspaceNode> removeNodes, int saveNodeId)
-{
-    vector<ConfigspaceNode> nodesToRemove, temp;
-
-    // get all nodes that have the removeNodes as a parent node
-     for (GraphNode rn : removeNodes)
-     {
-        temp = getAllChildren(rn.id());
-        nodesToRemove.insert(nodesToRemove.end(), temp.begin(), temp.end());
-     }
-
-    // if there are any nodes that have any of the remove nodes as a parent node,
-    // then continue until there are no more children
-    if (!nodesToRemove.empty())
-        trimTreeChildren(nodesToRemove, 0);
-
-    // after all children are obtained, start deleting them in the order of the
-    // youngest children first (but save the node if it is the initital node)
-    if (removeNodes.front().id() != saveNodeId)
-        removeGraphNodes(removeNodes);
 }
 
 void ConfigspaceGraph::printData(ConfigspaceNode finalNode, int probNum)
@@ -213,12 +169,12 @@ void ConfigspaceGraph::printData(ConfigspaceNode finalNode, int probNum)
     ConfigspaceNode currentNode = finalNode;
 
     outputPathFile << currentNode.x() << ", " << currentNode.y() << ", " << currentNode.theta << "\n";
-    currentNode = findNodeId(currentNode.parentId());
+    currentNode = nodes[currentNode.parentId()];
 
     while (currentNode.parentId())
     {
         outputPathFile << currentNode.x() << ", " << currentNode.y() << ", " << currentNode.theta << "\n";
-        currentNode = findNodeId(currentNode.parentId());
+        currentNode = nodes[currentNode.parentId()];
     }
     outputPathFile << nodes[1].x() << ", " << nodes[1].y() << ", " << nodes[1].theta << "\n";
 
@@ -243,7 +199,7 @@ ConfigspaceNode ConfigspaceGraph::findClosestNode(GraphNode node)
 
     for (auto itr = nodes.begin(); itr != nodes.end(); ++itr)
     {
-        dist = hypot(itr->second.x() - node.x(), itr->second.y() - node.y());;
+        dist = itr->second.distanceTo(node);
         if (dist < shortestDist)
         {
             shortestDist = dist;
@@ -255,7 +211,7 @@ ConfigspaceNode ConfigspaceGraph::findClosestNode(GraphNode node)
 
 double ConfigspaceGraph::computeCost(GraphNode node_1, GraphNode node_2)
 {
-    return hypot((node_1.x() - node_2.x()), (node_1.y() - node_2.y()));
+    return node_1.distanceTo(node_2);
 }
 
 vector<ConfigspaceNode> ConfigspaceGraph::findNeighbors(GraphNode centerNode, double radius, int k)
@@ -265,7 +221,7 @@ vector<ConfigspaceNode> ConfigspaceGraph::findNeighbors(GraphNode centerNode, do
 
     for (auto itr = nodes.begin(); itr != nodes.end(); ++itr)
     {
-        dist = hypot((centerNode.x() - itr->second.x()), (centerNode.y() - itr->second.y()));
+        dist = itr->second.distanceTo(centerNode);
         if (dist < radius && centerNode.parentId() != itr->second.id())
         {
             neighbors.push_back(itr->second);
