@@ -129,3 +129,5 @@ TEST(Geometry_Circle, InitializeWithPointRadius_CheckVals)
     GTEST_ASSERT_EQ(c.radius(), 3);
     GTEST_ASSERT_EQ(c.area(), M_PI * 3 * 3);
 }
+
+#pragma endregion //Circle
