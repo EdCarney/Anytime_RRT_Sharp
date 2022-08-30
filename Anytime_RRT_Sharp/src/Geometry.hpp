@@ -1,3 +1,4 @@
+#include <float.h>
 #include <math.h>
 #include "cppshrhelp.hpp"
 
@@ -35,10 +36,6 @@ class DLL_EXPORT Line
         Line(Point p1, Point p2);
         Point p1();
         Point p2();
-        double slope();
-        double a();
-        double b();
-        double c();
         double length();
         double dotProduct(Line line);
 };
