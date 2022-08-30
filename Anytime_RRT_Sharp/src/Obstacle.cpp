@@ -64,8 +64,8 @@ bool Obstacle::intersects(Line line)
 
     double xi1 = ((D*dy + sgn_dy*dx*sqrt(det)) / (dr*dr)) + _x;
     double xi2 = ((D*dy - sgn_dy*dx*sqrt(det)) / (dr*dr)) + _x;
-    double yi1 = ((-D*dx + abs(dx)*sqrt(det)) / (dr*dr)) + _y;
-    double yi2 = ((-D*dx - abs(dx)*sqrt(det)) / (dr*dr)) + _y;
+    double yi1 = ((-D*dx + abs(dy)*sqrt(det)) / (dr*dr)) + _y;
+    double yi2 = ((-D*dx - abs(dy)*sqrt(det)) / (dr*dr)) + _y;
 
     // detmine if either point lies on line segment
     // https://lucidar.me/en/mathematics/check-if-a-point-belongs-on-a-line-segment/
