@@ -27,25 +27,18 @@ void ConfigspaceGraph::buildGraph()
     dim = 0;
 }
 
-void ConfigspaceGraph::addParentChildRelation(GraphNode node)
+void ConfigspaceGraph::addParentChildRelation(int id)
 {
+    auto node = nodes[id];
     parentChildMap[node.parentId()].push_back(node.id());
 }
 
-void ConfigspaceGraph::removeParentChildRelation(GraphNode node)
+void ConfigspaceGraph::removeParentChildRelation(int id)
 {
+    auto node = nodes[id];
     for (auto itr = parentChildMap[node.parentId()].begin(); itr < parentChildMap[node.parentId()].end(); ++itr)
-        if (*itr == node.id())
+        if (*itr == id)
             parentChildMap[node.parentId()].erase(itr);
-}
-
-vector<ConfigspaceNode> ConfigspaceGraph::getAllChildren(int parentId)
-{
-    auto childIds = parentChildMap[parentId];
-    vector<ConfigspaceNode> children;
-    for (int id : childIds)
-        children.push_back(nodes[id]);
-    return children;
 }
 
 void ConfigspaceGraph::defineFreespace(double minX, double minY, double newMinTheta, double maxX, double maxY, double newMaxTheta, int dimension, double obstacleVol)
@@ -253,39 +246,53 @@ int ConfigspaceGraph::addNode(ConfigspaceNode node)
 {
     node.setId(++numNodeInd);
     nodes[node.id()] = node;
-    addParentChildRelation(node);
+    addParentChildRelation(node.id());
     return node.id();
 }
 
-void ConfigspaceGraph::propagateCost(ConfigspaceNode updatedNode)
+void ConfigspaceGraph::propagateCost(int updatedNodeId)
 {
-    vector<ConfigspaceNode> updateNodes(1, updatedNode);
+    vector<int> updateNodes(1, updatedNodeId);
     propagateCost(updateNodes);
 }
 
-void ConfigspaceGraph::propagateCost(vector<ConfigspaceNode> updatedNodes)
+void ConfigspaceGraph::propagateCost(vector<int> updatedNodeIds)
 {
-    vector<ConfigspaceNode> tempNodesToUpdate, nodesToUpdate, children;
-
-    if (updatedNodes.empty())
+    if (updatedNodeIds.empty())
         return;
 
-    for (ConfigspaceNode un : updatedNodes)
-    {
-        nodesToUpdate = getAllChildren(un.id());
+    vector<int> children = getAllChildIds(updatedNodeIds);
+    recomputeCost(children);
+    propagateCost(children);
+}
 
-        for (auto itr = nodesToUpdate.begin(); itr != nodesToUpdate.end(); ++itr)
-            itr->cost = un.cost + computeCost(*itr, un);
+vector<int> ConfigspaceGraph::getAllChildIds(vector<int> ids)
+{
+    vector<int> childIds, tempChildIds;
+    for (int id : ids)
+    {
+        tempChildIds = parentChildMap[id];
+        childIds.insert(childIds.begin(), tempChildIds.begin(), tempChildIds.end());
     }
- 
-    propagateCost(nodesToUpdate);
+    return childIds;
+}
+
+void ConfigspaceGraph::recomputeCost(vector<int> ids)
+{
+    ConfigspaceNode node, parent;
+    for (int id : ids)
+    {
+        node = nodes[id];
+        parent= nodes[node.parentId()];
+        node.cost = parent.cost + computeCost(node, parent);
+    }
 }
 
 void ConfigspaceGraph::replaceNode(ConfigspaceNode oldNode, ConfigspaceNode newNode)
 {
+    removeParentChildRelation(oldNode.id());
     nodes.erase(oldNode.id());
-    removeParentChildRelation(oldNode);
 
     nodes[newNode.id()] = newNode;
-    addParentChildRelation(newNode);
+    addParentChildRelation(newNode.id());
 }

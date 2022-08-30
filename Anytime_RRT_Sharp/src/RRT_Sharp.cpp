@@ -270,8 +270,7 @@ void rewireRemainingNodes(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_wor
             G_configspace.replaceNode(rn, newNode);
 
             // propagate the cost update from using the new node down the tree
-            // (this requires adding the new node to a small pointer array)
-            G_configspace.propagateCost(newNode);
+            G_configspace.propagateCost(newNode.id());
         }
     }
 }

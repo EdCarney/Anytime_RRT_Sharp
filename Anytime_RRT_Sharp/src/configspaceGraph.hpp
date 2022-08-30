@@ -27,10 +27,10 @@ class ConfigspaceGraph : Rectangle
 
     unordered_map<int, vector<int>> parentChildMap;
 
-    vector<ConfigspaceNode> getAllChildren(int id);
-    void addParentChildRelation(GraphNode node);
-    void removeParentChildRelation(GraphNode node);
-    void removeEdgesWithEndNode(GraphNode node);
+    vector<int> getAllChildIds(vector<int> ids);
+    void addParentChildRelation(int id);
+    void removeParentChildRelation(int id);
+    void recomputeCost(vector<int> ids);
 
     public:
         int numNodeInd;                    // used to set the node id; is NOT modified by pruning
@@ -68,17 +68,10 @@ class ConfigspaceGraph : Rectangle
         // print data from the graph for displaying
         void printData(ConfigspaceNode finalNode, int probNum = 1);
 
-        // finds the node closest to the given node
-        // returns pointer to the closest node
         ConfigspaceNode findClosestNode(GraphNode node);
-
-        // generates a random node in the graph freespace
         ConfigspaceNode generateRandomNode();
-
-        // generates a random node in the graph freespace
         ConfigspaceNode generateBiasedNode(double biasedX, double biasedY);
 
-        // calculate the cost between two nodes
         double computeCost(GraphNode node_1, GraphNode node_2);
 
         // calculate the radius of the ball to consider for the k-nearest neighbor
@@ -87,14 +80,9 @@ class ConfigspaceGraph : Rectangle
         // get the k-nearest neighbors from the current node
         // will not return the centerNode's parent node in the array
         vector<ConfigspaceNode> findNeighbors(GraphNode centerNode, double radius, int k);
-
-        // find the best node of the provided list of safe nodes to attempt to
-        // connect to for RRT*
         ConfigspaceNode findBestNeighbor(ConfigspaceNode newNode, vector<ConfigspaceNode> safeNeighbors);
-
-        // propagate cost updates to a node to all of its children
-        void propagateCost(vector<ConfigspaceNode> updatedNodes);
-		void propagateCost(ConfigspaceNode updatedNode);
+        void propagateCost(vector<int> updatedNodeIds);
+        void propagateCost(int updatedNodeId);
 
         // default constructor
         ConfigspaceGraph() { buildGraph(); }
