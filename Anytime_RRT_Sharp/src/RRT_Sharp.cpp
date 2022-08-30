@@ -264,7 +264,7 @@ void rewireRemainingNodes(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_wor
 
             // get the old parent of the current remaining node, remove the old
             // edge, add the new edge, and replace the old remaining node
-            remainingNodeParent = G_configspace.findNodeId(rn.parentId());
+            remainingNodeParent = G_configspace.nodes[rn.parentId()];
             G_configspace.removeEdge(remainingNodeParent.id(), rn.id());
             G_configspace.addEdge(addedNode, newNode);
             G_configspace.replaceNode(rn, newNode);

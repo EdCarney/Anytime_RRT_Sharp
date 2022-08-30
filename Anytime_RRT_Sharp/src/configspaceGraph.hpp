@@ -30,8 +30,6 @@ class ConfigspaceGraph : Rectangle
     vector<ConfigspaceNode> getAllChildren(int id);
     void addParentChildRelation(GraphNode node);
     void removeParentChildRelation(GraphNode node);
-
-    void removeNode(unordered_map<int, ConfigspaceNode> nodeMap, ConfigspaceNode nodeToRemove);
     void removeEdgesWithEndNode(GraphNode node);
 
     public:
@@ -54,8 +52,6 @@ class ConfigspaceGraph : Rectangle
         // as a pointer array
         vector<ConfigspaceNode> removeNode(vector<ConfigspaceNode> nodeVec, ConfigspaceNode nodeToRemove);
 
-        // removes a set of nodes from the graph (i.e. the nodes array)
-        void removeGraphNodes(vector<ConfigspaceNode> nodesToRemove);
         void removeEdge(int parentId, int childId);
 
         // function to replace a node in the current graph node array
@@ -68,9 +64,6 @@ class ConfigspaceGraph : Rectangle
         // used when extending to a new node
         void defineFreespace(double minX, double minY, double minTheta, double maxX,
             double maxY, double maxTheta, int dimension, double obstacleVol);
-
-        // find node from an ID
-        ConfigspaceNode findNodeId(int nodeId);
 
         // print data from the graph for displaying
         void printData(ConfigspaceNode finalNode, int probNum = 1);
@@ -102,10 +95,6 @@ class ConfigspaceGraph : Rectangle
         // propagate cost updates to a node to all of its children
         void propagateCost(vector<ConfigspaceNode> updatedNodes);
 		void propagateCost(ConfigspaceNode updatedNode);
-
-        // recursively deletes a given set of nodes from the graph, starting
-        // with the nodes' children first
-        void trimTreeChildren(vector<ConfigspaceNode> removeNodes, int saveNodeId);
 
         // default constructor
         ConfigspaceGraph() { buildGraph(); }
