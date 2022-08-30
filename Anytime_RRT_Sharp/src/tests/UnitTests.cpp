@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "ARRTSTests.hpp"
+#include "GeometryTests.hpp"
 #include "ObstacleTests.hpp"
 #include "VehicleTests.hpp"
 
