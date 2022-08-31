@@ -109,3 +109,12 @@ TEST(Obstacle, RectagleIntersect_DoesNotIntersect)
     Rectangle r = { { 1, 1 }, { 5, 5 } };
     EXPECT_FALSE(o.intersects(r));
 }
+
+TEST(Obstacle, LineIntersection_Bug_01)
+{
+    Point p1(19.7974, 83.1155), p2(29.0543, 85.7924);
+    Obstacle o(25, 77, 8);
+    Line l(p1, p2);
+
+    EXPECT_TRUE(o.intersects(l));
+}

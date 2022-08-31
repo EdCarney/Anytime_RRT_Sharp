@@ -255,7 +255,7 @@ void rewireRemainingNodes(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_wor
     {
         // check if it is cheaper for the current remaining node to use the added node as
         // its parent node
-        if (!compareNodes(rn, addedNode, G_configspace))
+        if (!compareNodes(rn, addedNode, G_configspace) && G_workspace.pathIsSafe(rn, addedNode))
         {
             // if it's cheaper, then create the new node, set the new cost, and set
             // the parent (now the added node)
