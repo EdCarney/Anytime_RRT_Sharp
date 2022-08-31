@@ -22,7 +22,7 @@ bool compareNodes(ConfigspaceNode nodeA, ConfigspaceNode nodeB, ConfigspaceGraph
 // checks if any of the newNode's (safe) neighbors function as a better (cheaper) parent than
 // newNode's current parent, and updates newNode if it is (note this does NOT rewire the graphs
 // on this update, and should only be used PRIOR to adding newNode to the graphs)
-vector<ConfigspaceNode> tryConnectToBestNeighbor(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_workspace, vector<ConfigspaceNode> safeNearestNeighbors, ConfigspaceNode& newNode, ConfigspaceNode& parentNode);
+ConfigspaceNode tryConnectToBestNeighbor(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_workspace, vector<ConfigspaceNode>& safeNearestNeighbors, ConfigspaceNode& newNode);
 
 // iterates through all nodes in the graphs and finds the node within
 // the goal region with the lowest cost-to-go
