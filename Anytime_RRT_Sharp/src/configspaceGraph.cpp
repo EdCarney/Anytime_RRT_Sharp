@@ -188,8 +188,9 @@ ConfigspaceNode ConfigspaceGraph::findClosestNode(GraphNode node)
     // initialize distance with first node
     // use euclidean distance of given node from existing nodes
     double dist, shortestDist = INFINITY;
-    int closestNodeId = 0, numNodes = nodes.size();
+    int closestNodeId = 0;
 
+    // track these in unordered map?
     for (auto itr = nodes.begin(); itr != nodes.end(); ++itr)
     {
         dist = itr->second.distanceTo(node);
