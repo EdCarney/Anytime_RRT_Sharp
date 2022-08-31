@@ -1,25 +1,56 @@
 #include "ConfigspaceGraph.hpp"
 
-ConfigspaceNode::ConfigspaceNode()
+void ConfigspaceNode::_buildConfigspaceNode()
 {
     _buildGraphNode();
-    cost = 0;
-    theta = 0;
+    _cost = 0;
 }
 
-ConfigspaceNode::ConfigspaceNode(double x, double y, int id, int parentId, double costVal, double thetaVal)
+void ConfigspaceNode::_buildConfigspaceNode(GraphNode n)
 {
-    _buildGraphNode(x, y, id, parentId);
-    cost = costVal;
-    theta = thetaVal;
+    _buildGraphNode(n.x(), n.y(), n.theta(), n.id(), n.parentId());
+    _cost = 0;
 }
 
-void ConfigspaceGraph::buildGraph()
+void ConfigspaceNode::_buildConfigspaceNode(double x, double y, double theta, int id, int parentId, double cost)
+{
+    _buildGraphNode(x, y, theta, id, parentId);
+    _cost = cost;
+}
+
+ConfigspaceNode::ConfigspaceNode()
+{
+    _buildConfigspaceNode();
+}
+
+ConfigspaceNode::ConfigspaceNode(GraphNode node)
+{
+    _buildConfigspaceNode(node);
+}
+
+ConfigspaceNode::ConfigspaceNode(double x, double y, double theta, int id, int parentId, double cost)
+{
+    _buildConfigspaceNode(x, y, theta, id, parentId, cost);
+}
+
+double ConfigspaceNode::cost()
+{
+    return _cost;
+}
+
+void ConfigspaceNode::setCost(double cost)
+{
+    _cost = cost;
+}
+
+void ConfigspaceGraph::_buildGraph()
 {
     printf("Constructing a default empty configspace graph.\n");
     numNodeInd = 0;
     _minPoint = Point(0, 0);
     _maxPoint = Point(0, 0);
+    _closestDistToGoal = INFINITY;
+    _closestIdToGoal = 0;
     minTheta = 0;
     maxTheta = 0;
     freeSpaceMeasure = 0;
@@ -27,18 +58,18 @@ void ConfigspaceGraph::buildGraph()
     dim = 0;
 }
 
-void ConfigspaceGraph::addParentChildRelation(int id)
+void ConfigspaceGraph::_addParentChildRelation(int id)
 {
     auto node = nodes[id];
-    parentChildMap[node.parentId()].push_back(node.id());
+    _parentChildMap[node.parentId()].push_back(node.id());
 }
 
-void ConfigspaceGraph::removeParentChildRelation(int id)
+void ConfigspaceGraph::_removeParentChildRelation(int id)
 {
     auto node = nodes[id];
-    for (auto itr = parentChildMap[node.parentId()].begin(); itr < parentChildMap[node.parentId()].end(); ++itr)
+    for (auto itr = _parentChildMap[node.parentId()].begin(); itr < _parentChildMap[node.parentId()].end(); ++itr)
         if (*itr == id)
-            parentChildMap[node.parentId()].erase(itr);
+            _parentChildMap[node.parentId()].erase(itr);
 }
 
 void ConfigspaceGraph::defineFreespace(double minX, double minY, double newMinTheta, double maxX, double maxY, double newMaxTheta, int dimension, double obstacleVol)
@@ -59,6 +90,12 @@ void ConfigspaceGraph::defineFreespace(double minX, double minY, double newMinTh
 void ConfigspaceGraph::addEdge(GraphNode parentNode, GraphNode newNode)
 {
     edges.push_back(Edge(parentNode, newNode));
+}
+
+void ConfigspaceGraph::addEdge(int newId)
+{
+    auto node = nodes[newId];
+    edges.push_back(Edge(nodes[node.parentId()], node));
 }
 
 void ConfigspaceGraph::removeEdge(int parentId, int childId)
@@ -102,7 +139,7 @@ ConfigspaceNode ConfigspaceGraph::generateBiasedNode(double biasedX, double bias
     return ConfigspaceNode(biasedX, biasedY, 0, 0, 0, 0);
 }
 
-double ConfigspaceGraph::computeRadius(double epsilon)
+double ConfigspaceGraph::_computeRadius(double epsilon)
 {
     double percDist = 0.0, circleRadius = 0.0;
 
@@ -140,10 +177,7 @@ void ConfigspaceGraph::printData(ConfigspaceNode finalNode, int probNum)
     nodeFile << numNodes << "\n";
 
     for (auto itr = nodes.begin(); itr != nodes.end(); ++itr)
-        nodeFile << itr->second.x() << ", " << itr->second.y() << ", " << itr->second.theta << ", " << itr->first << "\n";
-
-    // nodeFile << nodes[numNodes - 1].x() << ", " << nodes[numNodes - 1].y() << ", "
-    //     << nodes[numNodes - 1].theta << ", " << nodes[numNodes - 1].id() << "\n";
+        nodeFile << itr->second.x() << ", " << itr->second.y() << ", " << itr->second.theta() << ", " << itr->first << "\n";
 
     // print out edge file
     edgeFile << numEdges << "\n";
@@ -161,15 +195,15 @@ void ConfigspaceGraph::printData(ConfigspaceNode finalNode, int probNum)
     // print out output path
     ConfigspaceNode currentNode = finalNode;
 
-    outputPathFile << currentNode.x() << ", " << currentNode.y() << ", " << currentNode.theta << "\n";
+    outputPathFile << currentNode.x() << ", " << currentNode.y() << ", " << currentNode.theta() << "\n";
     currentNode = nodes[currentNode.parentId()];
 
     while (currentNode.parentId())
     {
-        outputPathFile << currentNode.x() << ", " << currentNode.y() << ", " << currentNode.theta << "\n";
+        outputPathFile << currentNode.x() << ", " << currentNode.y() << ", " << currentNode.theta() << "\n";
         currentNode = nodes[currentNode.parentId()];
     }
-    outputPathFile << nodes[1].x() << ", " << nodes[1].y() << ", " << nodes[1].theta << "\n";
+    outputPathFile << nodes[1].x() << ", " << nodes[1].y() << ", " << nodes[1].theta() << "\n";
 
     printf("Printing nodes to nodes_%d.txt.\n", probNum);
     printf("Printing edges to edges_%d.txt.\n", probNum);
@@ -183,7 +217,7 @@ void ConfigspaceGraph::printData(ConfigspaceNode finalNode, int probNum)
     outputPathFile.close();
 }
 
-ConfigspaceNode ConfigspaceGraph::findClosestNode(GraphNode node)
+GraphNode ConfigspaceGraph::findClosestNode(GraphNode node)
 {
     // initialize distance with first node
     // use euclidean distance of given node from existing nodes
@@ -203,14 +237,14 @@ ConfigspaceNode ConfigspaceGraph::findClosestNode(GraphNode node)
     return nodes[closestNodeId];
 }
 
-double ConfigspaceGraph::computeCost(GraphNode node_1, GraphNode node_2)
+double ConfigspaceGraph::computeCost(Point p1, Point p2)
 {
-    return node_1.distanceTo(node_2);
+    return p1.distanceTo(p2);
 }
 
-vector<ConfigspaceNode> ConfigspaceGraph::findNeighbors(GraphNode centerNode, double radius, int k)
+vector<ConfigspaceNode> ConfigspaceGraph::findNeighbors(GraphNode centerNode, double epsilon, int k)
 {
-    double dist;
+    double dist, radius = _computeRadius(epsilon);
     vector<ConfigspaceNode> neighbors(0);
 
     for (auto itr = nodes.begin(); itr != nodes.end(); ++itr)
@@ -223,6 +257,7 @@ vector<ConfigspaceNode> ConfigspaceGraph::findNeighbors(GraphNode centerNode, do
                 return neighbors;
         }
     }
+
     return neighbors;
 }
 
@@ -233,7 +268,7 @@ ConfigspaceNode ConfigspaceGraph::findBestNeighbor(ConfigspaceNode newNode, vect
 
     for (ConfigspaceNode n : safeNeighbors)
     {
-        tempBestCost = n.cost + computeCost(newNode, n);
+        tempBestCost = n.cost() + computeCost(newNode, n);
         if (tempBestCost < bestCost)
         {
             bestCost = tempBestCost;
@@ -247,7 +282,8 @@ int ConfigspaceGraph::addNode(ConfigspaceNode node)
 {
     node.setId(++numNodeInd);
     nodes[node.id()] = node;
-    addParentChildRelation(node.id());
+    _updateClosestGoalNode(node.id());
+    _addParentChildRelation(node.id());
     return node.id();
 }
 
@@ -262,38 +298,78 @@ void ConfigspaceGraph::propagateCost(vector<int> updatedNodeIds)
     if (updatedNodeIds.empty())
         return;
 
-    vector<int> children = getAllChildIds(updatedNodeIds);
-    recomputeCost(children);
+    vector<int> children = _getAllChildIds(updatedNodeIds);
+    _recomputeCost(children);
     propagateCost(children);
 }
 
-vector<int> ConfigspaceGraph::getAllChildIds(vector<int> ids)
+vector<int> ConfigspaceGraph::_getAllChildIds(vector<int> ids)
 {
     vector<int> childIds, tempChildIds;
     for (int id : ids)
     {
-        tempChildIds = parentChildMap[id];
+        tempChildIds = _parentChildMap[id];
         childIds.insert(childIds.begin(), tempChildIds.begin(), tempChildIds.end());
     }
     return childIds;
 }
 
-void ConfigspaceGraph::recomputeCost(vector<int> ids)
+void ConfigspaceGraph::_recomputeCost(vector<int> ids)
 {
     ConfigspaceNode node, parent;
     for (int id : ids)
     {
         node = nodes[id];
         parent= nodes[node.parentId()];
-        node.cost = parent.cost + computeCost(node, parent);
+        node.setCost(parent.cost() + computeCost(node, parent));
     }
 }
 
 void ConfigspaceGraph::replaceNode(ConfigspaceNode oldNode, ConfigspaceNode newNode)
 {
-    removeParentChildRelation(oldNode.id());
+    _removeParentChildRelation(oldNode.id());
     nodes.erase(oldNode.id());
 
     nodes[newNode.id()] = newNode;
-    addParentChildRelation(newNode.id());
+    _addParentChildRelation(newNode.id());
+}
+
+ConfigspaceNode ConfigspaceGraph::extendToNode(GraphNode parentNode, GraphNode childNode, double maxDist)
+{
+    double x, y, theta, cost;
+    double dist = parentNode.distanceTo(childNode);
+
+    if (dist >= maxDist)
+    {
+        x = parentNode.x() + ((childNode.x() - parentNode.x()) / dist) * maxDist;
+        y = parentNode.y() + ((childNode.y() - parentNode.y()) / dist) * maxDist;
+        theta = 0;
+    }
+    else
+    {
+        x = childNode.x();
+        y = childNode.y();
+        theta = 0;
+    }
+    cost = nodes[parentNode.id()].cost() + computeCost(parentNode, Point(x, y));
+    return ConfigspaceNode(x, y, theta, DEFAULT_ID, parentNode.id(), cost);
+}
+
+ConfigspaceNode ConfigspaceGraph::connectNodes(ConfigspaceNode parentNode, ConfigspaceNode newNode)
+{
+    newNode.setParentId(parentNode.id());
+    newNode.setCost(parentNode.cost() + computeCost(parentNode, newNode));
+    return newNode;
+}
+
+ConfigspaceNode ConfigspaceGraph::closestNodeToGoal()
+{
+    return nodes[_closestIdToGoal];
+}
+
+void ConfigspaceGraph::_updateClosestGoalNode(int id)
+{
+    double dist = nodes[id].distanceTo(goalNode);
+    if (dist < _closestDistToGoal)
+        _closestIdToGoal = id;
 }
