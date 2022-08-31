@@ -14,8 +14,8 @@ class WorkspaceGraph : Rectangle
     Vehicle _vehicle;
     void _buildWorkspaceGraph();
     bool _goalRegionReached;
-    bool _nodeIntersectsObstacle(GraphNode node);
-    bool _pathIntersectsObstacle(GraphNode parent, GraphNode child);
+    bool _nodeIntersectsObstacle(Point p);
+    bool _pathIntersectsObstacle(Point p1, Point p2);
 
     public:
 
@@ -46,6 +46,7 @@ class WorkspaceGraph : Rectangle
         // will check if an obstacle is within the vicinity of the new node and any of
         // its neighbors; will return an array of safe nodes
         vector<ConfigspaceNode> checkSafety(ConfigspaceNode newNode, vector<ConfigspaceNode> neighbors);
+        bool pathIsSafe(Point p1, Point p2);
 
         // checks if an obstacle (defined by position and radius) lies within the current freespace
         bool obstacleInFreespace(double xObs, double yObs, double radiusObs);
