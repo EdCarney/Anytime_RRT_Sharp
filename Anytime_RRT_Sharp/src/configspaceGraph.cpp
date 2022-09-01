@@ -229,9 +229,9 @@ ConfigspaceNode ConfigspaceGraph::findClosestNode(GraphNode node)
     return nodes[closestNodeId];
 }
 
-double ConfigspaceGraph::computeCost(GraphNode node_1, GraphNode node_2)
+double ConfigspaceGraph::computeCost(Point p1, Point p2)
 {
-    return node_1.distanceTo(node_2);
+    return p1.distanceTo(p2);
 }
 
 vector<ConfigspaceNode> ConfigspaceGraph::findNeighbors(GraphNode centerNode, double radius, int k)
@@ -328,17 +328,21 @@ ConfigspaceNode ConfigspaceGraph::extendToNode(GraphNode parentNode, GraphNode n
 {
     ConfigspaceNode currentNode;
     double dist = parentNode.distanceTo(newNode);
+    double x, y, theta, cost;
 
     if (dist >= maxDist)
     {
-        double xVal = parentNode.x() + ((newNode.x() - parentNode.x()) / dist) * maxDist;
-        double yVal = parentNode.y() + ((newNode.y() - parentNode.y()) / dist) * maxDist;
-        currentNode = ConfigspaceNode(xVal, yVal, 0, parentNode.id(), 0, 0);
+        x = parentNode.x() + ((newNode.x() - parentNode.x()) / dist) * maxDist;
+        y = parentNode.y() + ((newNode.y() - parentNode.y()) / dist) * maxDist;
+        theta = 0;
     }
     else
     {
-        currentNode = ConfigspaceNode(newNode.x(), newNode.y(), 0, 0, parentNode.id(), 0);
+        x = newNode.x();
+        y = newNode.y();
+        theta = 0;
     }
+    cost = nodes[parentNode.id()].cost() + computeCost(parentNode, Point(x, y));
 
-    return currentNode;
+    return ConfigspaceNode(x, y, theta, 0, parentNode.id(), cost);
 }

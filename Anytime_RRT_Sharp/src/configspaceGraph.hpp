@@ -78,7 +78,7 @@ class ConfigspaceGraph : Rectangle
         ConfigspaceNode generateRandomNode();
         ConfigspaceNode generateBiasedNode(double biasedX, double biasedY);
 
-        double computeCost(GraphNode node_1, GraphNode node_2);
+        double computeCost(Point p1, Point p2);
 
         // calculate the radius of the ball to consider for the k-nearest neighbor
         double computeRadius(double epsilon);
