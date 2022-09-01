@@ -89,6 +89,7 @@ class ConfigspaceGraph : Rectangle
         ConfigspaceNode findBestNeighbor(ConfigspaceNode newNode, vector<ConfigspaceNode> safeNeighbors);
         void propagateCost(vector<int> updatedNodeIds);
         void propagateCost(int updatedNodeId);
+        ConfigspaceNode extendToNode(GraphNode parentNode, GraphNode newNode, double maxDist);
 
         // default constructor
         ConfigspaceGraph() { buildGraph(); }

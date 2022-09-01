@@ -132,28 +132,6 @@ bool WorkspaceGraph::atGate(GraphNode node)
     return dist <= _goalRegion.radius();
 }
 
-ConfigspaceNode WorkspaceGraph::extendToNode(GraphNode parentNode, GraphNode newNode, double maxDist)
-{
-    ConfigspaceNode currentNode;
-    double dist = parentNode.distanceTo(newNode);
-
-    if (dist >= maxDist)
-    {
-        double xVal = parentNode.x() + ((newNode.x() - parentNode.x()) / dist) * maxDist;
-        double yVal = parentNode.y() + ((newNode.y() - parentNode.y()) / dist) * maxDist;
-        currentNode = ConfigspaceNode(xVal, yVal, 0, parentNode.id(), 0, 0);
-    }
-    else
-    {
-        currentNode = ConfigspaceNode(newNode.x(), newNode.y(), 0, 0, parentNode.id(), 0);
-    }
-
-    if (!nodeIsSafe(currentNode) || !pathIsSafe(parentNode, currentNode))
-        currentNode.setId(parentNode.id());
-
-    return currentNode;
-}
-
 bool WorkspaceGraph::nodeIsSafe(Point p)
 {
     for (Obstacle o : _obstacles)
