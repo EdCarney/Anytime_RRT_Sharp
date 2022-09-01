@@ -13,11 +13,17 @@ using namespace std;
 
 class ConfigspaceNode : public GraphNode
 {
+    double _cost;
+    void _buildConfigspaceNode();
+    void _buildConfigspaceNode(GraphNode node);
+    void _buildConfigspaceNode(double x, double y, double theta, int id, int parentId, double cost);
+
     public:
         ConfigspaceNode();
-        ConfigspaceNode(double x, double y, int id, int parentId, double costVal, double thetaVal);
-        double theta;
-        double cost;        // cost-to-go for this node
+        ConfigspaceNode(GraphNode node);
+        ConfigspaceNode(double x, double y, double theta, int id, int parentId, double cost);
+        double cost();
+        void setCost(double cost);
 };
 
 class ConfigspaceGraph : Rectangle
