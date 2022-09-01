@@ -37,6 +37,9 @@ class ConfigspaceGraph : Rectangle
     void addParentChildRelation(int id);
     void removeParentChildRelation(int id);
     void recomputeCost(vector<int> ids);
+    
+    // calculate the radius of the ball to consider for the k-nearest neighbor
+    double _computeRadius(double epsilon);
 
     public:
         int numNodeInd;                    // used to set the node id; is NOT modified by pruning
@@ -79,9 +82,6 @@ class ConfigspaceGraph : Rectangle
         ConfigspaceNode generateBiasedNode(double biasedX, double biasedY);
 
         double computeCost(Point p1, Point p2);
-
-        // calculate the radius of the ball to consider for the k-nearest neighbor
-        double computeRadius(double epsilon);
 
         // get the k-nearest neighbors from the current node
         // will not return the centerNode's parent node in the array
