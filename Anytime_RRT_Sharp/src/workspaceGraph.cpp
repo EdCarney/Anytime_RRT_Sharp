@@ -148,12 +148,6 @@ bool WorkspaceGraph::pathIsSafe(Point p1, Point p2)
     return true;
 }
 
-ConfigspaceNode WorkspaceGraph::connectNodes(ConfigspaceNode parentNode, ConfigspaceNode newNode)
-{
-    newNode.setParentId(parentNode.id());
-    return newNode;
-}
-
 bool WorkspaceGraph::checkAtGoal(GraphNode node)
 {
     // update vehicle state to temp node

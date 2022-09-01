@@ -90,6 +90,7 @@ class ConfigspaceGraph : Rectangle
         void propagateCost(vector<int> updatedNodeIds);
         void propagateCost(int updatedNodeId);
         ConfigspaceNode extendToNode(GraphNode parentNode, GraphNode newNode, double maxDist);
+        ConfigspaceNode connectNodes(ConfigspaceNode parentNode, ConfigspaceNode newNode);
 
         // default constructor
         ConfigspaceGraph() { buildGraph(); }

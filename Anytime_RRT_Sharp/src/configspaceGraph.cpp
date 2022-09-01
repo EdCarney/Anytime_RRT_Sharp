@@ -346,3 +346,9 @@ ConfigspaceNode ConfigspaceGraph::extendToNode(GraphNode parentNode, GraphNode n
 
     return ConfigspaceNode(x, y, theta, 0, parentNode.id(), cost);
 }
+
+ConfigspaceNode ConfigspaceGraph::connectNodes(ConfigspaceNode parentNode, ConfigspaceNode newNode)
+{
+    newNode.setParentId(parentNode.id());
+    return newNode;
+}
