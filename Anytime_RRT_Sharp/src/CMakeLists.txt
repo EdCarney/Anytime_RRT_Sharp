@@ -11,6 +11,7 @@ configure_file(ARRTSConfig.h.in ARRTSConfig.h)
 
 # add libraries
 add_library(ConfigspaceGraph ConfigspaceGraph.cpp)
+add_library(ConfigspaceNode ConfigspaceNode.cpp)
 add_library(WorkspaceGraph WorkspaceGraph.cpp)
 add_library(Vehicle Vehicle.cpp)
 add_library(Obstacle Obstacle.cpp)
@@ -18,6 +19,7 @@ add_library(Geometry Geometry.cpp)
 add_library(ARRTS ARRTS.cpp)
 
 list(APPEND EXTRA_LIBS ConfigspaceGraph)
+list(APPEND EXTRA_LIBS ConfigspaceNode)
 list(APPEND EXTRA_LIBS WorkspaceGraph)
 list(APPEND EXTRA_LIBS Vehicle)
 list(APPEND EXTRA_LIBS Obstacle)

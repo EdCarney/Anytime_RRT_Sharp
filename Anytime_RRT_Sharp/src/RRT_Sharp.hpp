@@ -1,6 +1,7 @@
 #include <tuple>
 #include <chrono>
 #include "ConfigspaceGraph.hpp"
+#include "ConfigspaceNode.hpp"
 #include "WorkspaceGraph.hpp"
 
 #ifndef M_PI
