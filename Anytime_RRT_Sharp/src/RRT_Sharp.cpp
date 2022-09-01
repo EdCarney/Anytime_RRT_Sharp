@@ -54,9 +54,9 @@ int main()
     int maxCount = 10000;
 
     ConfigspaceNode gateNode, tempNode, parentNode, newNode;
-    vector<ConfigspaceNode> neighbors, remainingNodes;
+    vector<ConfigspaceNode> neighbors;
 
-    int k = 10, count = 0, tempId = 0;
+    int k = 15, count = 0, tempId = 0;
     double epsilon = 10.0;
 
     #pragma endregion Initializes all necessary variables (could be read-in from file)
@@ -136,11 +136,9 @@ int main()
                     if (!G_workspace.pathIsSafe(newNode, *itr))
                         neighbors.erase(itr);
 
-                // if there were no safe neighbors then the first node id will be zero
                 if (!neighbors.empty())
                 {
-                    // reset the remaining nodes to the safe neighbors minus the one we connected to
-                    remainingNodes = tryConnectToBestNeighbor(G_configspace, G_workspace, neighbors, newNode, parentNode);
+                    tryConnectToBestNeighbor(G_configspace, G_workspace, neighbors, newNode, parentNode);
                 }
 
                 // add new node and edge to the config graph
@@ -154,8 +152,7 @@ int main()
                     goalRegionReached = true;
 
                 // do the rewiring while there are nodes left in remainingNodes
-                rewireRemainingNodes(G_configspace, G_workspace, remainingNodes, newNode);
-                remainingNodes.clear();
+                rewireRemainingNodes(G_configspace, G_workspace, neighbors, newNode);
             }
         }
     }
@@ -225,7 +222,7 @@ ConfigspaceNode findBestNode(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_
     return finalNode;
 }
 
-vector<ConfigspaceNode> tryConnectToBestNeighbor(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_workspace, vector<ConfigspaceNode> neighbors, ConfigspaceNode& newNode, ConfigspaceNode& parentNode)
+void tryConnectToBestNeighbor(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_workspace, vector<ConfigspaceNode>& neighbors, ConfigspaceNode& newNode, ConfigspaceNode& parentNode)
 {
     // find the best safe neighbor and connect newNode and the bestNeighbor
     // assign the resulting node to tempNode
@@ -237,13 +234,11 @@ vector<ConfigspaceNode> tryConnectToBestNeighbor(ConfigspaceGraph& G_configspace
     {
         newNode = tempNode;
         parentNode = bestNeighbor;
-        return G_configspace.removeNode(neighbors, bestNeighbor);
+        G_configspace.removeNode(neighbors, bestNeighbor);
     }
-
-    return neighbors;
 }
 
-void rewireRemainingNodes(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_workspace, vector<ConfigspaceNode> remainingNodes, ConfigspaceNode addedNode)
+void rewireRemainingNodes(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_workspace, vector<ConfigspaceNode>& remainingNodes, ConfigspaceNode addedNode)
 {
     ConfigspaceNode remainingNodeParent, newNode;
 
