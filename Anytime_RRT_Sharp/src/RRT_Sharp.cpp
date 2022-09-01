@@ -232,9 +232,6 @@ vector<ConfigspaceNode> tryConnectToBestNeighbor(ConfigspaceGraph& G_configspace
     ConfigspaceNode bestNeighbor = G_configspace.findBestNeighbor(newNode, safeNearestNeighbors);
     ConfigspaceNode tempNode = G_configspace.connectNodes(bestNeighbor, newNode);
 
-    // compute the cost of tempNode using the best neighbor
-    tempNode.setCost(bestNeighbor.cost() + G_configspace.computeCost(bestNeighbor, tempNode));
-
     // if the tempNode is cheaper then make that the newNode
     if (tempNode.cost() < newNode.cost())
     {
@@ -259,7 +256,6 @@ void rewireRemainingNodes(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_wor
             // if it's cheaper, then create the new node, set the new cost, and set
             // the parent (now the added node)
             newNode = G_configspace.connectNodes(addedNode, rn);
-            newNode.setCost(addedNode.cost() + G_configspace.computeCost(rn, addedNode));
 
             // get the old parent of the current remaining node, remove the old
             // edge, add the new edge, and replace the old remaining node
