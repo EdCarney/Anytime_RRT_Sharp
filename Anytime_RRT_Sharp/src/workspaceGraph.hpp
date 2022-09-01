@@ -25,7 +25,6 @@ class WorkspaceGraph : Rectangle
         Obstacle obstacles(int i);
         void defineFreespace(double minX, double minY, double maxX, double maxY);
         bool checkAtGoal(ConfigspaceNode node);
-        ConfigspaceNode extendToNode(GraphNode parentNode, GraphNode newNode, double maxDist);
         ConfigspaceNode connectNodes(ConfigspaceNode parentNode, ConfigspaceNode newNode);
         vector<ConfigspaceNode> checkSafety(ConfigspaceNode newNode, vector<ConfigspaceNode> neighbors);
         bool nodeIsSafe(Point p);

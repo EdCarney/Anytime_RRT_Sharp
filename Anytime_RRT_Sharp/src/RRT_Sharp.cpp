@@ -125,11 +125,11 @@ int main()
         {
             // create a new node by extending from the parent to the temp node
             // (this includes a collision check); then compute cost
-            newNode = G_workspace.extendToNode(parentNode, tempNode, epsilon);
+            newNode = G_configspace.extendToNode(parentNode, tempNode, epsilon);
             newNode.setCost(parentNode.cost() + G_configspace.computeCost(parentNode, newNode));
 
             // if there is a collision, newNode id will be set to its parent's id
-            if (newNode.id() != parentNode.id())
+            if (G_workspace.nodeIsSafe(newNode) && G_workspace.pathIsSafe(newNode, parentNode))
             {
                 // compute ball radius and find k safe neighbor nodes (i.e. no collision)
                 // within that ball
