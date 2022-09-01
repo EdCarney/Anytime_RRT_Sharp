@@ -57,7 +57,7 @@ int main()
     vector<ConfigspaceNode> neighbors, safeNeighbors, remainingNodes;
 
     int k = 10, count = 0, tempId = 0;
-    double circleRadius = 0.0, epsilon = 10.0;
+    double epsilon = 10.0;
 
     #pragma endregion Initializes all necessary variables (could be read-in from file)
 
@@ -132,8 +132,7 @@ int main()
             {
                 // compute ball radius and find k safe neighbor nodes (i.e. no collision)
                 // within that ball
-                circleRadius = G_configspace.computeRadius(epsilon);
-                neighbors = G_configspace.findNeighbors(newNode, circleRadius, k);
+                neighbors = G_configspace.findNeighbors(newNode, epsilon, k);
                 safeNeighbors = G_workspace.checkSafety(newNode, neighbors);
 
                 // if there were no safe neighbors then the first node id will be zero

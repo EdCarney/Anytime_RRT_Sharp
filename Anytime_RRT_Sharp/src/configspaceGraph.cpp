@@ -131,7 +131,7 @@ ConfigspaceNode ConfigspaceGraph::generateBiasedNode(double biasedX, double bias
     return ConfigspaceNode(biasedX, biasedY, 0, 0, 0, 0);
 }
 
-double ConfigspaceGraph::computeRadius(double epsilon)
+double ConfigspaceGraph::_computeRadius(double epsilon)
 {
     double percDist = 0.0, circleRadius = 0.0;
 
@@ -234,9 +234,9 @@ double ConfigspaceGraph::computeCost(Point p1, Point p2)
     return p1.distanceTo(p2);
 }
 
-vector<ConfigspaceNode> ConfigspaceGraph::findNeighbors(GraphNode centerNode, double radius, int k)
+vector<ConfigspaceNode> ConfigspaceGraph::findNeighbors(GraphNode centerNode, double epsilon, int k)
 {
-    double dist;
+    double dist, radius = _computeRadius(epsilon);
     vector<ConfigspaceNode> neighbors(0);
 
     for (auto itr = nodes.begin(); itr != nodes.end(); ++itr)
