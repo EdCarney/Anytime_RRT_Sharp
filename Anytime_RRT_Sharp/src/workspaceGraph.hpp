@@ -1,5 +1,4 @@
 #include <vector>
-#include "ConfigspaceGraph.hpp"
 #include "Geometry.hpp"
 #include "Obstacle.hpp"
 #include "Vehicle.hpp"
@@ -25,7 +24,6 @@ class WorkspaceGraph : Rectangle
         Obstacle obstacles(int i);
         void defineFreespace(double minX, double minY, double maxX, double maxY);
         bool checkAtGoal(GraphNode node);
-        vector<ConfigspaceNode> checkSafety(ConfigspaceNode newNode, vector<ConfigspaceNode> neighbors);
         bool nodeIsSafe(Point p);
         bool pathIsSafe(Point p1, Point p2);
         bool pathIsSafe(Point p1, vector<Point> points);

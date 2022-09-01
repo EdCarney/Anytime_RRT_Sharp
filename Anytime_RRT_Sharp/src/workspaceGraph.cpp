@@ -97,21 +97,6 @@ void WorkspaceGraph::defineFreespace(double minX, double minY, double maxX, doub
     _maxPoint = Point(maxX, maxY);
 }
 
-vector<ConfigspaceNode> WorkspaceGraph::checkSafety(ConfigspaceNode newNode, vector<ConfigspaceNode> neighbors)
-{
-    // check if line from node to neighbor intersects any obstacle
-    for (auto itr = neighbors.begin(); itr < neighbors.end(); ++itr)
-    {
-        if (!pathIsSafe(newNode, *itr))
-        {
-            neighbors.erase(itr);
-            break;
-        }
-    }
-
-    return neighbors;
-}
-
 bool WorkspaceGraph::obstacleInFreespace(double xObs, double yObs, double radiusObs)
 {
     if ((xObs - radiusObs < maxX() && xObs + radiusObs > minX()) &&

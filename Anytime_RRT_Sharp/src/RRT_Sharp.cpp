@@ -54,7 +54,7 @@ int main()
     int maxCount = 10000;
 
     ConfigspaceNode gateNode, tempNode, parentNode, newNode;
-    vector<ConfigspaceNode> neighbors, safeNeighbors, remainingNodes;
+    vector<ConfigspaceNode> neighbors, remainingNodes;
 
     int k = 10, count = 0, tempId = 0;
     double epsilon = 10.0;
@@ -130,16 +130,17 @@ int main()
             // if there is a collision, newNode id will be set to its parent's id
             if (G_workspace.nodeIsSafe(newNode) && G_workspace.pathIsSafe(newNode, parentNode))
             {
-                // compute ball radius and find k safe neighbor nodes (i.e. no collision)
-                // within that ball
                 neighbors = G_configspace.findNeighbors(newNode, epsilon, k);
-                safeNeighbors = G_workspace.checkSafety(newNode, neighbors);
+
+                for (auto itr = neighbors.begin(); itr < neighbors.end(); ++itr)
+                    if (!G_workspace.pathIsSafe(newNode, *itr))
+                        neighbors.erase(itr);
 
                 // if there were no safe neighbors then the first node id will be zero
-                if (!safeNeighbors.empty())
+                if (!neighbors.empty())
                 {
                     // reset the remaining nodes to the safe neighbors minus the one we connected to
-                    remainingNodes = tryConnectToBestNeighbor(G_configspace, G_workspace, safeNeighbors, newNode, parentNode);
+                    remainingNodes = tryConnectToBestNeighbor(G_configspace, G_workspace, neighbors, newNode, parentNode);
                 }
 
                 // add new node and edge to the config graph
