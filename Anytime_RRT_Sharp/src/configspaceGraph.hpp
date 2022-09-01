@@ -37,7 +37,7 @@ class ConfigspaceGraph : Rectangle
     void addParentChildRelation(int id);
     void removeParentChildRelation(int id);
     void recomputeCost(vector<int> ids);
-    
+
     // calculate the radius of the ball to consider for the k-nearest neighbor
     double _computeRadius(double epsilon);
 
@@ -59,7 +59,7 @@ class ConfigspaceGraph : Rectangle
 
         // removes a node from a given array of nodes specified
         // as a pointer array
-        vector<ConfigspaceNode> removeNode(vector<ConfigspaceNode> nodeVec, ConfigspaceNode nodeToRemove);
+        vector<ConfigspaceNode> removeNode(vector<ConfigspaceNode>& nodeVec, ConfigspaceNode nodeToRemove);
 
         void removeEdge(int parentId, int childId);
 

@@ -102,7 +102,7 @@ void ConfigspaceGraph::removeEdge(int parentId, int childId)
     }
 }
 
-vector<ConfigspaceNode> ConfigspaceGraph::removeNode(vector<ConfigspaceNode> nodeVec, ConfigspaceNode nodeToRemove)
+vector<ConfigspaceNode> ConfigspaceGraph::removeNode(vector<ConfigspaceNode>& nodeVec, ConfigspaceNode nodeToRemove)
 {
     for (auto itr = nodeVec.begin(); itr < nodeVec.end(); ++itr)
     {
