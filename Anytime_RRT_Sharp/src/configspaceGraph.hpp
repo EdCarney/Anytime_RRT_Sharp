@@ -10,46 +10,33 @@ using namespace std;
 
 #ifndef CONFIGSPACE_H
 #define CONFIGSPACE_H
-#define DEFAULT_ID 0
 
 class ConfigspaceNode : public GraphNode
 {
-    double _cost;
-    void _buildConfigspaceNode();
-    void _buildConfigspaceNode(GraphNode node);
-    void _buildConfigspaceNode(double x, double y, double theta, int id, int parentId, double cost);
-
     public:
         ConfigspaceNode();
-        ConfigspaceNode(GraphNode node);
-        ConfigspaceNode(double x, double y, double theta, int id, int parentId, double cost);
-        double cost();
-        void setCost(double cost);
+        ConfigspaceNode(double x, double y, int id, int parentId, double costVal, double thetaVal);
+        double theta;
+        double cost;        // cost-to-go for this node
 };
 
 class ConfigspaceGraph : Rectangle
 {
-    void _buildGraph();
-    void _deleteGraph();
+    void buildGraph();
+    void deleteGraph();
 
-    unordered_map<int, vector<int>> _parentChildMap;
-    int _closestIdToGoal;
-    double _closestDistToGoal;
+    unordered_map<int, vector<int>> parentChildMap;
 
-    vector<int> _getAllChildIds(vector<int> ids);
-    void _addParentChildRelation(int id);
-    void _removeParentChildRelation(int id);
-    void _recomputeCost(vector<int> ids);
-    void _updateClosestGoalNode(int id);
-
-    // calculate the radius of the ball to consider for the k-nearest neighbor
-    double _computeRadius(double epsilon);
+    vector<int> getAllChildIds(vector<int> ids);
+    void addParentChildRelation(int id);
+    void removeParentChildRelation(int id);
+    void recomputeCost(vector<int> ids);
 
     public:
         int numNodeInd;                    // used to set the node id; is NOT modified by pruning
 
-        GraphNode goalNode;
         unordered_map<int, ConfigspaceNode> nodes;
+        //vector<ConfigspaceNode> nodes;            // an array containing all nodes
         vector<Edge> edges;                    // an array containing all edges
         double minTheta, maxTheta;        // limits of the orientation theta
         double freeSpaceMeasure;        // a measure of the free space in the graph
@@ -72,7 +59,6 @@ class ConfigspaceGraph : Rectangle
 
         // creates an edge between nodes
         void addEdge(GraphNode parentNode, GraphNode newNode);
-        void addEdge(int newId);
 
         // defines freespace for problem
         // used when extending to a new node
@@ -82,11 +68,14 @@ class ConfigspaceGraph : Rectangle
         // print data from the graph for displaying
         void printData(ConfigspaceNode finalNode, int probNum = 1);
 
-        GraphNode findClosestNode(GraphNode node);
+        ConfigspaceNode findClosestNode(GraphNode node);
         ConfigspaceNode generateRandomNode();
         ConfigspaceNode generateBiasedNode(double biasedX, double biasedY);
 
-        double computeCost(Point p1, Point p2);
+        double computeCost(GraphNode node_1, GraphNode node_2);
+
+        // calculate the radius of the ball to consider for the k-nearest neighbor
+        double computeRadius(double epsilon);
 
         // get the k-nearest neighbors from the current node
         // will not return the centerNode's parent node in the array
@@ -95,12 +84,8 @@ class ConfigspaceGraph : Rectangle
         void propagateCost(vector<int> updatedNodeIds);
         void propagateCost(int updatedNodeId);
 
-        ConfigspaceNode extendToNode(GraphNode parentNode, GraphNode newNode, double maxDist);
-        ConfigspaceNode connectNodes(ConfigspaceNode parentNode, ConfigspaceNode newNode);
-        ConfigspaceNode closestNodeToGoal();
-
         // default constructor
-        ConfigspaceGraph() { _buildGraph(); }
+        ConfigspaceGraph() { buildGraph(); }
 };
 
 #endif // CONFIGSPACE_H

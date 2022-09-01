@@ -97,21 +97,24 @@ void WorkspaceGraph::defineFreespace(double minX, double minY, double maxX, doub
     _maxPoint = Point(maxX, maxY);
 }
 
-bool WorkspaceGraph::nodeIsSafe(Point p)
+vector<ConfigspaceNode> WorkspaceGraph::checkSafety(ConfigspaceNode newNode, vector<ConfigspaceNode> neighbors)
 {
-    for (Obstacle o : _obstacles)
-        if (o.intersects(p))
-            return false;
-    return true;
+    // check if line from node to neighbor intersects any obstacle
+    for (auto itr = neighbors.begin(); itr < neighbors.end(); ++itr)
+    {
+        if (_pathIntersectsObstacle(newNode, *itr))
+        {
+            neighbors.erase(itr);
+            break;
+        }
+    }
+
+    return neighbors;
 }
 
 bool WorkspaceGraph::pathIsSafe(Point p1, Point p2)
 {
-    Line line(p1, p2);
-    for (Obstacle o : _obstacles)
-        if (o.intersects(line))
-            return false;
-    return true;
+    return !_pathIntersectsObstacle(p1, p2);
 }
 
 bool WorkspaceGraph::obstacleInFreespace(double xObs, double yObs, double radiusObs)
@@ -134,10 +137,54 @@ bool WorkspaceGraph::atGate(GraphNode node)
     return dist <= _goalRegion.radius();
 }
 
-bool WorkspaceGraph::checkAtGoal(GraphNode node)
+ConfigspaceNode WorkspaceGraph::extendToNode(GraphNode parentNode, GraphNode newNode, double maxDist)
+{
+    ConfigspaceNode currentNode;
+    double dist = parentNode.distanceTo(newNode);
+
+    if (dist >= maxDist)
+    {
+        double xVal = parentNode.x() + ((newNode.x() - parentNode.x()) / dist) * maxDist;
+        double yVal = parentNode.y() + ((newNode.y() - parentNode.y()) / dist) * maxDist;
+        currentNode = ConfigspaceNode(xVal, yVal, 0, parentNode.id(), 0, 0);
+    }
+    else
+    {
+        currentNode = ConfigspaceNode(newNode.x(), newNode.y(), 0, parentNode.id(), 0, 0);
+    }
+
+    if (_nodeIntersectsObstacle(currentNode) || _pathIntersectsObstacle(parentNode, currentNode))
+        currentNode.setId(parentNode.id());
+
+    return currentNode;
+}
+
+bool WorkspaceGraph::_nodeIntersectsObstacle(Point p)
+{
+    for (Obstacle o : _obstacles)
+        if (o.intersects(p))
+            return true;
+    return false;
+}
+
+bool WorkspaceGraph::_pathIntersectsObstacle(Point p1, Point p2)
+{
+    for (Obstacle o : _obstacles)
+        if (o.intersects(Line(p1, p2)))
+            return true;
+    return false;
+}
+
+ConfigspaceNode WorkspaceGraph::connectNodes(ConfigspaceNode parentNode, ConfigspaceNode newNode)
+{
+    newNode.setParentId(parentNode.id());
+    return newNode;
+}
+
+bool WorkspaceGraph::checkAtGoal(ConfigspaceNode node)
 {
     // update vehicle state to temp node
-    State s(node.x(), node.y(), node.theta());
+    State s(node.x(), node.y(), node.theta);
     _vehicle.updateState(s);
 
     double distToGoal = _vehicle.state().distanceTo(_goalRegion);
