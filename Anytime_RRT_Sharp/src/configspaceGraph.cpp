@@ -1,17 +1,46 @@
 #include "ConfigspaceGraph.hpp"
 
-ConfigspaceNode::ConfigspaceNode()
+void ConfigspaceNode::_buildConfigspaceNode()
 {
     _buildGraphNode();
-    cost = 0;
-    theta = 0;
+    _cost = 0;
 }
 
-ConfigspaceNode::ConfigspaceNode(double x, double y, int id, int parentId, double costVal, double thetaVal)
+void ConfigspaceNode::_buildConfigspaceNode(GraphNode n)
 {
-    _buildGraphNode(x, y, id, parentId);
-    cost = costVal;
-    theta = thetaVal;
+    _buildGraphNode(n.x(), n.y(), n.theta(), n.id(), n.parentId());
+    _cost = 0;
+}
+
+void ConfigspaceNode::_buildConfigspaceNode(double x, double y, double theta, int id, int parentId, double cost)
+{
+    _buildGraphNode(x, y, theta, id, parentId);
+    _cost = cost;
+}
+
+ConfigspaceNode::ConfigspaceNode()
+{
+    _buildConfigspaceNode();
+}
+
+ConfigspaceNode::ConfigspaceNode(GraphNode node)
+{
+    _buildConfigspaceNode(node);
+}
+
+ConfigspaceNode::ConfigspaceNode(double x, double y, double theta, int id, int parentId, double cost)
+{
+    _buildConfigspaceNode(x, y, theta, id, parentId, cost);
+}
+
+double ConfigspaceNode::cost()
+{
+    return _cost;
+}
+
+void ConfigspaceNode::setCost(double cost)
+{
+    _cost = cost;
 }
 
 void ConfigspaceGraph::buildGraph()
@@ -140,10 +169,7 @@ void ConfigspaceGraph::printData(ConfigspaceNode finalNode, int probNum)
     nodeFile << numNodes << "\n";
 
     for (auto itr = nodes.begin(); itr != nodes.end(); ++itr)
-        nodeFile << itr->second.x() << ", " << itr->second.y() << ", " << itr->second.theta << ", " << itr->first << "\n";
-
-    // nodeFile << nodes[numNodes - 1].x() << ", " << nodes[numNodes - 1].y() << ", "
-    //     << nodes[numNodes - 1].theta << ", " << nodes[numNodes - 1].id() << "\n";
+        nodeFile << itr->second.x() << ", " << itr->second.y() << ", " << itr->second.theta() << ", " << itr->first << "\n";
 
     // print out edge file
     edgeFile << numEdges << "\n";
@@ -161,15 +187,15 @@ void ConfigspaceGraph::printData(ConfigspaceNode finalNode, int probNum)
     // print out output path
     ConfigspaceNode currentNode = finalNode;
 
-    outputPathFile << currentNode.x() << ", " << currentNode.y() << ", " << currentNode.theta << "\n";
+    outputPathFile << currentNode.x() << ", " << currentNode.y() << ", " << currentNode.theta() << "\n";
     currentNode = nodes[currentNode.parentId()];
 
     while (currentNode.parentId())
     {
-        outputPathFile << currentNode.x() << ", " << currentNode.y() << ", " << currentNode.theta << "\n";
+        outputPathFile << currentNode.x() << ", " << currentNode.y() << ", " << currentNode.theta() << "\n";
         currentNode = nodes[currentNode.parentId()];
     }
-    outputPathFile << nodes[1].x() << ", " << nodes[1].y() << ", " << nodes[1].theta << "\n";
+    outputPathFile << nodes[1].x() << ", " << nodes[1].y() << ", " << nodes[1].theta() << "\n";
 
     printf("Printing nodes to nodes_%d.txt.\n", probNum);
     printf("Printing edges to edges_%d.txt.\n", probNum);
@@ -233,7 +259,7 @@ ConfigspaceNode ConfigspaceGraph::findBestNeighbor(ConfigspaceNode newNode, vect
 
     for (ConfigspaceNode n : safeNeighbors)
     {
-        tempBestCost = n.cost + computeCost(newNode, n);
+        tempBestCost = n.cost() + computeCost(newNode, n);
         if (tempBestCost < bestCost)
         {
             bestCost = tempBestCost;
@@ -285,7 +311,7 @@ void ConfigspaceGraph::recomputeCost(vector<int> ids)
     {
         node = nodes[id];
         parent= nodes[node.parentId()];
-        node.cost = parent.cost + computeCost(node, parent);
+        node.setCost(parent.cost() + computeCost(node, parent));
     }
 }
 

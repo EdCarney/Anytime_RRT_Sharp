@@ -100,7 +100,7 @@ int main()
 
     printf("ObsVol: %f, NumObs: %lu, Freespace: [%f, %f, %f, %f]\n", obsVol, G_workspace.obstacles().size(), xMin, xMax, yMin, yMax);
     printf("UAV Location: %f, %f, %f\n", G_workspace.goalRegion().x(), G_workspace.goalRegion().y(), G_workspace.goalRegion().radius());
-    printf("Root Node:    %f, %f, %f\n", G_configspace.nodes[1].x(), G_configspace.nodes[1].y(), G_configspace.nodes[1].theta);
+    printf("Root Node:    %f, %f, %f\n", G_configspace.nodes[1].x(), G_configspace.nodes[1].y(), G_configspace.nodes[1].theta());
 
     //------------------------------------------------------------------------//
     //------------------------start the RRT# iterations-----------------------//
@@ -126,7 +126,7 @@ int main()
             // create a new node by extending from the parent to the temp node
             // (this includes a collision check); then compute cost
             newNode = G_workspace.extendToNode(parentNode, tempNode, epsilon);
-            newNode.cost = parentNode.cost + G_configspace.computeCost(parentNode, newNode);
+            newNode.setCost(parentNode.cost() + G_configspace.computeCost(parentNode, newNode));
 
             // if there is a collision, newNode id will be set to its parent's id
             if (newNode.id() != parentNode.id())
@@ -170,7 +170,7 @@ int main()
     // print all the results to files
     printf("Total number of points: %lu\n", G_configspace.nodes.size());
     printf("Final node at: (%f, %f)\n", finalNode.x(), finalNode.y());
-    printf("Final cost is: %f\n", finalNode.cost);
+    printf("Final cost is: %f\n", finalNode.cost());
     printf("Total runtime is %lld ms\n", duration.count());
     G_configspace.printData(finalNode);
 
@@ -215,7 +215,7 @@ ConfigspaceNode findBestNode(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_
     {
         if (G_workspace.checkAtGoal(itr->second))
         {
-            tempCost = itr->second.cost;
+            tempCost = itr->second.cost();
             if (tempCost)
             {
                 finalCost = tempCost;
@@ -234,10 +234,10 @@ vector<ConfigspaceNode> tryConnectToBestNeighbor(ConfigspaceGraph& G_configspace
     ConfigspaceNode tempNode = G_workspace.connectNodes(bestNeighbor, newNode);
 
     // compute the cost of tempNode using the best neighbor
-    tempNode.cost = bestNeighbor.cost + G_configspace.computeCost(bestNeighbor, tempNode);
+    tempNode.setCost(bestNeighbor.cost() + G_configspace.computeCost(bestNeighbor, tempNode));
 
     // if the tempNode is cheaper then make that the newNode
-    if (tempNode.cost < newNode.cost)
+    if (tempNode.cost() < newNode.cost())
     {
         newNode = tempNode;
         parentNode = bestNeighbor;
@@ -260,7 +260,7 @@ void rewireRemainingNodes(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_wor
             // if it's cheaper, then create the new node, set the new cost, and set
             // the parent (now the added node)
             newNode = G_workspace.connectNodes(addedNode, rn);
-            newNode.cost = addedNode.cost + G_configspace.computeCost(rn, addedNode);
+            newNode.setCost(addedNode.cost() + G_configspace.computeCost(rn, addedNode));
 
             // get the old parent of the current remaining node, remove the old
             // edge, add the new edge, and replace the old remaining node
@@ -277,7 +277,7 @@ void rewireRemainingNodes(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_wor
 
 bool compareNodes(ConfigspaceNode nodeA, ConfigspaceNode nodeB, ConfigspaceGraph& G_configspace)
 {
-    if (nodeA.cost < (nodeB.cost + G_configspace.computeCost(nodeA, nodeB)))
+    if (nodeA.cost() < (nodeB.cost() + G_configspace.computeCost(nodeA, nodeB)))
         return true;
     return false;
 }

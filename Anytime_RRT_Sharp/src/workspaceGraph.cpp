@@ -145,7 +145,7 @@ ConfigspaceNode WorkspaceGraph::extendToNode(GraphNode parentNode, GraphNode new
     }
     else
     {
-        currentNode = ConfigspaceNode(newNode.x(), newNode.y(), 0, parentNode.id(), 0, 0);
+        currentNode = ConfigspaceNode(newNode.x(), newNode.y(), 0, 0, parentNode.id(), 0);
     }
 
     if (!nodeIsSafe(currentNode) || !pathIsSafe(parentNode, currentNode))
@@ -179,7 +179,7 @@ ConfigspaceNode WorkspaceGraph::connectNodes(ConfigspaceNode parentNode, Configs
 bool WorkspaceGraph::checkAtGoal(ConfigspaceNode node)
 {
     // update vehicle state to temp node
-    State s(node.x(), node.y(), node.theta);
+    State s(node.x(), node.y(), node.theta());
     _vehicle.updateState(s);
 
     double distToGoal = _vehicle.state().distanceTo(_goalRegion);
