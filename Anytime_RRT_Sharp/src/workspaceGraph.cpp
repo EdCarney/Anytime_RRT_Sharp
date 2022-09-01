@@ -102,7 +102,7 @@ vector<ConfigspaceNode> WorkspaceGraph::checkSafety(ConfigspaceNode newNode, vec
     // check if line from node to neighbor intersects any obstacle
     for (auto itr = neighbors.begin(); itr < neighbors.end(); ++itr)
     {
-        if (_pathIntersectsObstacle(newNode, *itr))
+        if (!pathIsSafe(newNode, *itr))
         {
             neighbors.erase(itr);
             break;
@@ -110,11 +110,6 @@ vector<ConfigspaceNode> WorkspaceGraph::checkSafety(ConfigspaceNode newNode, vec
     }
 
     return neighbors;
-}
-
-bool WorkspaceGraph::pathIsSafe(Point p1, Point p2)
-{
-    return !_pathIntersectsObstacle(p1, p2);
 }
 
 bool WorkspaceGraph::obstacleInFreespace(double xObs, double yObs, double radiusObs)
@@ -153,26 +148,26 @@ ConfigspaceNode WorkspaceGraph::extendToNode(GraphNode parentNode, GraphNode new
         currentNode = ConfigspaceNode(newNode.x(), newNode.y(), 0, parentNode.id(), 0, 0);
     }
 
-    if (_nodeIntersectsObstacle(currentNode) || _pathIntersectsObstacle(parentNode, currentNode))
+    if (!nodeIsSafe(currentNode) || !pathIsSafe(parentNode, currentNode))
         currentNode.setId(parentNode.id());
 
     return currentNode;
 }
 
-bool WorkspaceGraph::_nodeIntersectsObstacle(Point p)
+bool WorkspaceGraph::nodeIsSafe(Point p)
 {
     for (Obstacle o : _obstacles)
         if (o.intersects(p))
-            return true;
-    return false;
+            return false;
+    return true;
 }
 
-bool WorkspaceGraph::_pathIntersectsObstacle(Point p1, Point p2)
+bool WorkspaceGraph::pathIsSafe(Point p1, Point p2)
 {
     for (Obstacle o : _obstacles)
         if (o.intersects(Line(p1, p2)))
-            return true;
-    return false;
+            return false;
+    return true;
 }
 
 ConfigspaceNode WorkspaceGraph::connectNodes(ConfigspaceNode parentNode, ConfigspaceNode newNode)
