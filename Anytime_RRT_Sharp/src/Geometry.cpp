@@ -214,21 +214,20 @@ GraphNode::GraphNode()
     _buildGraphNode();
 }
 
-GraphNode::GraphNode(Point p, double theta, int id, int parentId)
+GraphNode::GraphNode(Point p, int id, int parentId)
 {
-    _buildGraphNode(p, theta, id, parentId);
+    _buildGraphNode(p, id, parentId);
 }
 
-GraphNode::GraphNode(double x, double y, double theta, int id, int parentId)
+GraphNode::GraphNode(double x, double y, int id, int parentId)
 {
-    _buildGraphNode(x, y, theta, id, parentId);
+    _buildGraphNode(x, y, id, parentId);
 }
 
 void GraphNode::_buildGraphNode()
 {
     _x = 0;
     _y = 0;
-    _theta = 0;
     _id = 0;
     _parentId = 0;
 }
@@ -237,32 +236,24 @@ void GraphNode::_buildGraphNode(GraphNode n)
 {
     _x = n.x();
     _y = n.y();
-    _theta = n.theta();
     _id = n.id();
     _parentId = n.parentId();
 }
 
-void GraphNode::_buildGraphNode(Point p, double theta, int id, int parentId)
+void GraphNode::_buildGraphNode(Point p, int id, int parentId)
 {
     _x = p.x();
     _y = p.y();
-    _theta = theta;
     _id = id;
     _parentId = parentId;
 }
 
-void GraphNode::_buildGraphNode(double x, double y, double theta, int id, int parentId)
+void GraphNode::_buildGraphNode(double x, double y, int id, int parentId)
 {
     _x = x;
     _y = y;
-    _theta = theta;
     _id = id;
     _parentId = parentId;
-}
-
-double GraphNode::theta()
-{
-    return _theta;
 }
 
 int GraphNode::id()
@@ -273,11 +264,6 @@ int GraphNode::id()
 int GraphNode::parentId()
 {
     return _parentId;
-}
-
-void GraphNode::setTheta(double theta)
-{
-    _theta = theta;
 }
 
 void GraphNode::setId(int id)

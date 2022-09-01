@@ -99,18 +99,15 @@ class DLL_EXPORT GraphNode : public Point
 {
     protected:
         int _id, _parentId;
-        double _theta;
         void _buildGraphNode();
         void _buildGraphNode(GraphNode n);
-        void _buildGraphNode(Point p, double theta, int id, int parentId);
-        void _buildGraphNode(double x, double y, double theta, int id, int parentId);
+        void _buildGraphNode(Point p, int id, int parentId);
+        void _buildGraphNode(double x, double y, int id, int parentId);
 
     public:
         GraphNode();
-        GraphNode(Point p, double theta, int id, int parentId);
-        GraphNode(double x, double y, double theta, int id, int parentId);
-        double theta();
-        void setTheta(double theta);
+        GraphNode(Point p, int id, int parentId);
+        GraphNode(double x, double y, int id, int parentId);
         int id();
         void setId(int id);
         int parentId();
