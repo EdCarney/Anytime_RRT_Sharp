@@ -225,11 +225,11 @@ ConfigspaceNode findBestNode(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_
     return finalNode;
 }
 
-vector<ConfigspaceNode> tryConnectToBestNeighbor(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_workspace, vector<ConfigspaceNode> safeNearestNeighbors, ConfigspaceNode& newNode, ConfigspaceNode& parentNode)
+vector<ConfigspaceNode> tryConnectToBestNeighbor(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_workspace, vector<ConfigspaceNode> neighbors, ConfigspaceNode& newNode, ConfigspaceNode& parentNode)
 {
     // find the best safe neighbor and connect newNode and the bestNeighbor
     // assign the resulting node to tempNode
-    ConfigspaceNode bestNeighbor = G_configspace.findBestNeighbor(newNode, safeNearestNeighbors);
+    ConfigspaceNode bestNeighbor = G_configspace.findBestNeighbor(newNode, neighbors);
     ConfigspaceNode tempNode = G_configspace.connectNodes(bestNeighbor, newNode);
 
     // if the tempNode is cheaper then make that the newNode
@@ -237,10 +237,10 @@ vector<ConfigspaceNode> tryConnectToBestNeighbor(ConfigspaceGraph& G_configspace
     {
         newNode = tempNode;
         parentNode = bestNeighbor;
+        return G_configspace.removeNode(neighbors, bestNeighbor);
     }
 
-    // reset the remaining nodes to the safe neighbors minus the one we connected to
-    return G_configspace.removeNode(safeNearestNeighbors, bestNeighbor);
+    return neighbors;
 }
 
 void rewireRemainingNodes(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_workspace, vector<ConfigspaceNode> remainingNodes, ConfigspaceNode addedNode)
