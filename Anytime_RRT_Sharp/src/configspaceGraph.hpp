@@ -17,27 +17,25 @@ class ConfigspaceGraph : Rectangle
     void buildGraph();
     void deleteGraph();
 
-    unordered_map<int, vector<int>> parentChildMap;
+    unordered_map<int, vector<int>> _parentChildMap;
 
-    vector<int> getAllChildIds(vector<int> ids);
-    void addParentChildRelation(int id);
-    void removeParentChildRelation(int id);
-    void recomputeCost(vector<int> ids);
+    vector<int> _getAllChildIds(vector<int> ids);
+    void _addParentChildRelation(int id);
+    void _removeParentChildRelation(int id);
+    void _recomputeCost(vector<int> ids);
 
     // calculate the radius of the ball to consider for the k-nearest neighbor
     double _computeRadius(double epsilon);
 
     public:
-        int numNodeInd;                    // used to set the node id; is NOT modified by pruning
-
-        unordered_map<int, ConfigspaceNode> nodes;
-        //vector<ConfigspaceNode> nodes;            // an array containing all nodes
-        vector<Edge> edges;                    // an array containing all edges
-        double minTheta, maxTheta;        // limits of the orientation theta
+        int numNodeInd;                 // used to set the node id; is NOT modified by pruning
+        double minTheta, maxTheta;
         double freeSpaceMeasure;        // a measure of the free space in the graph
         double zeta;                    // the volume of a unit ball in the free space
-        double gamma_star;                // optimality constraint calculated from percollation theory
+        double gamma_star;              // optimality constraint calculated from percollation theory
         int dim;                        // dimension of the free space
+        unordered_map<int, ConfigspaceNode> nodes;
+        vector<Edge> edges;
 
         // adds a node to the graph
         // NOTE: this should be used for all other nodes

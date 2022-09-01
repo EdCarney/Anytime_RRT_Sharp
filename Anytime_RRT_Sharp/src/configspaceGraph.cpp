@@ -13,18 +13,18 @@ void ConfigspaceGraph::buildGraph()
     dim = 0;
 }
 
-void ConfigspaceGraph::addParentChildRelation(int id)
+void ConfigspaceGraph::_addParentChildRelation(int id)
 {
     auto node = nodes[id];
-    parentChildMap[node.parentId()].push_back(node.id());
+    _parentChildMap[node.parentId()].push_back(node.id());
 }
 
-void ConfigspaceGraph::removeParentChildRelation(int id)
+void ConfigspaceGraph::_removeParentChildRelation(int id)
 {
     auto node = nodes[id];
-    for (auto itr = parentChildMap[node.parentId()].begin(); itr < parentChildMap[node.parentId()].end(); ++itr)
+    for (auto itr = _parentChildMap[node.parentId()].begin(); itr < _parentChildMap[node.parentId()].end(); ++itr)
         if (*itr == id)
-            parentChildMap[node.parentId()].erase(itr);
+            _parentChildMap[node.parentId()].erase(itr);
 }
 
 void ConfigspaceGraph::defineFreespace(double minX, double minY, double newMinTheta, double maxX, double maxY, double newMaxTheta, int dimension, double obstacleVol)
@@ -230,7 +230,7 @@ int ConfigspaceGraph::addNode(ConfigspaceNode node)
 {
     node.setId(++numNodeInd);
     nodes[node.id()] = node;
-    addParentChildRelation(node.id());
+    _addParentChildRelation(node.id());
     return node.id();
 }
 
@@ -245,23 +245,23 @@ void ConfigspaceGraph::propagateCost(vector<int> updatedNodeIds)
     if (updatedNodeIds.empty())
         return;
 
-    vector<int> children = getAllChildIds(updatedNodeIds);
-    recomputeCost(children);
+    vector<int> children = _getAllChildIds(updatedNodeIds);
+    _recomputeCost(children);
     propagateCost(children);
 }
 
-vector<int> ConfigspaceGraph::getAllChildIds(vector<int> ids)
+vector<int> ConfigspaceGraph::_getAllChildIds(vector<int> ids)
 {
     vector<int> childIds, tempChildIds;
     for (int id : ids)
     {
-        tempChildIds = parentChildMap[id];
+        tempChildIds = _parentChildMap[id];
         childIds.insert(childIds.begin(), tempChildIds.begin(), tempChildIds.end());
     }
     return childIds;
 }
 
-void ConfigspaceGraph::recomputeCost(vector<int> ids)
+void ConfigspaceGraph::_recomputeCost(vector<int> ids)
 {
     ConfigspaceNode node, parent;
     for (int id : ids)
@@ -274,11 +274,11 @@ void ConfigspaceGraph::recomputeCost(vector<int> ids)
 
 void ConfigspaceGraph::replaceNode(ConfigspaceNode oldNode, ConfigspaceNode newNode)
 {
-    removeParentChildRelation(oldNode.id());
+    _removeParentChildRelation(oldNode.id());
     nodes.erase(oldNode.id());
 
     nodes[newNode.id()] = newNode;
-    addParentChildRelation(newNode.id());
+    _addParentChildRelation(newNode.id());
 }
 
 ConfigspaceNode ConfigspaceGraph::extendToNode(GraphNode parentNode, GraphNode newNode, double maxDist)
