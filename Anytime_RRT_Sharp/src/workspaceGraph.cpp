@@ -154,7 +154,7 @@ ConfigspaceNode WorkspaceGraph::connectNodes(ConfigspaceNode parentNode, Configs
     return newNode;
 }
 
-bool WorkspaceGraph::checkAtGoal(ConfigspaceNode node)
+bool WorkspaceGraph::checkAtGoal(GraphNode node)
 {
     // update vehicle state to temp node
     State s(node.x(), node.y(), node.theta());
