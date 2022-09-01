@@ -4,27 +4,13 @@
 #include <cstring>
 #include <vector>
 #include "cppshrhelp.hpp"
+#include "ConfigspaceNode.hpp"
 #include "Geometry.hpp"
 
 using namespace std;
 
-#ifndef CONFIGSPACE_H
-#define CONFIGSPACE_H
-
-class ConfigspaceNode : public GraphNode
-{
-    double _cost;
-    void _buildConfigspaceNode();
-    void _buildConfigspaceNode(GraphNode node);
-    void _buildConfigspaceNode(double x, double y, double theta, int id, int parentId, double cost);
-
-    public:
-        ConfigspaceNode();
-        ConfigspaceNode(GraphNode node);
-        ConfigspaceNode(double x, double y, double theta, int id, int parentId, double cost);
-        double cost();
-        void setCost(double cost);
-};
+#ifndef CONFIGSPACE_GRAPH_H
+#define CONFIGSPACE_GRAPH_H
 
 class ConfigspaceGraph : Rectangle
 {
@@ -96,4 +82,4 @@ class ConfigspaceGraph : Rectangle
         ConfigspaceGraph() { buildGraph(); }
 };
 
-#endif // CONFIGSPACE_H
+#endif //CONFIGSPACE_GRAPH_H
