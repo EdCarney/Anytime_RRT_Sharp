@@ -5,34 +5,6 @@ bool approximatelyEqual(double val1, double val2, double delta = 0.001)
     return abs(val1 - val2) < delta;
 }
 
-Obstacle::Obstacle()
-{
-    _buildObstacle();
-}
-
-Obstacle::Obstacle(double x, double y, double radius)
-{
-    _buildObstacle();
-    _x = x;
-    _y = y;
-    _radius = radius;
-}
-
-Obstacle::Obstacle(Point pos, double radius)
-{
-    _buildObstacle();
-    _x = pos.x();
-    _y = pos.y();
-    _radius = radius;
-}
-
-void Obstacle::_buildObstacle()
-{
-    _x = 0.0;
-    _y = 0.0;
-    _radius = 0.0;
-}
-
 bool Obstacle::intersects(Point point)
 {
     double dist = this->distanceTo(point);
