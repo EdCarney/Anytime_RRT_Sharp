@@ -5,10 +5,16 @@ Vehicle::Vehicle()
     _buildVehicle();
 }
 
-Vehicle::Vehicle(const double* x, const double *y, int numPoints)
+Vehicle::Vehicle(vector<double> x, vector<double> y)
 {
     _buildVehicle();
-    addOffsetNodes(x, y, numPoints);
+    addOffsetNodes(x, y);
+}
+
+Vehicle::Vehicle(FILE* file)
+{
+    _buildVehicle();
+    addOffsetNodesFromFile(file);
 }
 
 void Vehicle::_buildVehicle()
@@ -65,10 +71,16 @@ void Vehicle::addOffsetNode(double x, double y)
     _updateOffsetParams();
 }
 
-void Vehicle::addOffsetNodes(const double* x, const double* y, int numPoints)
+void Vehicle::addOffsetNodes(vector<double> x, vector<double> y)
 {
-    for (int i = 0; i < numPoints; ++i)
+    if (x.size() != y.size())
+        throw runtime_error("Inconsistent array size in addOffsetNodes()");
+
+    int size = x.size();
+    for (int i = 0; i < size; ++i)
+    {
         _offsetNodes.push_back(Point(x[i], y[i]));
+    }
     _nodes.resize(_offsetNodes.size());
     _updateOffsetParams();
 }
@@ -85,8 +97,8 @@ void Vehicle::addOffsetNodesFromFile(FILE* file)
         pointCount++;
 
     // get points
-    double* x = new double[pointCount];
-    double* y = new double[pointCount];
+    vector<double> x(pointCount);
+    vector<double> y(pointCount);
     rewind(file);
     for (int i = 0; i < pointCount; ++i)
     {
@@ -99,7 +111,7 @@ void Vehicle::addOffsetNodesFromFile(FILE* file)
     fclose(file);
 
     // add points
-    addOffsetNodes(x, y, pointCount);
+    addOffsetNodes(x, y);
 }
 
 vector<Point> Vehicle::nodes()
