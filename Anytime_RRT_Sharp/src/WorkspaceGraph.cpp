@@ -76,7 +76,7 @@ bool WorkspaceGraph::readObstaclesFromFile(const char* obstacleFile)
     return true;
 }
 
-double WorkspaceGraph::computeObsVol()
+double WorkspaceGraph::obstacleVolume() const
 {
     double volume = 0.0;
 
@@ -97,18 +97,29 @@ void WorkspaceGraph::defineFreespace(double minX, double minY, double maxX, doub
     _maxPoint = Point(maxX, maxY);
 }
 
-bool WorkspaceGraph::obstacleInFreespace(double xObs, double yObs, double radiusObs)
+bool WorkspaceGraph::obstacleInFreespace(double x, double y, double radius) const
 {
-    if ((xObs - radiusObs < maxX() && xObs + radiusObs > minX()) &&
-        (yObs - radiusObs < maxY() && yObs + radiusObs > minY()))
+    if ((x - radius < maxX() && x + radius > minX()) &&
+        (y - radius < maxY() && y + radius > minY()))
         return true;
     
     return false;
 }
 
+bool WorkspaceGraph::obstacleInFreespace(Obstacle o) const
+{
+    return obstacleInFreespace(o.x(), o.y(), o.radius());
+}
+
 void WorkspaceGraph::addObstacle(double x, double y, double radius)
 {
     _obstacles.push_back(Obstacle(x, y, radius));
+}
+
+void WorkspaceGraph::addObstacles(vector<Obstacle> obstacles)
+{
+    for (Obstacle o : obstacles)
+        _obstacles.push_back(o);
 }
 
 bool WorkspaceGraph::atGate(GraphNode node)

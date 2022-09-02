@@ -27,10 +27,12 @@ class WorkspaceGraph : Rectangle
         bool nodeIsSafe(Point p);
         bool pathIsSafe(Point p1, Point p2);
         bool pathIsSafe(Point p1, vector<Point> points);
-        bool obstacleInFreespace(double xObs, double yObs, double radiusObs);
-        void addObstacle(double xObs, double yObs, double radiusObs);
+        bool obstacleInFreespace(double x, double y, double radius) const;
+        bool obstacleInFreespace(Obstacle o) const;
+        void addObstacle(double x, double y, double radius);
+        void addObstacles(vector<Obstacle> obstacles);
         bool readObstaclesFromFile(const char* obstacleFile);
-        double computeObsVol();
+        double obstacleVolume() const;
         bool atGate(GraphNode node);
         WorkspaceGraph() { _buildWorkspaceGraph(); }
 };
