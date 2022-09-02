@@ -5,34 +5,18 @@ using namespace std::chrono;
 
 int main()
 {
-    #pragma region Initialization 
-    //------------------------------------------------------------------------//
-    //-------this info should be ingested from the initialization script-------//
-    //------------------------------------------------------------------------//
+    ArrtsService service;
+    
+    FILE* obstacleFile = fopen("./test/obstacles.txt", "r");
+    FILE* vehicleFile = fopen("./test/simpleRobot.txt", "r");
 
-    // define arrays for the gate and obstacle information
-    const double rootXPosition = 5.0;
-    const double rootYPosition = 60.0;
-    const double rootApproach = - M_PI / 2.0;
+    service.setStartState(5, 60, -M_PI / 2.0);   // gate position
+    service.setGoalState(100, 60, 0);           // uav position
+    service.addObstaclesFromFile(obstacleFile);
+    Vehicle vehicle(vehicleFile);
 
-    const double obstacleXPosition[] = { 80, 73, 63, 53, 43, 33, 28, 25, 25, 25, 25, 35, 40, 45, 80, 85, 90, 95, 100, 100, 100, 100, 60 };
-    const double obstacleYPosition[] = { 40, 30, 25, 25, 26, 25, 35, 47, 57, 67, 77, 80, 80, 80, 80, 80, 80, 80, 80, 0, 5, 10, 100 };
-    const double obstacleRadius[]    = { 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8 };
-    const int numObstacles = sizeof(obstacleRadius) / sizeof(double);
-
-    // define additional input parameters for the goal node calculation
     const double standOffRange = 5.0;
-
-    // initial UAV orientation
-    const double uavStartX = 100.0, uavStartY = 60.0, uavStartTheta = 0.0;
-
-    // goal region (UAV position) radius
     const double uavGoalRadius = 2.5;
-
-    // vehicle rigid body information
-    const double vehicleX[] = { -0.5, 0.5, 0.5, -0.5 };
-    const double vehicleY[] = { -0.5, -0.5, 0.5, 0.5 };
-    int numVehiclePoints = sizeof(vehicleX) / sizeof(double);
 
     // initialize variables for the graph limits
     double xMin = 0.0, yMin = 0.0, xMax = 0.0, yMax = 0.0;
@@ -45,21 +29,7 @@ int main()
     // seed for random node generation
     srand (time(NULL));
 
-    //------------------------------------------------------------------------//
-    //------------------this info must be declared regardless-----------------//
-    //------------------------------------------------------------------------//
-    double obsVol = 0.0;
     int dimension = 2;
-    int goalBiasCount = 100;
-    int maxCount = 10000;
-
-    ConfigspaceNode gateNode, tempNode, parentNode, newNode;
-    vector<ConfigspaceNode> neighbors;
-
-    int k = 15, count = 0, tempId = 0;
-    double epsilon = 10.0;
-
-    #pragma endregion Initializes all necessary variables (could be read-in from file)
 
     #pragma region Primary Function
 
@@ -67,38 +37,17 @@ int main()
     WorkspaceGraph G_workspace;
     ConfigspaceGraph G_configspace;
 
-    // set the goal region (i.e. the UAV starting location)
-    G_workspace.setGoalRegion(uavStartX, uavStartY, uavStartTheta, uavGoalRadius);
-
-    // function to determine goal node based on approximate gate information
-    gateNode = calcGateNode(rootXPosition, rootYPosition, rootApproach, standOffRange);
-
-    // define the limits of the graph based on position of the gate
-    // and the robot
+    auto gateNode = calcGateNode(service.startState().x(), service.startState().y(), service.startState().theta(), standOffRange);
+    G_workspace.setGoalRegion(service.goalState().x(), service.goalState().y(), service.goalState().theta(), uavGoalRadius);
     tie(xMin, xMax, yMin, yMax) = calculateGraphLimits(G_workspace, gateNode, buffer);
-
     G_workspace.defineFreespace(xMin, yMin, xMax, yMax);
+    G_workspace.addObstacles(service.obstacles());
+    G_workspace.setVehicle(vehicle);
 
-    // set the obstacles for this iteration (we don't need to consider all obstacles
-    // for every iteration); use the above defined freespace limits
-    for (int i = 0; i < numObstacles; ++i)
-        if (G_workspace.obstacleInFreespace(obstacleXPosition[i], obstacleYPosition[i], obstacleRadius[i]))
-            G_workspace.addObstacle(obstacleXPosition[i], obstacleYPosition[i], obstacleRadius[i]);
-
-    // compute the volume of the obstacles
-    obsVol = G_workspace.computeObsVol();
-
-    // set freespace of graphs based on the graph limits; some values will always
-    // be the same (theta, v, w, a, gamma), while others will vary (x and y)
-    G_configspace.defineFreespace(xMin, yMin, thetaMin, xMax, yMax, thetaMax, dimension, obsVol);
-
-    // add gateNode to the graph
+    G_configspace.defineFreespace(xMin, yMin, thetaMin, xMax, yMax, thetaMax, dimension, G_workspace.obstacleVolume());
     G_configspace.addNode(gateNode);
 
-    // add vehicle to the graph
-    G_workspace.setVehicle(Vehicle(vehicleX, vehicleY, numVehiclePoints));
-
-    printf("ObsVol: %f, NumObs: %lu, Freespace: [%f, %f, %f, %f]\n", obsVol, G_workspace.obstacles().size(), xMin, xMax, yMin, yMax);
+    printf("ObsVol: %f, NumObs: %lu, Freespace: [%f, %f, %f, %f]\n", G_workspace.obstacleVolume(), G_workspace.obstacles().size(), xMin, xMax, yMin, yMax);
     printf("UAV Location: %f, %f, %f\n", G_workspace.goalRegion().x(), G_workspace.goalRegion().y(), G_workspace.goalRegion().radius());
     printf("Root Node:    %f, %f, %f\n", G_configspace.nodes[1].x(), G_configspace.nodes[1].y(), G_configspace.nodes[1].theta());
 
@@ -106,7 +55,13 @@ int main()
     //------------------------start the RRT# iterations-----------------------//
     //------------------------------------------------------------------------//
 
+    ConfigspaceNode tempNode, parentNode, newNode;
+    vector<ConfigspaceNode> neighbors;
     bool goalRegionReached = false;
+    int goalBiasCount = 100, maxCount = 10000;
+
+    int k = 15, count = 0, tempId = 0;
+    double epsilon = 10.0;
 
     // do the RRT# thing
 
@@ -116,7 +71,6 @@ int main()
     {
         // create a new node (not yet connected to the graph)
         tempNode = (count++ % goalBiasCount != 0) ? G_configspace.generateRandomNode() : G_configspace.generateBiasedNode(G_workspace.goalRegion().x(), G_workspace.goalRegion().y());
-
         // find the closest graph node and set it as the parent
         parentNode = G_configspace.findClosestNode(tempNode);
 
@@ -275,6 +229,6 @@ bool compareNodes(ConfigspaceNode nodeA, ConfigspaceNode nodeB, ConfigspaceGraph
 ConfigspaceNode calcGateNode(double xPosition, double yPosition, double gateOrientation, double standOffRange)
 {
     double x = xPosition + standOffRange * cos(gateOrientation - M_PI);
-    double y = yPosition + standOffRange * sin(gateOrientation - M_PI);;
+    double y = yPosition + standOffRange * sin(gateOrientation - M_PI);
     return ConfigspaceNode(x, y, 0, 0, 0, gateOrientation);
 }
