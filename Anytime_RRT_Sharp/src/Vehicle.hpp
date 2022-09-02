@@ -22,10 +22,11 @@ class Vehicle
 
     public:
         Vehicle();
-        Vehicle(const double* x, const double *y, int numPoints);
+        Vehicle(vector<double> x, vector<double> y);
+        Vehicle(FILE* file);
         void updateState(State newState);
         void addOffsetNode(double x, double y);
-        void addOffsetNodes(const double* x, const double *y, int numPoints);
+        void addOffsetNodes(vector<double> x, vector<double> y);
         void addOffsetNodesFromFile(FILE* file);
         vector<Point> nodes();
         Point nodes(int i);

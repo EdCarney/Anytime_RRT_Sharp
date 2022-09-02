@@ -20,18 +20,18 @@ TEST(Vehicle, AddOnePoint_CheckVal)
 TEST(Vehicle, AddMultiplePoint_CheckNum)
 {
     Vehicle v;
-    const double x[] = { 1, 2, 3 };
-    const double y[] = { 1, 2, 3 };
-    v.addOffsetNodes(x, y, 3);
+    vector<double> x = { 1, 2, 3 };
+    vector<double> y = { 1, 2, 3 };
+    v.addOffsetNodes(x, y);
     GTEST_ASSERT_EQ(v.nodes().size(), 3);
 }
 
 TEST(Vehicle, AddMultiplePoint_CheckVals)
 {
     Vehicle v;
-    const double x[] = { 1, 2, 3 };
-    const double y[] = { 4, 5, 6 };
-    v.addOffsetNodes(x, y, 3);
+    vector<double> x = { 1, 2, 3 };
+    vector<double> y = { 4, 5, 6 };
+    v.addOffsetNodes(x, y);
 
     Point n1 = v.offsetNodes(0);
     Point n2 = v.offsetNodes(1);
@@ -73,24 +73,24 @@ TEST(Vehicle, AddSingleThenSinglePoint_CheckVals)
 TEST(Vehicle, AddMultipleThenMultiplePoint_CheckNum)
 {
     Vehicle v;
-    const double x1[] = { 1, 2 };
-    const double y1[] = { 1, 2 };
-    const double x2[] = { 1, 2 };
-    const double y2[] = { 1, 2 };
-    v.addOffsetNodes(x1, y1, 2);
-    v.addOffsetNodes(x2, y2, 2);
+    vector<double> x1 = { 1, 2 };
+    vector<double> y1 = { 1, 2 };
+    vector<double> x2 = { 1, 2 };
+    vector<double> y2 = { 1, 2 };
+    v.addOffsetNodes(x1, y1);
+    v.addOffsetNodes(x2, y2);
     GTEST_ASSERT_EQ(v.nodes().size(), 4);
 }
 
 TEST(Vehicle, AddMultipleThenMultiplePoint_CheckVals)
 {
     Vehicle v;
-    const double x1[] = { 1, 2 };
-    const double y1[] = { 3, 4 };
-    const double x2[] = { 5, 6 };
-    const double y2[] = { 7, 8 };
-    v.addOffsetNodes(x1, y1, 2);
-    v.addOffsetNodes(x2, y2, 2);
+    vector<double> x1 = { 1, 2 };
+    vector<double> y1 = { 3, 4 };
+    vector<double> x2 = { 5, 6 };
+    vector<double> y2 = { 7, 8 };
+    v.addOffsetNodes(x1, y1);
+    v.addOffsetNodes(x2, y2);
     
     Point n1 = v.offsetNodes(0);
     Point n2 = v.offsetNodes(1);
@@ -112,10 +112,10 @@ TEST(Vehicle, AddSingleThenMultiplePoint_CheckNum)
 {
     Vehicle v;
     v.addOffsetNode(1, 2);
-    const double x[] = { 1, 2, 3 };
-    const double y[] = { 1, 2, 3 };
-    const double r[] = { 1, 2, 3 };
-    v.addOffsetNodes(x, y, 3);
+    vector<double> x = { 1, 2, 3 };
+    vector<double> y = { 1, 2, 3 };
+    vector<double> r = { 1, 2, 3 };
+    v.addOffsetNodes(x, y);
     GTEST_ASSERT_EQ(v.nodes().size(), 4);
 }
 
@@ -123,10 +123,10 @@ TEST(Vehicle, AddSingleThenMultiplePoint_CheckVals)
 {
     Vehicle v;
     v.addOffsetNode(1, 2);
-    const double x[] = { 4, 5, 6 };
-    const double y[] = { 7, 8, 9 };
-    const double r[] = { 10, 11, 12 };
-    v.addOffsetNodes(x, y, 3);
+    vector<double> x = { 4, 5, 6 };
+    vector<double> y = { 7, 8, 9 };
+    vector<double> r = { 10, 11, 12 };
+    v.addOffsetNodes(x, y);
     
     Point n1 = v.offsetNodes(0);
     Point n2 = v.offsetNodes(1);
@@ -147,9 +147,9 @@ TEST(Vehicle, AddSingleThenMultiplePoint_CheckVals)
 TEST(Vehicle, AddMultipleThenSinglePoint_CheckNum)
 {
     Vehicle v;
-    const double x[] = { 1, 2, 3 };
-    const double y[] = { 1, 2, 3 };
-    v.addOffsetNodes(x, y, 3);
+    vector<double> x = { 1, 2, 3 };
+    vector<double> y = { 1, 2, 3 };
+    v.addOffsetNodes(x, y);
     v.addOffsetNode(1, 2);
     GTEST_ASSERT_EQ(v.nodes().size(), 4);
 }
@@ -157,9 +157,9 @@ TEST(Vehicle, AddMultipleThenSinglePoint_CheckNum)
 TEST(Vehicle, AddMultipleThenSinglePoint_CheckVals)
 {
     Vehicle v;
-    const double x[] = { 4, 5, 6 };
-    const double y[] = { 7, 8, 9 };
-    v.addOffsetNodes(x, y, 3);
+    vector<double> x = { 4, 5, 6 };
+    vector<double> y = { 7, 8, 9 };
+    v.addOffsetNodes(x, y);
     v.addOffsetNode(1, 2);
     
     Point n1 = v.offsetNodes(0);
@@ -261,10 +261,10 @@ TEST(Vehicle, AddNodesUpdateStateNoRotation_CheckVals)
 {
     Vehicle v;
     State p = { 1, 2, 0 };
-    const double x[] = { -0.5, 0.5, 0.5, -0.5 };
-    const double y[] = { -0.5, -0.5, 0.5, 0.5 };
+    vector<double> x = { -0.5, 0.5, 0.5, -0.5 };
+    vector<double> y = { -0.5, -0.5, 0.5, 0.5 };
 
-    v.addOffsetNodes(x, y, 4);
+    v.addOffsetNodes(x, y);
     v.updateState(p);
 
     double tol = 0.001;
@@ -291,10 +291,10 @@ TEST(Vehicle, AddNodesUpdateStateNoRotation_CheckVals)
 TEST(Vehicle, AddNodesUpdateStateWithPosRotation_CheckVals)
 {
     Vehicle v;
-    const double x[] = { -0.5, 0.5, 0.5, -0.5 };
-    const double y[] = { -0.5, -0.5, 0.5, 0.5 };
+    vector<double> x = { -0.5, 0.5, 0.5, -0.5 };
+    vector<double> y = { -0.5, -0.5, 0.5, 0.5 };
 
-    v.addOffsetNodes(x, y, 4);
+    v.addOffsetNodes(x, y);
 
     State p = { 1, 2, M_PI / 4.0 };
     v.updateState(p);
