@@ -97,7 +97,7 @@ void WorkspaceGraph::defineFreespace(double minX, double minY, double maxX, doub
     _maxPoint = Point(maxX, maxY);
 }
 
-bool WorkspaceGraph::obstacleInFreespace(double x, double y, double radius) const
+bool WorkspaceGraph::_obstacleInFreespace(double x, double y, double radius) const
 {
     if ((x - radius < maxX() && x + radius > minX()) &&
         (y - radius < maxY() && y + radius > minY()))
@@ -106,9 +106,9 @@ bool WorkspaceGraph::obstacleInFreespace(double x, double y, double radius) cons
     return false;
 }
 
-bool WorkspaceGraph::obstacleInFreespace(Obstacle o) const
+bool WorkspaceGraph::_obstacleInFreespace(Obstacle o) const
 {
-    return obstacleInFreespace(o.x(), o.y(), o.radius());
+    return _obstacleInFreespace(o.x(), o.y(), o.radius());
 }
 
 void WorkspaceGraph::addObstacle(double x, double y, double radius)
@@ -119,7 +119,8 @@ void WorkspaceGraph::addObstacle(double x, double y, double radius)
 void WorkspaceGraph::addObstacles(vector<Obstacle> obstacles)
 {
     for (Obstacle o : obstacles)
-        _obstacles.push_back(o);
+        if (_obstacleInFreespace(o))
+            _obstacles.push_back(o);
 }
 
 bool WorkspaceGraph::atGate(GraphNode node)
