@@ -12,17 +12,17 @@ Point::Point(double x, double y)
     _y = y;
 }
 
-double Point::x()
+double Point::x() const
 {
     return _x;
 }
 
-double Point::y()
+double Point::y() const
 {
     return _y;
 }
 
-double Point::distanceTo(Point p)
+double Point::distanceTo(Point p) const
 {
     return hypot(_x - p.x(), _y - p.y());
 }
@@ -45,22 +45,22 @@ Line::Line(Point p1, Point p2)
     _length = p1.distanceTo(p2);
 }
 
-Point Line::p1()
+Point Line::p1() const
 {
     return _p1;
 }
 
-Point Line::p2()
+Point Line::p2() const
 {
     return _p2;
 }
 
-double Line::length()
+double Line::length() const
 {
     return _length;
 }
 
-double Line::dotProduct(Line line)
+double Line::dotProduct(Line line) const
 {
     double dx1 = _p2.x() - _p1.x();
     double dy1 = _p2.y() - _p1.y();
@@ -99,12 +99,12 @@ double Circle::_calculateArea()
     return M_PI * _radius * _radius;
 }
 
-double Circle::radius()
+double Circle::radius() const
 {
     return _radius;
 }
 
-double Circle::area()
+double Circle::area() const
 {
     return _area;
 }
@@ -127,32 +127,32 @@ Rectangle::Rectangle(double minX, double minY, double maxX, double maxY)
     _maxPoint = Point(maxX, maxY);
 }
 
-Point Rectangle::minPoint()
+Point Rectangle::minPoint() const
 {
     return _minPoint;
 }
 
-Point Rectangle::maxPoint()
+Point Rectangle::maxPoint() const
 {
     return _maxPoint;
 }
 
-double Rectangle::minX()
+double Rectangle::minX() const
 {
     return _minPoint.x();
 }
 
-double Rectangle::minY()
+double Rectangle::minY() const
 {
     return _minPoint.y();
 }
 
-double Rectangle::maxX()
+double Rectangle::maxX() const
 {
     return _maxPoint.x();
 }
 
-double Rectangle::maxY()
+double Rectangle::maxY() const
 {
     return _maxPoint.y();
 }
@@ -178,7 +178,7 @@ State::State(double x, double y, double theta)
     _theta = theta;
 }
 
-double State::theta()
+double State::theta() const
 {
     return _theta;
 }
@@ -199,12 +199,12 @@ GoalState::GoalState(double x, double y, double radius, double theta)
     _theta = theta;
 }
 
-double GoalState::theta()
+double GoalState::theta() const
 {
     return _theta;
 }
 
-double GoalState::radius()
+double GoalState::radius() const
 {
     return _radius;
 }
@@ -260,17 +260,17 @@ void GraphNode::_buildGraphNode(double x, double y, double theta, int id, int pa
     _parentId = parentId;
 }
 
-double GraphNode::theta()
+double GraphNode::theta() const
 {
     return _theta;
 }
 
-int GraphNode::id()
+int GraphNode::id() const
 {
     return _id;
 }
 
-int GraphNode::parentId()
+int GraphNode::parentId() const
 {
     return _parentId;
 }

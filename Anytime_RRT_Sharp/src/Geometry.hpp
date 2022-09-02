@@ -7,7 +7,7 @@
 
 struct HasArea
 {
-    virtual double area() = 0;
+    virtual double area() const = 0;
 };
 
 class DLL_EXPORT Point
@@ -18,9 +18,9 @@ class DLL_EXPORT Point
     public:
         Point();
         Point(double x, double y);
-        double x();
-        double y();
-        double distanceTo(Point p);
+        double x() const;
+        double y() const;
+        double distanceTo(Point p) const;
 };
 
 class DLL_EXPORT Line
@@ -34,10 +34,10 @@ class DLL_EXPORT Line
     public:
         Line();
         Line(Point p1, Point p2);
-        Point p1();
-        Point p2();
-        double length();
-        double dotProduct(Line line);
+        Point p1() const;
+        Point p2() const;
+        double length() const;
+        double dotProduct(Line line) const;
 };
 
 class DLL_EXPORT Circle : public Point, public HasArea
@@ -51,8 +51,8 @@ class DLL_EXPORT Circle : public Point, public HasArea
         Circle();
         Circle(Point p, double radius);
         Circle(double x, double y, double radius);
-        double radius();
-        double area();
+        double radius() const;
+        double area() const;
 };
 
 class DLL_EXPORT Rectangle
@@ -64,12 +64,12 @@ class DLL_EXPORT Rectangle
         Rectangle();
         Rectangle(Point minPoint, Point maxPoint);
         Rectangle(double minX, double minY, double maxX, double maxY);
-        Point minPoint();
-        Point maxPoint();
-        double minX();
-        double minY();
-        double maxX();
-        double maxY();
+        Point minPoint() const;
+        Point maxPoint() const;
+        double minX() const;
+        double minY() const;
+        double maxX() const;
+        double maxY() const;
 };
 
 class DLL_EXPORT State : public Point
@@ -81,7 +81,7 @@ class DLL_EXPORT State : public Point
         State();
         State(Point p, double theta);
         State(double x, double y, double theta);
-        double theta();
+        double theta() const;
 };
 
 class DLL_EXPORT GoalState : public Point
@@ -91,8 +91,8 @@ class DLL_EXPORT GoalState : public Point
     public:
         GoalState();
         GoalState(double x, double y, double radius, double theta);
-        double theta();
-        double radius();
+        double theta() const;
+        double radius() const;
 };
 
 class DLL_EXPORT GraphNode : public Point
@@ -109,11 +109,11 @@ class DLL_EXPORT GraphNode : public Point
         GraphNode();
         GraphNode(Point p, double theta, int id, int parentId);
         GraphNode(double x, double y, double theta, int id, int parentId);
-        double theta();
+        double theta() const;
         void setTheta(double theta);
-        int id();
+        int id() const;
         void setId(int id);
-        int parentId();
+        int parentId() const;
         void setParentId(int parentId);
 };
 
