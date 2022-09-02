@@ -13,6 +13,8 @@ class WorkspaceGraph : Rectangle
     Vehicle _vehicle;
     void _buildWorkspaceGraph();
     bool _goalRegionReached;
+    bool _obstacleInFreespace(double x, double y, double radius) const;
+    bool _obstacleInFreespace(Obstacle o) const;
 
     public:
 
@@ -27,8 +29,6 @@ class WorkspaceGraph : Rectangle
         bool nodeIsSafe(Point p);
         bool pathIsSafe(Point p1, Point p2);
         bool pathIsSafe(Point p1, vector<Point> points);
-        bool obstacleInFreespace(double x, double y, double radius) const;
-        bool obstacleInFreespace(Obstacle o) const;
         void addObstacle(double x, double y, double radius);
         void addObstacles(vector<Obstacle> obstacles);
         bool readObstaclesFromFile(const char* obstacleFile);
