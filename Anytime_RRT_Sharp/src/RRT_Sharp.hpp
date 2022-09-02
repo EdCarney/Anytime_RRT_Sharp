@@ -1,5 +1,6 @@
 #include <tuple>
 #include <chrono>
+#include "ARRTS.hpp"
 #include "ConfigspaceGraph.hpp"
 #include "ConfigspaceNode.hpp"
 #include "WorkspaceGraph.hpp"
