@@ -88,22 +88,6 @@ void ArrtsService::readStatesFromFile(FILE* file)
     setGoalState(goalX, goalY, goalTheta);
 }
 
-void ArrtsService::readLimitsFromFile(FILE* file)
-{
-    if (file == NULL)
-        throw runtime_error("NULL file pointer in readLimitsFromFile()");
-
-    double minX, minY, maxX, maxY;
-
-    // ignore first line (formatting)
-    fscanf(file, "%*[^\n]\n");
-    fscanf(file, "%lf,%lf", &minX, &minY);
-    fscanf(file, "%lf,%lf", &maxX, &maxY);
-    fclose(file);
-
-    setLimits(minX, minY, maxX, maxY);
-}
-
 void ArrtsService::readVehicleFromFile(FILE* file)
 {
     _vehicle = Vehicle(file);
@@ -132,11 +116,9 @@ void ArrtsService::readObstaclesFromFile(FILE* file)
 void ArrtsService::initializeFromDataDirectory(string dataDir)
 {
     string statesFile = dataDir + "/" + DEFAULT_STATES_FILE;
-    string limitsFile = dataDir + "/" + DEFAULT_LIMITS_FILE;
     string vehicleFile = dataDir + "/" + DEFAULT_VEHICLE_FILE;
     string obstaclesFile = dataDir + "/" + DEFAULT_OBSTACLES_FILE;
 
-    readLimitsFromFile(fopen(limitsFile.c_str(), "r"));
     readStatesFromFile(fopen(statesFile.c_str(), "r"));
     readVehicleFromFile(fopen(vehicleFile.c_str(), "r"));
     readObstaclesFromFile(fopen(obstaclesFile.c_str(), "r"));

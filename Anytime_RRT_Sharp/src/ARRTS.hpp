@@ -51,7 +51,6 @@ class DLL_EXPORT ArrtsService
         void addObstacles(const vector<double>& x, const vector<double>& y, const vector<double>& r);
 
         void readStatesFromFile(FILE* file);
-        void readLimitsFromFile(FILE* file);
         void readVehicleFromFile(FILE* file);
         void readObstaclesFromFile(FILE* file);
         void initializeFromDataDirectory(string dataDir);
