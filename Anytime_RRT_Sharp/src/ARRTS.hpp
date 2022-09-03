@@ -21,25 +21,30 @@ class DLL_EXPORT ArrtsService
         vector<Point> _vehicleOutline;
         State _startState;
         State _goalState;
+        Rectangle _limits;
         // ConfigspaceGraph _configspaceGraph;
         // WorkspaceGraph _workspaceGraph;
 
     public:
+        State goalState() const;
         void setGoalState(double x, double y, double theta);
-        State goalState();
 
+        State startState() const;
         void setStartState(double x, double y, double theta);
-        State startState();
 
+        Rectangle limits() const;
+        void setLimits(Point minPoint, Point maxPoint);
+        void setLimits(double minX, double minY, double maxX, double maxY);
+
+        vector<Obstacle> obstacles() const;
+        Obstacle obstacles(int i) const;
         void addObstacle(double x, double y, double r);
-        //TODO switch to vector
         void addObstacles(const vector<double>& x, const vector<double>& y, const vector<double>& r);
+
         void readObstaclesFromFile(FILE* file);
         void readStatesFromFile(FILE* file);
         void readLimitsFromFile(FILE* file);
         void initializeFromDataDirectory(string dataDir);
-        vector<Obstacle> obstacles();
-        Obstacle obstacles(int i);
 
         // runs ARRTS algorithm
         vector<State> calculatePath(double standoffRange, double positionBuffer, double freespaceBuffer);
