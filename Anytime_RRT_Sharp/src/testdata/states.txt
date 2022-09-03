@@ -1,0 +1,3 @@
+FORMAT: (startX, startY, startTheta) (goalX, goalY, goalTheta)
+1, 5, 0.5
+120, -30, -0.3
