@@ -126,7 +126,7 @@ vector<Point> Vehicle::offsetNodes()
 Point Vehicle::offsetNodes(int i)
 {
     if (i >= _offsetNodes.size() || i < 0)
-        throw runtime_error("Attempt to read index beyond array limits in GetOffsetNode");
+        throw runtime_error("Attempt to read index beyond array limits in offsetNodes()");
 
     return _offsetNodes[i];
 }

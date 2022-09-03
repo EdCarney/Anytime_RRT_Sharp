@@ -420,3 +420,68 @@ TEST(ARRTS_Limits, InitializeFromDataDirectoryAndGet)
 }
 
 #pragma endregion //ARRTS_Limits
+
+#pragma region ARRTS_Vehicle
+
+TEST(ARRTS_Vehicle, AddMultiplePoint_CheckVals)
+{
+    ArrtsService service;
+    vector<double> x = { 1, 2, 3 };
+    vector<double> y = { 4, 5, 6 };
+    service.setVehicle(x, y);
+
+    Point n1 = service.vehicle().offsetNodes(0);
+    Point n2 = service.vehicle().offsetNodes(1);
+    Point n3 = service.vehicle().offsetNodes(2);
+    
+    GTEST_ASSERT_EQ(n1.x(), 1);
+    GTEST_ASSERT_EQ(n2.x(), 2);
+    GTEST_ASSERT_EQ(n3.x(), 3);
+
+    GTEST_ASSERT_EQ(n1.y(), 4);
+    GTEST_ASSERT_EQ(n2.y(), 5);
+    GTEST_ASSERT_EQ(n3.y(), 6);
+}
+
+TEST(ARRTS_Vehicle, ReadVehicleFromFileAndGet)
+{
+    ArrtsService service;
+    FILE* file = fopen("./test/robot.txt", "r");
+    service.readVehicleFromFile(file);
+
+    Point n1 = service.vehicle().offsetNodes(0);
+    Point n2 = service.vehicle().offsetNodes(20);
+    Point n3 = service.vehicle().offsetNodes(36);
+
+    GTEST_ASSERT_EQ(service.vehicle().offsetNodes().size(), 37);
+
+    GTEST_ASSERT_EQ(n1.x(), 0);
+    GTEST_ASSERT_EQ(n2.x(), -1);
+    GTEST_ASSERT_EQ(n3.x(), -0.8);
+
+    GTEST_ASSERT_EQ(n1.y(), 0);
+    GTEST_ASSERT_EQ(n2.y(), 0);
+    GTEST_ASSERT_EQ(n3.y(), -0.3);
+}
+
+TEST(ARRTS_Vehicle, InitializeFromDataDirectoryAndGet)
+{
+    ArrtsService service;
+    service.initializeFromDataDirectory("./test");
+    
+    Point n1 = service.vehicle().offsetNodes(0);
+    Point n2 = service.vehicle().offsetNodes(20);
+    Point n3 = service.vehicle().offsetNodes(36);
+
+    GTEST_ASSERT_EQ(service.vehicle().offsetNodes().size(), 37);
+
+    GTEST_ASSERT_EQ(n1.x(), 0);
+    GTEST_ASSERT_EQ(n2.x(), -1);
+    GTEST_ASSERT_EQ(n3.x(), -0.8);
+
+    GTEST_ASSERT_EQ(n1.y(), 0);
+    GTEST_ASSERT_EQ(n2.y(), 0);
+    GTEST_ASSERT_EQ(n3.y(), -0.3);
+}
+
+#pragma endregion //ARRTS_Vehicle
