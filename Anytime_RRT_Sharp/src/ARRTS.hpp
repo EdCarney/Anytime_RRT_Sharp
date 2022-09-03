@@ -58,6 +58,9 @@ class DLL_EXPORT ArrtsService
         Vehicle vehicle() const;
         void setVehicle(vector<double> x, vector<double> y);
 
+        ConfigspaceGraph& configspaceGraph();
+        WorkspaceGraph& workspaceGraph();
+
         vector<Obstacle> obstacles() const;
         Obstacle obstacles(int i) const;
         void addObstacle(double x, double y, double r);
