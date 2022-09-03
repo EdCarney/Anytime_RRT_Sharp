@@ -72,20 +72,23 @@ function outputData(startX, startY, goalX, goalY, obsX, obsY, obsR, xMin, xMax, 
     
     obsFormat = "%f, %f, %f\n";
     obsFile = fullfile(folder, "obstacles.txt");
-    fid = fopen(obsFile, "w");
+    writelines("FORMAT: (x, y, radius)", obsFile);
+    fid = fopen(obsFile, "a+");
     fprintf(fid, obsFormat, obsX, obsY, obsR);
     fclose(fid);
 
     stateFormat = "%f, %f\n";
     stateFile = fullfile(folder, "states.txt");
-    fid = fopen(stateFile, "w");
+    writelines("FORMAT: (startX, startY) (goalX, goalY)", stateFile);
+    fid = fopen(stateFile, "a+");
     fprintf(fid, stateFormat, [startX, goalX], [startY, goalY]);
     fclose(fid);
 
     limitsFormat = "%f, %f\n";
     limitsFile = fullfile(folder, "limits.txt");
-    fid = fopen(limitsFile, "w");
-    fprintf(fid, limitsFormat, [xMin, xMax], [yMin, yMax]);
+    writelines("FORMAT: (xMin, yMin) (xMax, yMax)", limitsFile);
+    fid = fopen(limitsFile, "a+");
+    fprintf(fid, limitsFormat, [xMin, yMin], [xMax, yMax]);
     fclose(fid);
 end
 
