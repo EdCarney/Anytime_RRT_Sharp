@@ -43,6 +43,7 @@ void ArrtsService::addObstaclesFromFile(FILE* file)
         obsCount++;
 
     // get points
+    //TODO switch to vector
     double* x = new double[obsCount];
     double* y = new double[obsCount];
     double* r = new double[obsCount];
