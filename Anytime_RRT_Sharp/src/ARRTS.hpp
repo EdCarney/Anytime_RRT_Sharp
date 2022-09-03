@@ -14,6 +14,10 @@ using namespace std;
 #ifndef ARRTS_H
 #define ARRTS_H
 
+#define DEFAULT_OBSTACLES_FILE "obstacles.txt"
+#define DEFAULT_STATES_FILE "states.txt"
+#define DEFAULT_LIMITS_FILE "limits.txt"
+
 class DLL_EXPORT ArrtsService
 {
     private:

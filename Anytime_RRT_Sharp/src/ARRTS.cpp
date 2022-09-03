@@ -114,6 +114,17 @@ void ArrtsService::readLimitsFromFile(FILE* file)
     setLimits(minX, minY, maxX, maxY);
 }
 
+void ArrtsService::initializeFromDataDirectory(string dataDir)
+{
+    string statesFile = dataDir + "/" + DEFAULT_STATES_FILE;
+    string limitsFile = dataDir + "/" + DEFAULT_LIMITS_FILE;
+    string obstaclesFile = dataDir + "/" + DEFAULT_OBSTACLES_FILE;
+
+    readLimitsFromFile(fopen(limitsFile.c_str(), "r"));
+    readStatesFromFile(fopen(statesFile.c_str(), "r"));
+    readObstaclesFromFile(fopen(obstaclesFile.c_str(), "r"));
+}
+
 vector<State> ArrtsService::calculatePath(double standoffRange, double positionBuffer, double freespaceBuffer)
 {
     return vector<State>(0);
