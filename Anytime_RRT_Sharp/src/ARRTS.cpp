@@ -15,6 +15,11 @@ State ArrtsService::startState() const
     return _startState;
 }
 
+void ArrtsService::setStartState(double x, double y, double theta)
+{
+    _startState = { x, y, theta };
+}
+
 Rectangle ArrtsService::limits() const
 {
     return _limits;
@@ -30,9 +35,14 @@ void ArrtsService::setLimits(double minX, double minY, double maxX, double maxY)
     _limits = Rectangle(minX, minY, maxX, maxY);
 }
 
-void ArrtsService::setStartState(double x, double y, double theta)
+Vehicle ArrtsService::vehicle() const
 {
-    _startState = { x, y, theta };
+    return _vehicle;
+}
+
+void ArrtsService::setVehicle(vector<double> x, vector<double> y)
+{
+    _vehicle = Vehicle(x, y);
 }
 
 vector<Obstacle> ArrtsService::obstacles() const
@@ -58,26 +68,6 @@ void ArrtsService::addObstacles(const vector<double>& x, const vector<double>& y
     int size = x.size();
     for (int i = 0; i < size; ++i)
         _obstacles.push_back(Obstacle(x[i], y[i], r[i]));
-}
-
-void ArrtsService::readObstaclesFromFile(FILE* file)
-{
-    if (file == NULL)
-        throw runtime_error("NULL file pointer in readObstaclesFromFile()");
-
-    double xVal, yVal, rVal;
-    vector<double> x, y, r;
-
-    // ignore first line (formatting)
-    fscanf(file, "%*[^\n]\n");
-    while (fscanf(file, "%lf,%lf,%lf", &xVal, &yVal, &rVal) != EOF)
-    {
-        x.push_back(xVal);
-        y.push_back(yVal);
-        r.push_back(rVal);
-    }
-    fclose(file);
-    addObstacles(x, y, r);
 }
 
 void ArrtsService::readStatesFromFile(FILE* file)
@@ -114,14 +104,41 @@ void ArrtsService::readLimitsFromFile(FILE* file)
     setLimits(minX, minY, maxX, maxY);
 }
 
+void ArrtsService::readVehicleFromFile(FILE* file)
+{
+    _vehicle = Vehicle(file);
+}
+
+void ArrtsService::readObstaclesFromFile(FILE* file)
+{
+    if (file == NULL)
+        throw runtime_error("NULL file pointer in readObstaclesFromFile()");
+
+    double xVal, yVal, rVal;
+    vector<double> x, y, r;
+
+    // ignore first line (formatting)
+    fscanf(file, "%*[^\n]\n");
+    while (fscanf(file, "%lf,%lf,%lf", &xVal, &yVal, &rVal) != EOF)
+    {
+        x.push_back(xVal);
+        y.push_back(yVal);
+        r.push_back(rVal);
+    }
+    fclose(file);
+    addObstacles(x, y, r);
+}
+
 void ArrtsService::initializeFromDataDirectory(string dataDir)
 {
     string statesFile = dataDir + "/" + DEFAULT_STATES_FILE;
     string limitsFile = dataDir + "/" + DEFAULT_LIMITS_FILE;
+    string vehicleFile = dataDir + "/" + DEFAULT_VEHICLE_FILE;
     string obstaclesFile = dataDir + "/" + DEFAULT_OBSTACLES_FILE;
 
     readLimitsFromFile(fopen(limitsFile.c_str(), "r"));
     readStatesFromFile(fopen(statesFile.c_str(), "r"));
+    readVehicleFromFile(fopen(vehicleFile.c_str(), "r"));
     readObstaclesFromFile(fopen(obstaclesFile.c_str(), "r"));
 }
 
