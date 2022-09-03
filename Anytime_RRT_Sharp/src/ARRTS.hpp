@@ -32,6 +32,7 @@ class DLL_EXPORT ArrtsService
         State startState();
 
         void addObstacle(double x, double y, double r);
+        //TODO switch to vector
         void addObstacles(const double* x, const double* y, const double* r, int numObs);
         void addObstaclesFromFile(FILE* file);
         vector<Obstacle> obstacles();
