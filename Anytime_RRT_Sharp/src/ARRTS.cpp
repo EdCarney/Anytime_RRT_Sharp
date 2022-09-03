@@ -81,12 +81,18 @@ void ArrtsService::_configureConfigspace()
 
 void ArrtsService::_runAlgorithm()
 {
+    printf("ObsVol: %f, NumObs: %lu, Freespace: [%f, %f, %f, %f]\n", _obstacleVolume, obstacles().size(), limits().minPoint().x(), limits().minPoint().y(), limits().maxPoint().x(), limits().maxPoint().y());
+    printf("UAV Location: %f, %f, %f\n", startState().x(), startState().y(), startState().theta());
+    printf("Root Node:    %f, %f, %f\n", goalState().x(), goalState().y(), goalState().theta());
+
     ConfigspaceNode tempNode, parentNode, newNode;
     vector<ConfigspaceNode> neighbors;
     bool goalRegionReached = false;
 
     int count = 0, tempId = 0;
     double epsilon = 10.0;
+
+    srand(time(NULL));
 
     auto start = high_resolution_clock::now();
 
@@ -139,6 +145,7 @@ void ArrtsService::_runAlgorithm()
 
     // find the best node in the goal region
     ConfigspaceNode finalNode = _findBestNode();
+    _getFinalPath();
 
     // print all the results to files
     printf("Total number of points: %lu\n", _configspaceGraph.nodes.size());
@@ -189,6 +196,22 @@ void ArrtsService::_tryConnectToBestNeighbor(vector<ConfigspaceNode>& neighbors,
         parentNode = bestNeighbor;
         _configspaceGraph.removeNode(neighbors, bestNeighbor);
     }
+}
+
+void ArrtsService::_getFinalPath()
+{
+    auto node = _findBestNode();
+
+    _path.clear();
+    _path.push_back(node);
+
+    while (node.parentId())
+    {
+        node = _configspaceGraph.nodes[node.parentId()];
+        _path.push_back(node);
+    }
+
+    _path.push_back(_configspaceGraph.nodes[0]);
 }
 
 bool ArrtsService::_compareNodes(ConfigspaceNode n1, ConfigspaceNode n2)

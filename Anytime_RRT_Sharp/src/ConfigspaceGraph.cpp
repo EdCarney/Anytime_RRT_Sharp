@@ -167,7 +167,7 @@ void ConfigspaceGraph::printData(ConfigspaceNode finalNode, int probNum)
         outputPathFile << currentNode.x() << ", " << currentNode.y() << ", " << currentNode.theta() << "\n";
         currentNode = nodes[currentNode.parentId()];
     }
-    outputPathFile << nodes[1].x() << ", " << nodes[1].y() << ", " << nodes[1].theta() << "\n";
+    outputPathFile << nodes[0].x() << ", " << nodes[0].y() << ", " << nodes[0].theta() << "\n";
 
     printf("Printing nodes to nodes_%d.txt.\n", probNum);
     printf("Printing edges to edges_%d.txt.\n", probNum);
