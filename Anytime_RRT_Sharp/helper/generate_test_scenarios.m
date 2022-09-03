@@ -77,16 +77,16 @@ function outputData(startX, startY, goalX, goalY, obsX, obsY, obsR, xMin, xMax, 
     fprintf(fid, obsFormat, obsX, obsY, obsR);
     fclose(fid);
 
-    stateFormat = "%f, %f\n";
+    stateFormat = "%f, %f, %f\n";
     stateFile = fullfile(folder, "states.txt");
-    writelines("FORMAT: (startX, startY) (goalX, goalY)", stateFile);
+    writelines("FORMAT: (startX, startY, startTheta) (goalX, goalY, goalTheta)", stateFile);
     fid = fopen(stateFile, "a+");
-    fprintf(fid, stateFormat, [startX, goalX], [startY, goalY]);
+    fprintf(fid, stateFormat, [startX, goalX], [startY, goalY], [0, 0]);
     fclose(fid);
 
     limitsFormat = "%f, %f\n";
     limitsFile = fullfile(folder, "limits.txt");
-    writelines("FORMAT: (xMin, yMin) (xMax, yMax)", limitsFile);
+    writelines(" ", limitsFile);
     fid = fopen(limitsFile, "a+");
     fprintf(fid, limitsFormat, [xMin, yMin], [xMax, yMax]);
     fclose(fid);
