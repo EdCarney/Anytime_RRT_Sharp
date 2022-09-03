@@ -13,3 +13,5 @@ high_fidelity_path*.csv
 bin
 build
 Info.plist
+Anytime_RRT_Sharp/helper/*.asv
+Anytime_RRT_Sharp/helper/testData_*
