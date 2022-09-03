@@ -12,7 +12,7 @@ int main()
 
     service.setStartState(5, 60, -M_PI / 2.0);   // gate position
     service.setGoalState(100, 60, 0);           // uav position
-    service.addObstaclesFromFile(obstacleFile);
+    service.readObstaclesFromFile(obstacleFile);
     Vehicle vehicle(vehicleFile);
 
     const double standOffRange = 5.0;

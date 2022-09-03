@@ -73,20 +73,20 @@ TEST(ARRTS_Obstacles, AddOneObstacle_CheckVal)
 TEST(ARRTS_Obstacles, AddMultipleObstacle_CheckNum)
 {
     ArrtsService service;
-    const double x[] = { 1, 2, 3 };
-    const double y[] = { 1, 2, 3 };
-    const double r[] = { 1, 2, 3 };
-    service.addObstacles(x, y, r, 3);
+    vector<double> x = { 1, 2, 3 };
+    vector<double> y = { 1, 2, 3 };
+    vector<double> r = { 1, 2, 3 };
+    service.addObstacles(x, y, r);
     GTEST_ASSERT_EQ(service.obstacles().size(), 3);
 }
 
 TEST(ARRTS_Obstacles, AddMultipleObstacle_CheckVals)
 {
     ArrtsService service;
-    const double x[] = { 1, 2, 3 };
-    const double y[] = { 4, 5, 6 };
-    const double r[] = { 7, 8, 9 };
-    service.addObstacles(x, y, r, 3);
+    vector<double> x = { 1, 2, 3 };
+    vector<double> y = { 4, 5, 6 };
+    vector<double> r = { 7, 8, 9 };
+    service.addObstacles(x, y, r);
 
     Obstacle obs1 = service.obstacles(0);
     Obstacle obs2 = service.obstacles(1);
@@ -135,28 +135,28 @@ TEST(ARRTS_Obstacles, AddSingleThenSingleObstacle_CheckVals)
 TEST(ARRTS_Obstacles, AddMultipleThenMultipleObstacle_CheckNum)
 {
     ArrtsService service;
-    const double x1[] = { 1, 2 };
-    const double y1[] = { 1, 2 };
-    const double r1[] = { 1, 2 };
-    const double x2[] = { 1, 2 };
-    const double y2[] = { 1, 2 };
-    const double r2[] = { 1, 2 };
-    service.addObstacles(x1, y1, r1, 2);
-    service.addObstacles(x2, y2, r2, 2);
+    vector<double> x1 = { 1, 2 };
+    vector<double> y1 = { 1, 2 };
+    vector<double> r1 = { 1, 2 };
+    vector<double> x2 = { 1, 2 };
+    vector<double> y2 = { 1, 2 };
+    vector<double> r2 = { 1, 2 };
+    service.addObstacles(x1, y1, r1);
+    service.addObstacles(x2, y2, r2);
     GTEST_ASSERT_EQ(service.obstacles().size(), 4);
 }
 
 TEST(ARRTS_Obstacles, AddMultipleThenMultipleObstacle_CheckVals)
 {
     ArrtsService service;
-    const double x1[] = { 1, 2 };
-    const double y1[] = { 3, 4 };
-    const double r1[] = { 5, 6 };
-    const double x2[] = { 7, 8 };
-    const double y2[] = { 9, 10 };
-    const double r2[] = { 11, 12 };
-    service.addObstacles(x1, y1, r1, 2);
-    service.addObstacles(x2, y2, r2, 2);
+    vector<double> x1 = { 1, 2 };
+    vector<double> y1 = { 3, 4 };
+    vector<double> r1 = { 5, 6 };
+    vector<double> x2 = { 7, 8 };
+    vector<double> y2 = { 9, 10 };
+    vector<double> r2 = { 11, 12 };
+    service.addObstacles(x1, y1, r1);
+    service.addObstacles(x2, y2, r2);
     
     Obstacle obs1 = service.obstacles(0);
     Obstacle obs2 = service.obstacles(1);
@@ -183,10 +183,10 @@ TEST(ARRTS_Obstacles, AddSingleThenMultipleObstacle_CheckNum)
 {
     ArrtsService service;
     service.addObstacle(1, 2, 3);
-    const double x[] = { 1, 2, 3 };
-    const double y[] = { 1, 2, 3 };
-    const double r[] = { 1, 2, 3 };
-    service.addObstacles(x, y, r, 3);
+    vector<double> x = { 1, 2, 3 };
+    vector<double> y = { 1, 2, 3 };
+    vector<double> r = { 1, 2, 3 };
+    service.addObstacles(x, y, r);
     GTEST_ASSERT_EQ(service.obstacles().size(), 4);
 }
 
@@ -194,10 +194,10 @@ TEST(ARRTS_Obstacles, AddSingleThenMultipleObstacle_CheckVals)
 {
     ArrtsService service;
     service.addObstacle(1, 2, 3);
-    const double x[] = { 4, 5, 6 };
-    const double y[] = { 7, 8, 9 };
-    const double r[] = { 10, 11, 12 };
-    service.addObstacles(x, y, r, 3);
+    vector<double> x = { 4, 5, 6 };
+    vector<double> y = { 7, 8, 9 };
+    vector<double> r = { 10, 11, 12 };
+    service.addObstacles(x, y, r);
     
     Obstacle obs1 = service.obstacles(0);
     Obstacle obs2 = service.obstacles(1);
@@ -223,10 +223,10 @@ TEST(ARRTS_Obstacles, AddSingleThenMultipleObstacle_CheckVals)
 TEST(ARRTS_Obstacles, AddMultipleThenSingleObstacle_CheckNum)
 {
     ArrtsService service;
-    const double x[] = { 1, 2, 3 };
-    const double y[] = { 1, 2, 3 };
-    const double r[] = { 1, 2, 3 };
-    service.addObstacles(x, y, r, 3);
+    vector<double> x = { 1, 2, 3 };
+    vector<double> y = { 1, 2, 3 };
+    vector<double> r = { 1, 2, 3 };
+    service.addObstacles(x, y, r);
     service.addObstacle(1, 2, 3);
     GTEST_ASSERT_EQ(service.obstacles().size(), 4);
 }
@@ -234,10 +234,10 @@ TEST(ARRTS_Obstacles, AddMultipleThenSingleObstacle_CheckNum)
 TEST(ARRTS_Obstacles, AddMultipleThenSingleObstacle_CheckVals)
 {
     ArrtsService service;
-    const double x[] = { 4, 5, 6 };
-    const double y[] = { 7, 8, 9 };
-    const double r[] = { 10, 11, 12 };
-    service.addObstacles(x, y, r, 3);
+    vector<double> x = { 4, 5, 6 };
+    vector<double> y = { 7, 8, 9 };
+    vector<double> r = { 10, 11, 12 };
+    service.addObstacles(x, y, r);
     service.addObstacle(1, 2, 3);
     
     Obstacle obs1 = service.obstacles(0);
@@ -265,7 +265,7 @@ TEST(ARRTS_Obstacles, AddFromFile_CheckNum)
 {
     ArrtsService service;
     FILE* file = fopen("./test/obstacles.txt", "r");
-    service.addObstaclesFromFile(file);
+    service.readObstaclesFromFile(file);
 
     GTEST_ASSERT_EQ(service.obstacles().size(), 23);
 }
@@ -274,7 +274,7 @@ TEST(ARRTS_Obstacles, AddFromFile_CheckVals)
 {
     ArrtsService service;
     FILE* file = fopen("./test/obstacles.txt", "r");
-    service.addObstaclesFromFile(file);
+    service.readObstaclesFromFile(file);
 
     Obstacle obs1 = service.obstacles(0);
     Obstacle obs2 = service.obstacles(11);

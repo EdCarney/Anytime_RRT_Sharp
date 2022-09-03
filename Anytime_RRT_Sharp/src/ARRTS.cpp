@@ -25,42 +25,41 @@ void ArrtsService::addObstacle(double x, double y, double radius)
     _obstacles.push_back(Obstacle(x, y, radius));
 }
 
-void ArrtsService::addObstacles(const double* x, const double* y, const double* radius, int numObs)
+void ArrtsService::addObstacles(const vector<double>& x, const vector<double>& y, const vector<double>& r)
 {
-    for (int i = 0; i < numObs; ++i)
-        _obstacles.push_back(Obstacle(x[i], y[i], radius[i]));
+    int size = x.size();
+    for (int i = 0; i < size; ++i)
+        _obstacles.push_back(Obstacle(x[i], y[i], r[i]));
 }
 
-void ArrtsService::addObstaclesFromFile(FILE* file)
+void ArrtsService::readObstaclesFromFile(FILE* file)
 {
     if (file == NULL)
         throw runtime_error("NULL file pointer in AddObstaclesFromFile");
 
-    // get num of points for allocation
-    int obsCount = 0;
+    // ignore first line (formatting)
+    fscanf(file, "%*[^\n]\n");
+
     double xVal, yVal, rVal;
+    vector<double> x, y, r;
     while (fscanf(file, "%lf,%lf,%lf", &xVal, &yVal, &rVal) != EOF)
-        obsCount++;
-
-    // get points
-    //TODO switch to vector
-    double* x = new double[obsCount];
-    double* y = new double[obsCount];
-    double* r = new double[obsCount];
-    rewind(file);
-    for (int i = 0; i < obsCount; ++i)
     {
-        fscanf(file, "%lf,%lf,%lf", &xVal, &yVal, &rVal);
-        x[i] = xVal;
-        y[i] = yVal;
-        r[i] = rVal;
+        x.push_back(xVal);
+        y.push_back(yVal);
+        r.push_back(rVal);
     }
-
-    // close file
     fclose(file);
+    addObstacles(x, y, r);
+}
 
-    // add points
-    addObstacles(x, y, r, obsCount);
+void ArrtsService::readStatesFromFile(FILE* file)
+{
+    return;
+}
+
+void ArrtsService::readLimitsFromFile(FILE* file)
+{
+    return;
 }
 
 vector<Obstacle> ArrtsService::obstacles()
