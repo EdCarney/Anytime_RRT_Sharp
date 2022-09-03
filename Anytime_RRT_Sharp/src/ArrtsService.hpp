@@ -15,8 +15,8 @@
 using namespace std;
 using namespace std::chrono;
 
-#ifndef ARRTS_H
-#define ARRTS_H
+#ifndef ARRTS_SERVICE_H
+#define ARRTS_SERVICE_H
 
 #define DEFAULT_STATES_FILE "states.txt"
 #define DEFAULT_VEHICLE_FILE "robot.txt"
