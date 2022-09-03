@@ -34,6 +34,15 @@ TEST(ARRTS_StartState, ReadStatesFromFileAndGetStart)
     GTEST_ASSERT_EQ(service.startState().theta(), 0.5);
 }
 
+TEST(ARRTS_StartState, InitializeFromDataDirectoryAndGet)
+{
+    ArrtsService service;
+    service.initializeFromDataDirectory("./test");
+    GTEST_ASSERT_EQ(service.startState().x(), 1);
+    GTEST_ASSERT_EQ(service.startState().y(), 5);
+    GTEST_ASSERT_EQ(service.startState().theta(), 0.5);
+}
+
 #pragma endregion //ARRTS_StartState
 
 #pragma region ARRTS_GoalState
@@ -64,6 +73,15 @@ TEST(ARRTS_GoalState, ReadStatesFromFileAndGetGoal)
     ArrtsService service;
     FILE* file = fopen("./test/states.txt", "r");
     service.readStatesFromFile(file);
+    GTEST_ASSERT_EQ(service.goalState().x(), 120);
+    GTEST_ASSERT_EQ(service.goalState().y(), -30);
+    GTEST_ASSERT_EQ(service.goalState().theta(), -0.3);
+}
+
+TEST(ARRTS_GoalState, InitializeFromDataDirectoryAndGet)
+{
+    ArrtsService service;
+    service.initializeFromDataDirectory("./test");
     GTEST_ASSERT_EQ(service.goalState().x(), 120);
     GTEST_ASSERT_EQ(service.goalState().y(), -30);
     GTEST_ASSERT_EQ(service.goalState().theta(), -0.3);
@@ -332,6 +350,28 @@ TEST(ARRTS_Obstacles, GetSecondObstacleWhenOne)
     EXPECT_ANY_THROW(service.obstacles(1));
 }
 
+TEST(ARRTS_Obstacles, InitializeFromDataDirectoryAndGet)
+{
+    ArrtsService service;
+    service.initializeFromDataDirectory("./test");
+    
+    Obstacle obs1 = service.obstacles(0);
+    Obstacle obs2 = service.obstacles(11);
+    Obstacle obs3 = service.obstacles(22);
+
+    GTEST_ASSERT_EQ(obs1.x(), 80);
+    GTEST_ASSERT_EQ(obs2.x(), 35);
+    GTEST_ASSERT_EQ(obs3.x(), 60);
+
+    GTEST_ASSERT_EQ(obs1.y(), 40);
+    GTEST_ASSERT_EQ(obs2.y(), 80);
+    GTEST_ASSERT_EQ(obs3.y(), 100);
+
+    GTEST_ASSERT_EQ(obs1.radius(), 8);
+    GTEST_ASSERT_EQ(obs2.radius(), 8);
+    GTEST_ASSERT_EQ(obs3.radius(), 8);
+}
+
 #pragma endregion //ARRTS_Obstacles
 
 #pragma region ARRTS_Limits
@@ -363,6 +403,16 @@ TEST(ARRTS_Limits, ReadLimitsFromFileAndGet)
     ArrtsService service;
     FILE* file = fopen("./test/limits.txt", "r");
     service.readLimitsFromFile(file);
+    GTEST_ASSERT_EQ(service.limits().minPoint().x(), -1);
+    GTEST_ASSERT_EQ(service.limits().minPoint().y(), -3);
+    GTEST_ASSERT_EQ(service.limits().maxPoint().x(), 10);
+    GTEST_ASSERT_EQ(service.limits().maxPoint().y(), 5);
+}
+
+TEST(ARRTS_Limits, InitializeFromDataDirectoryAndGet)
+{
+    ArrtsService service;
+    service.initializeFromDataDirectory("./test");
     GTEST_ASSERT_EQ(service.limits().minPoint().x(), -1);
     GTEST_ASSERT_EQ(service.limits().minPoint().y(), -3);
     GTEST_ASSERT_EQ(service.limits().maxPoint().x(), 10);
