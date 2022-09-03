@@ -72,18 +72,6 @@ class DLL_EXPORT Rectangle
         double maxY() const;
 };
 
-class DLL_EXPORT State : public Point
-{
-    protected:
-        double _theta;
-
-    public:
-        State();
-        State(Point p, double theta);
-        State(double x, double y, double theta);
-        double theta() const;
-};
-
 class DLL_EXPORT GoalState : public Point
 {
     double _theta, _radius;
@@ -115,6 +103,19 @@ class DLL_EXPORT GraphNode : public Point
         void setId(int id);
         int parentId() const;
         void setParentId(int parentId);
+};
+
+class DLL_EXPORT State : public Point
+{
+    protected:
+        double _theta;
+
+    public:
+        State();
+        State(GraphNode node);
+        State(Point p, double theta);
+        State(double x, double y, double theta);
+        double theta() const;
 };
 
 class DLL_EXPORT Edge

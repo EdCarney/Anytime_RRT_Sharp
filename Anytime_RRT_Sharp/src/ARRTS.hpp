@@ -46,6 +46,7 @@ class DLL_EXPORT ArrtsService
         void _runAlgorithm();
         void _rewireNodes(vector<ConfigspaceNode>& remainingNodes, ConfigspaceNode& addedNode);
         void _tryConnectToBestNeighbor(vector<ConfigspaceNode>& neighbors, ConfigspaceNode& newNode, ConfigspaceNode& parentNode);
+        void _getFinalPath();
         bool _compareNodes(ConfigspaceNode n1, ConfigspaceNode n2);
         ConfigspaceNode _findBestNode();
 

@@ -164,6 +164,13 @@ State::State()
     _theta = 0;
 }
 
+State::State(GraphNode node)
+{
+    _x = node.x();
+    _y = node.y();
+    _theta = node.theta();
+}
+
 State::State(Point p, double theta)
 {
     _x = p.x();
