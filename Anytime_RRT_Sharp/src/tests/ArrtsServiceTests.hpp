@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
-#include "../ARRTS.hpp"
+#include "../ArrtsService.hpp"
 
-#pragma region ARRTS_StartState
+#pragma region ArrtsService_StartState
 
-TEST(ARRTS_StartState, SetAndGet)
+TEST(ArrtsService_StartState, SetAndGet)
 {
     ArrtsService service;
     service.setStartState(5, 6, 7);
@@ -13,7 +13,7 @@ TEST(ARRTS_StartState, SetAndGet)
     GTEST_ASSERT_EQ(state.theta(), 7);
 }
 
-TEST(ARRTS_StartState, SetUpdateAndGet)
+TEST(ArrtsService_StartState, SetUpdateAndGet)
 {
     ArrtsService service;
     service.setStartState(5, 6, 7);
@@ -24,7 +24,7 @@ TEST(ARRTS_StartState, SetUpdateAndGet)
     GTEST_ASSERT_EQ(state.theta(), 10);
 }
 
-TEST(ARRTS_StartState, ReadStatesFromFileAndGetStart)
+TEST(ArrtsService_StartState, ReadStatesFromFileAndGetStart)
 {
     ArrtsService service;
     FILE* file = fopen("./test/states.txt", "r");
@@ -34,7 +34,7 @@ TEST(ARRTS_StartState, ReadStatesFromFileAndGetStart)
     GTEST_ASSERT_EQ(service.startState().theta(), 0);
 }
 
-TEST(ARRTS_StartState, InitializeFromDataDirectoryAndGet)
+TEST(ArrtsService_StartState, InitializeFromDataDirectoryAndGet)
 {
     ArrtsService service;
     service.initializeFromDataDirectory("./test");
@@ -43,11 +43,11 @@ TEST(ARRTS_StartState, InitializeFromDataDirectoryAndGet)
     GTEST_ASSERT_EQ(service.startState().theta(), 0);
 }
 
-#pragma endregion //ARRTS_StartState
+#pragma endregion //ArrtsService_StartState
 
-#pragma region ARRTS_GoalState
+#pragma region ArrtsService_GoalState
 
-TEST(ARRTS_GoalState, SetAndGet)
+TEST(ArrtsService_GoalState, SetAndGet)
 {
     ArrtsService service;
     service.setGoalState(5, 6, 7);
@@ -57,7 +57,7 @@ TEST(ARRTS_GoalState, SetAndGet)
     GTEST_ASSERT_EQ(state.theta(), 7);
 }
 
-TEST(ARRTS_GoalState, SetUpdateAndGet)
+TEST(ArrtsService_GoalState, SetUpdateAndGet)
 {
     ArrtsService service;
     service.setGoalState(5, 6, 7);
@@ -68,7 +68,7 @@ TEST(ARRTS_GoalState, SetUpdateAndGet)
     GTEST_ASSERT_EQ(state.theta(), 10);
 }
 
-TEST(ARRTS_GoalState, ReadStatesFromFileAndGetGoal)
+TEST(ArrtsService_GoalState, ReadStatesFromFileAndGetGoal)
 {
     ArrtsService service;
     FILE* file = fopen("./test/states.txt", "r");
@@ -78,7 +78,7 @@ TEST(ARRTS_GoalState, ReadStatesFromFileAndGetGoal)
     GTEST_ASSERT_EQ(service.goalState().theta(), 0);
 }
 
-TEST(ARRTS_GoalState, InitializeFromDataDirectoryAndGet)
+TEST(ArrtsService_GoalState, InitializeFromDataDirectoryAndGet)
 {
     ArrtsService service;
     service.initializeFromDataDirectory("./test");
@@ -87,18 +87,18 @@ TEST(ARRTS_GoalState, InitializeFromDataDirectoryAndGet)
     GTEST_ASSERT_EQ(service.goalState().theta(), 0);
 }
 
-#pragma endregion //ARRTS_GoalState
+#pragma endregion //ArrtsService_GoalState
 
-#pragma region ARRTS_Obstacles
+#pragma region ArrtsService_Obstacles
 
-TEST(ARRTS_Obstacles, AddOneObstacle_CheckNum)
+TEST(ArrtsService_Obstacles, AddOneObstacle_CheckNum)
 {
     ArrtsService service;
     service.addObstacle(1, 1, 1);
     GTEST_ASSERT_EQ(service.obstacles().size(), 1);
 }
 
-TEST(ARRTS_Obstacles, AddOneObstacle_CheckVal)
+TEST(ArrtsService_Obstacles, AddOneObstacle_CheckVal)
 {
     ArrtsService service;
     service.addObstacle(1, 2, 3);
@@ -108,7 +108,7 @@ TEST(ARRTS_Obstacles, AddOneObstacle_CheckVal)
     GTEST_ASSERT_EQ(obs.radius(), 3);
 }
 
-TEST(ARRTS_Obstacles, AddMultipleObstacle_CheckNum)
+TEST(ArrtsService_Obstacles, AddMultipleObstacle_CheckNum)
 {
     ArrtsService service;
     vector<double> x = { 1, 2, 3 };
@@ -118,7 +118,7 @@ TEST(ARRTS_Obstacles, AddMultipleObstacle_CheckNum)
     GTEST_ASSERT_EQ(service.obstacles().size(), 3);
 }
 
-TEST(ARRTS_Obstacles, AddMultipleObstacle_CheckVals)
+TEST(ArrtsService_Obstacles, AddMultipleObstacle_CheckVals)
 {
     ArrtsService service;
     vector<double> x = { 1, 2, 3 };
@@ -143,7 +143,7 @@ TEST(ARRTS_Obstacles, AddMultipleObstacle_CheckVals)
     GTEST_ASSERT_EQ(obs3.radius(), 9);
 }
 
-TEST(ARRTS_Obstacles, AddSingleThenSingleObstacle_CheckNum)
+TEST(ArrtsService_Obstacles, AddSingleThenSingleObstacle_CheckNum)
 {
     ArrtsService service;
     service.addObstacle(1, 2, 3);
@@ -151,7 +151,7 @@ TEST(ARRTS_Obstacles, AddSingleThenSingleObstacle_CheckNum)
     GTEST_ASSERT_EQ(service.obstacles().size(), 2);
 }
 
-TEST(ARRTS_Obstacles, AddSingleThenSingleObstacle_CheckVals)
+TEST(ArrtsService_Obstacles, AddSingleThenSingleObstacle_CheckVals)
 {
     ArrtsService service;
     service.addObstacle(1, 2, 3);
@@ -170,7 +170,7 @@ TEST(ARRTS_Obstacles, AddSingleThenSingleObstacle_CheckVals)
     GTEST_ASSERT_EQ(obs2.radius(), 6);
 }
 
-TEST(ARRTS_Obstacles, AddMultipleThenMultipleObstacle_CheckNum)
+TEST(ArrtsService_Obstacles, AddMultipleThenMultipleObstacle_CheckNum)
 {
     ArrtsService service;
     vector<double> x1 = { 1, 2 };
@@ -184,7 +184,7 @@ TEST(ARRTS_Obstacles, AddMultipleThenMultipleObstacle_CheckNum)
     GTEST_ASSERT_EQ(service.obstacles().size(), 4);
 }
 
-TEST(ARRTS_Obstacles, AddMultipleThenMultipleObstacle_CheckVals)
+TEST(ArrtsService_Obstacles, AddMultipleThenMultipleObstacle_CheckVals)
 {
     ArrtsService service;
     vector<double> x1 = { 1, 2 };
@@ -217,7 +217,7 @@ TEST(ARRTS_Obstacles, AddMultipleThenMultipleObstacle_CheckVals)
     GTEST_ASSERT_EQ(obs4.radius(), 12);
 }
 
-TEST(ARRTS_Obstacles, AddSingleThenMultipleObstacle_CheckNum)
+TEST(ArrtsService_Obstacles, AddSingleThenMultipleObstacle_CheckNum)
 {
     ArrtsService service;
     service.addObstacle(1, 2, 3);
@@ -228,7 +228,7 @@ TEST(ARRTS_Obstacles, AddSingleThenMultipleObstacle_CheckNum)
     GTEST_ASSERT_EQ(service.obstacles().size(), 4);
 }
 
-TEST(ARRTS_Obstacles, AddSingleThenMultipleObstacle_CheckVals)
+TEST(ArrtsService_Obstacles, AddSingleThenMultipleObstacle_CheckVals)
 {
     ArrtsService service;
     service.addObstacle(1, 2, 3);
@@ -258,7 +258,7 @@ TEST(ARRTS_Obstacles, AddSingleThenMultipleObstacle_CheckVals)
     GTEST_ASSERT_EQ(obs4.radius(), 12);
 }
 
-TEST(ARRTS_Obstacles, AddMultipleThenSingleObstacle_CheckNum)
+TEST(ArrtsService_Obstacles, AddMultipleThenSingleObstacle_CheckNum)
 {
     ArrtsService service;
     vector<double> x = { 1, 2, 3 };
@@ -269,7 +269,7 @@ TEST(ARRTS_Obstacles, AddMultipleThenSingleObstacle_CheckNum)
     GTEST_ASSERT_EQ(service.obstacles().size(), 4);
 }
 
-TEST(ARRTS_Obstacles, AddMultipleThenSingleObstacle_CheckVals)
+TEST(ArrtsService_Obstacles, AddMultipleThenSingleObstacle_CheckVals)
 {
     ArrtsService service;
     vector<double> x = { 4, 5, 6 };
@@ -299,7 +299,7 @@ TEST(ARRTS_Obstacles, AddMultipleThenSingleObstacle_CheckVals)
     GTEST_ASSERT_EQ(obs4.radius(), 3);
 }
 
-TEST(ARRTS_Obstacles, AddFromFile_CheckNum)
+TEST(ArrtsService_Obstacles, AddFromFile_CheckNum)
 {
     ArrtsService service;
     FILE* file = fopen("./test/obstacles.txt", "r");
@@ -308,7 +308,7 @@ TEST(ARRTS_Obstacles, AddFromFile_CheckNum)
     GTEST_ASSERT_EQ(service.obstacles().size(), 23);
 }
 
-TEST(ARRTS_Obstacles, AddFromFile_CheckVals)
+TEST(ArrtsService_Obstacles, AddFromFile_CheckVals)
 {
     ArrtsService service;
     FILE* file = fopen("./test/obstacles.txt", "r");
@@ -331,30 +331,30 @@ TEST(ARRTS_Obstacles, AddFromFile_CheckVals)
     GTEST_ASSERT_EQ(obs3.radius(), 8);
 }
 
-TEST(ARRTS_Obstacles, GetFirstObstacleWhenNone)
+TEST(ArrtsService_Obstacles, GetFirstObstacleWhenNone)
 {
     ArrtsService service;
     EXPECT_ANY_THROW(service.obstacles(0));
 }
 
-TEST(ARRTS_Obstacles, GetNegativeObstacleWhenNone)
+TEST(ArrtsService_Obstacles, GetNegativeObstacleWhenNone)
 {
     ArrtsService service;
     EXPECT_ANY_THROW(service.obstacles(-1));
 }
 
-TEST(ARRTS_Obstacles, GetSecondObstacleWhenOne)
+TEST(ArrtsService_Obstacles, GetSecondObstacleWhenOne)
 {
     ArrtsService service;
     service.addObstacle(1, 2, 3);
     EXPECT_ANY_THROW(service.obstacles(1));
 }
 
-#pragma endregion //ARRTS_Obstacles
+#pragma endregion //ArrtsService_Obstacles
 
-#pragma region ARRTS_Limits
+#pragma region ArrtsService_Limits
 
-TEST(ARRTS_Limits, SetWithPointsAndGet)
+TEST(ArrtsService_Limits, SetWithPointsAndGet)
 {
     ArrtsService service;
     Point p1(1, 2), p2(3, 4);
@@ -365,7 +365,7 @@ TEST(ARRTS_Limits, SetWithPointsAndGet)
     GTEST_ASSERT_EQ(service.limits().maxPoint().y(), p2.y());
 }
 
-TEST(ARRTS_Limits, SetWithLimitsAndGet)
+TEST(ArrtsService_Limits, SetWithLimitsAndGet)
 {
     ArrtsService service;
     double minX = 2, minY = 3, maxX = 4, maxY = 5;
@@ -376,11 +376,11 @@ TEST(ARRTS_Limits, SetWithLimitsAndGet)
     GTEST_ASSERT_EQ(service.limits().maxPoint().y(), maxY);
 }
 
-#pragma endregion //ARRTS_Limits
+#pragma endregion //ArrtsService_Limits
 
-#pragma region ARRTS_Vehicle
+#pragma region ArrtsService_Vehicle
 
-TEST(ARRTS_Vehicle, AddMultiplePoint_CheckVals)
+TEST(ArrtsService_Vehicle, AddMultiplePoint_CheckVals)
 {
     ArrtsService service;
     vector<double> x = { 1, 2, 3 };
@@ -400,7 +400,7 @@ TEST(ARRTS_Vehicle, AddMultiplePoint_CheckVals)
     GTEST_ASSERT_EQ(n3.y(), 6);
 }
 
-TEST(ARRTS_Vehicle, ReadVehicleFromFileAndGet)
+TEST(ArrtsService_Vehicle, ReadVehicleFromFileAndGet)
 {
     ArrtsService service;
     FILE* file = fopen("./test/robot.txt", "r");
@@ -421,7 +421,7 @@ TEST(ARRTS_Vehicle, ReadVehicleFromFileAndGet)
     GTEST_ASSERT_EQ(n3.y(), -0.3);
 }
 
-TEST(ARRTS_Vehicle, InitializeFromDataDirectoryAndGet)
+TEST(ArrtsService_Vehicle, InitializeFromDataDirectoryAndGet)
 {
     ArrtsService service;
     service.initializeFromDataDirectory("./test");
@@ -441,4 +441,4 @@ TEST(ARRTS_Vehicle, InitializeFromDataDirectoryAndGet)
     GTEST_ASSERT_EQ(n3.y(), -0.3);
 }
 
-#pragma endregion //ARRTS_Vehicle
+#pragma endregion //ArrtsService_Vehicle
