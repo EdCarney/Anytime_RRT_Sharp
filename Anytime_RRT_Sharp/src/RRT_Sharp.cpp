@@ -6,14 +6,8 @@ using namespace std::chrono;
 int main()
 {
     ArrtsService service;
-    
-    FILE* obstacleFile = fopen("./test/obstacles.txt", "r");
-    FILE* vehicleFile = fopen("./test/simpleRobot.txt", "r");
 
-    service.setStartState(5, 60, -M_PI / 2.0);   // gate position
-    service.setGoalState(100, 60, 0);           // uav position
-    service.readObstaclesFromFile(obstacleFile);
-    Vehicle vehicle(vehicleFile);
+    service.initializeFromDataDirectory("./test");
 
     const double standOffRange = 5.0;
     const double uavGoalRadius = 2.5;
@@ -42,7 +36,7 @@ int main()
     tie(xMin, xMax, yMin, yMax) = calculateGraphLimits(G_workspace, gateNode, buffer);
     G_workspace.defineFreespace(xMin, yMin, xMax, yMax);
     G_workspace.addObstacles(service.obstacles());
-    G_workspace.setVehicle(vehicle);
+    G_workspace.setVehicle(service.vehicle());
 
     G_configspace.defineFreespace(xMin, yMin, thetaMin, xMax, yMax, thetaMax, dimension, G_workspace.obstacleVolume());
     G_configspace.addNode(gateNode);
