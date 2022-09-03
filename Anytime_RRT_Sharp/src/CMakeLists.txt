@@ -26,6 +26,8 @@ list(APPEND EXTRA_LIBS Obstacle)
 list(APPEND EXTRA_LIBS Geometry)
 list(APPEND EXTRA_LIBS ARRTS)
 
+list(APPEND TEST_LIBS ConfigspaceGraph)
+list(APPEND TEST_LIBS ConfigspaceNode)
 list(APPEND TEST_LIBS WorkspaceGraph)
 list(APPEND TEST_LIBS Vehicle)
 list(APPEND TEST_LIBS Obstacle)

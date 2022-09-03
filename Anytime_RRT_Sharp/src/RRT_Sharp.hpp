@@ -29,7 +29,3 @@ void tryConnectToBestNeighbor(ConfigspaceGraph& G_configspace, WorkspaceGraph& G
 // iterates through all nodes in the graphs and finds the node within
 // the goal region with the lowest cost-to-go
 ConfigspaceNode findBestNode(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_workspace);
-
-// calculates the absolute limites for the x and y graph coordinates based on the gateNode, graph
-// goal region, and buffer; returns a tuple of (xMin, xMax, yMin, yMax)
-tuple<double, double, double, double> calculateGraphLimits(WorkspaceGraph G_workspace, ConfigspaceNode gateNode, double buffer);

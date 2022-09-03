@@ -76,25 +76,26 @@ bool WorkspaceGraph::readObstaclesFromFile(const char* obstacleFile)
     return true;
 }
 
-double WorkspaceGraph::obstacleVolume() const
-{
-    double volume = 0.0;
-
-    for (Obstacle o : _obstacles)
-        volume += o.area();
-
-    return volume;
-}
-
 void WorkspaceGraph::setGoalRegion(double x, double y, double theta, double radius)
 {
     _goalRegion = GoalState(x, y, radius, theta);
+}
+
+void WorkspaceGraph::setGoalRegion(State goalState, double radius)
+{
+    _goalRegion = GoalState(goalState.x(), goalState.y(), radius, goalState.theta());
 }
 
 void WorkspaceGraph::defineFreespace(double minX, double minY, double maxX, double maxY)
 {
     _minPoint = Point(minX, minY);
     _maxPoint = Point(maxX, maxY);
+}
+
+void WorkspaceGraph::defineFreespace(Rectangle limits)
+{
+    _minPoint = limits.minPoint();
+    _maxPoint = limits.maxPoint();
 }
 
 bool WorkspaceGraph::_obstacleInFreespace(double x, double y, double radius) const
