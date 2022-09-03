@@ -37,12 +37,8 @@ class ConfigspaceGraph : Rectangle
         unordered_map<int, ConfigspaceNode> nodes;
         vector<Edge> edges;
 
-        // adds a node to the graph
-        // NOTE: this should be used for all other nodes
+        void setRootNode(State state);
         int addNode(ConfigspaceNode node);
-
-        // removes a node from a given array of nodes specified
-        // as a pointer array
         vector<ConfigspaceNode> removeNode(vector<ConfigspaceNode>& nodeVec, ConfigspaceNode nodeToRemove);
 
         void removeEdge(int parentId, int childId);
@@ -57,6 +53,7 @@ class ConfigspaceGraph : Rectangle
         // used when extending to a new node
         void defineFreespace(double minX, double minY, double minTheta, double maxX,
             double maxY, double maxTheta, int dimension, double obstacleVol);
+        void defineFreespace(Rectangle limits, int dimension, double obstacleVol);
 
         // print data from the graph for displaying
         void printData(ConfigspaceNode finalNode, int probNum = 1);

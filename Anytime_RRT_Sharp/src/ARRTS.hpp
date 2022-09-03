@@ -3,12 +3,12 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include "ConfigspaceGraph.hpp"
 #include "cppshrhelp.hpp"
-//#include "ConfigspaceGraph.hpp"
 #include "Geometry.hpp"
 #include "Obstacle.hpp"
 #include "Vehicle.hpp"
-//#include "WorkspaceGraph.hpp"
+#include "WorkspaceGraph.hpp"
 
 using namespace std;
 
@@ -16,25 +16,35 @@ using namespace std;
 #define ARRTS_H
 
 #define DEFAULT_STATES_FILE "states.txt"
-#define DEFAULT_LIMITS_FILE "limits.txt"
 #define DEFAULT_VEHICLE_FILE "robot.txt"
 #define DEFAULT_OBSTACLES_FILE "obstacles.txt"
 
 class DLL_EXPORT ArrtsService
 {
     private:
+        double _dimension = 2; // hard-coded
+        double _goalRadius, _obstacleVolume;
         State _startState;
         State _goalState;
         Rectangle _limits;
         Vehicle _vehicle;
         vector<Obstacle> _obstacles;
+        ConfigspaceGraph _configspaceGraph;
+        WorkspaceGraph _workspaceGraph;
 
+        void _calculateObstacleVolume();
         void _updateLimitsFromStates();
         void _removeObstaclesNotInLimits();
-        // ConfigspaceGraph _configspaceGraph;
-        // WorkspaceGraph _workspaceGraph;
+        void _configureWorkspace();
+        void _configureConfigspace();
 
     public:
+        //TEMP
+        double obstacleVolume();
+
+        ArrtsService();
+        ArrtsService(string dataDirectory);
+
         State goalState() const;
         void setGoalState(double x, double y, double theta);
 
@@ -56,10 +66,10 @@ class DLL_EXPORT ArrtsService
         void readStatesFromFile(FILE* file);
         void readVehicleFromFile(FILE* file);
         void readObstaclesFromFile(FILE* file);
-        void initializeFromDataDirectory(string dataDir);
+        void initializeFromDataDirectory(string dataDirectory);
 
         // runs ARRTS algorithm
-        vector<State> calculatePath(double standoffRange, double positionBuffer, double freespaceBuffer);
+        vector<State> calculatePath(double goalRadius);
 };
 
 #endif

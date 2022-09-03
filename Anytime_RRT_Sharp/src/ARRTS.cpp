@@ -1,5 +1,25 @@
 #include "ARRTS.hpp"
 
+ArrtsService::ArrtsService() { }
+
+ArrtsService::ArrtsService(string dataDirectory)
+{
+    initializeFromDataDirectory(dataDirectory);
+}
+
+//TEMP
+double ArrtsService::obstacleVolume()
+{
+    return _obstacleVolume;
+}
+
+void ArrtsService::_calculateObstacleVolume()
+{
+    _obstacleVolume = 0.0;
+    for (Obstacle o : _obstacles)
+        _obstacleVolume += o.area();
+}
+
 void ArrtsService::_updateLimitsFromStates()
 {
     double minX, maxX, minY, maxY;
@@ -42,6 +62,21 @@ void ArrtsService::_removeObstaclesNotInLimits()
         if (o.intersects(_limits))
             newObstacles.push_back(o);
     _obstacles = newObstacles;
+    _calculateObstacleVolume();
+}
+
+void ArrtsService::_configureWorkspace()
+{
+    _workspaceGraph.setGoalRegion(goalState(), _goalRadius);
+    _workspaceGraph.defineFreespace(limits());
+    _workspaceGraph.addObstacles(obstacles());
+    _workspaceGraph.setVehicle(vehicle());
+}
+
+void ArrtsService::_configureConfigspace()
+{
+    _configspaceGraph.defineFreespace(_limits, _dimension, _obstacleVolume);
+    _configspaceGraph.setRootNode(goalState());
 }
 
 State ArrtsService::goalState() const
@@ -105,6 +140,7 @@ Obstacle ArrtsService::obstacles(int i) const
 void ArrtsService::addObstacle(double x, double y, double radius)
 {
     _obstacles.push_back(Obstacle(x, y, radius));
+    _calculateObstacleVolume();
 }
 
 void ArrtsService::addObstacles(const vector<double>& x, const vector<double>& y, const vector<double>& r)
@@ -112,6 +148,7 @@ void ArrtsService::addObstacles(const vector<double>& x, const vector<double>& y
     int size = x.size();
     for (int i = 0; i < size; ++i)
         _obstacles.push_back(Obstacle(x[i], y[i], r[i]));
+    _calculateObstacleVolume();
 }
 
 void ArrtsService::readStatesFromFile(FILE* file)
@@ -157,11 +194,11 @@ void ArrtsService::readObstaclesFromFile(FILE* file)
     addObstacles(x, y, r);
 }
 
-void ArrtsService::initializeFromDataDirectory(string dataDir)
+void ArrtsService::initializeFromDataDirectory(string dataDirectory)
 {
-    string statesFile = dataDir + "/" + DEFAULT_STATES_FILE;
-    string vehicleFile = dataDir + "/" + DEFAULT_VEHICLE_FILE;
-    string obstaclesFile = dataDir + "/" + DEFAULT_OBSTACLES_FILE;
+    string statesFile = dataDirectory + "/" + DEFAULT_STATES_FILE;
+    string vehicleFile = dataDirectory + "/" + DEFAULT_VEHICLE_FILE;
+    string obstaclesFile = dataDirectory + "/" + DEFAULT_OBSTACLES_FILE;
 
     readStatesFromFile(fopen(statesFile.c_str(), "r"));
     readVehicleFromFile(fopen(vehicleFile.c_str(), "r"));
@@ -171,7 +208,10 @@ void ArrtsService::initializeFromDataDirectory(string dataDir)
     _removeObstaclesNotInLimits();
 }
 
-vector<State> ArrtsService::calculatePath(double standoffRange, double positionBuffer, double freespaceBuffer)
+vector<State> ArrtsService::calculatePath(double goalRadius)
 {
+    _goalRadius = goalRadius;
+    _configureWorkspace();
+    _configureConfigspace();
     return vector<State>(0);
 }

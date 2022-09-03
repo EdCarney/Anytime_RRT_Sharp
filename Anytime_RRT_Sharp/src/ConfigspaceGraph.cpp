@@ -42,6 +42,21 @@ void ConfigspaceGraph::defineFreespace(double minX, double minY, double newMinTh
     gamma_star = 2 * pow((1.0 + 1.0 / dim) * (freeSpaceMeasure / (zeta * dim)), 1.0 / float(dim));
 }
 
+void ConfigspaceGraph::defineFreespace(Rectangle limits, int dimension, double obstacleVol)
+{
+    // set graph parameters
+    _minPoint = limits.minPoint();
+    _maxPoint = limits.maxPoint();
+    minTheta = 0;
+    maxTheta = 2.0 * M_PI;
+
+    // compute dependent variables
+    dim = dimension;
+    zeta = 3.14159;
+    freeSpaceMeasure = ((limits.maxPoint().x() - limits.minPoint().x()) * (limits.maxPoint().y() - limits.minPoint().y())) - obstacleVol;
+    gamma_star = 2 * pow((1.0 + 1.0 / dim) * (freeSpaceMeasure / (zeta * dim)), 1.0 / float(dim));
+}
+
 void ConfigspaceGraph::addEdge(GraphNode parentNode, GraphNode newNode)
 {
     edges.push_back(Edge(parentNode, newNode));
@@ -224,6 +239,14 @@ ConfigspaceNode ConfigspaceGraph::findBestNeighbor(ConfigspaceNode newNode, vect
         }
     }
 	return bestNeighbor;
+}
+
+void ConfigspaceGraph::setRootNode(State state)
+{
+    nodes.clear();
+    _parentChildMap.clear();
+    numNodeInd = 0;
+    addNode(ConfigspaceNode(state.x(), state.y(), state.theta(), numNodeInd, 0, 0));
 }
 
 int ConfigspaceGraph::addNode(ConfigspaceNode node)

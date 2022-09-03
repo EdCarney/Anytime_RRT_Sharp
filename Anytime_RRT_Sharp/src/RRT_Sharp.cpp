@@ -5,9 +5,7 @@ using namespace std::chrono;
 
 int main()
 {
-    ArrtsService service;
-
-    service.initializeFromDataDirectory("./test");
+    ArrtsService service("./test");
 
     const double standOffRange = 5.0;
     const double uavGoalRadius = 2.5;
@@ -31,10 +29,10 @@ int main()
     G_workspace.addObstacles(service.obstacles());
     G_workspace.setVehicle(service.vehicle());
 
-    G_configspace.defineFreespace(service.limits().minPoint().x(), service.limits().minPoint().y(), thetaMin, service.limits().maxPoint().x(), service.limits().maxPoint().y(), thetaMax, dimension, G_workspace.obstacleVolume());
+    G_configspace.defineFreespace(service.limits().minPoint().x(), service.limits().minPoint().y(), thetaMin, service.limits().maxPoint().x(), service.limits().maxPoint().y(), thetaMax, dimension, service.obstacleVolume());
     G_configspace.addNode(gateNode);
 
-    printf("ObsVol: %f, NumObs: %lu, Freespace: [%f, %f, %f, %f]\n", G_workspace.obstacleVolume(), G_workspace.obstacles().size(), service.limits().minPoint().x(), service.limits().minPoint().y(), service.limits().maxPoint().x(), service.limits().maxPoint().y());
+    printf("ObsVol: %f, NumObs: %lu, Freespace: [%f, %f, %f, %f]\n", service.obstacleVolume(), G_workspace.obstacles().size(), service.limits().minPoint().x(), service.limits().minPoint().y(), service.limits().maxPoint().x(), service.limits().maxPoint().y());
     printf("UAV Location: %f, %f, %f\n", G_workspace.goalRegion().x(), G_workspace.goalRegion().y(), G_workspace.goalRegion().radius());
     printf("Root Node:    %f, %f, %f\n", G_configspace.nodes[1].x(), G_configspace.nodes[1].y(), G_configspace.nodes[1].theta());
 
@@ -190,5 +188,5 @@ ConfigspaceNode calcGateNode(double xPosition, double yPosition, double gateOrie
 {
     double x = xPosition + standOffRange * cos(gateOrientation - M_PI);
     double y = yPosition + standOffRange * sin(gateOrientation - M_PI);
-    return ConfigspaceNode(x, y, 0, 0, 0, gateOrientation);
+    return ConfigspaceNode(x, y, gateOrientation, 0, 0, 0);
 }
