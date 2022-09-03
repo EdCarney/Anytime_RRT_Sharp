@@ -1,9 +1,11 @@
+#include <chrono>
 #include <cstddef>
 #include <cstdlib>
 #include <stdexcept>
 #include <string>
 #include <vector>
 #include "ConfigspaceGraph.hpp"
+#include "ConfigspaceNode.hpp"
 #include "cppshrhelp.hpp"
 #include "Geometry.hpp"
 #include "Obstacle.hpp"
@@ -11,6 +13,7 @@
 #include "WorkspaceGraph.hpp"
 
 using namespace std;
+using namespace std::chrono;
 
 #ifndef ARRTS_H
 #define ARRTS_H
@@ -22,6 +25,7 @@ using namespace std;
 class DLL_EXPORT ArrtsService
 {
     private:
+        int _maxCount, _goalBiasCount, _maxNumNeighbors;
         double _dimension = 2; // hard-coded
         double _goalRadius, _obstacleVolume;
         State _startState;
@@ -29,6 +33,7 @@ class DLL_EXPORT ArrtsService
         Rectangle _limits;
         Vehicle _vehicle;
         vector<Obstacle> _obstacles;
+        vector<State> _path;
         ConfigspaceGraph _configspaceGraph;
         WorkspaceGraph _workspaceGraph;
 
@@ -37,6 +42,12 @@ class DLL_EXPORT ArrtsService
         void _removeObstaclesNotInLimits();
         void _configureWorkspace();
         void _configureConfigspace();
+
+        void _runAlgorithm();
+        void _rewireNodes(vector<ConfigspaceNode>& remainingNodes, ConfigspaceNode& addedNode);
+        void _tryConnectToBestNeighbor(vector<ConfigspaceNode>& neighbors, ConfigspaceNode& newNode, ConfigspaceNode& parentNode);
+        bool _compareNodes(ConfigspaceNode n1, ConfigspaceNode n2);
+        ConfigspaceNode _findBestNode();
 
     public:
         //TEMP
@@ -72,7 +83,7 @@ class DLL_EXPORT ArrtsService
         void initializeFromDataDirectory(string dataDirectory);
 
         // runs ARRTS algorithm
-        vector<State> calculatePath(double goalRadius);
+        vector<State> calculatePath(double goalRadius, int maxCount, int goalBiasCount, int maxNumNeighbors);
 };
 
 #endif

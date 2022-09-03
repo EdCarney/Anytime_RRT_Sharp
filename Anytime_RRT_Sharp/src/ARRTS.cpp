@@ -79,6 +79,145 @@ void ArrtsService::_configureConfigspace()
     _configspaceGraph.setRootNode(startState());
 }
 
+void ArrtsService::_runAlgorithm()
+{
+    ConfigspaceNode tempNode, parentNode, newNode;
+    vector<ConfigspaceNode> neighbors;
+    bool goalRegionReached = false;
+
+    int count = 0, tempId = 0;
+    double epsilon = 10.0;
+
+    auto start = high_resolution_clock::now();
+
+    while(!goalRegionReached || count < _maxCount)
+    {
+        // create a new node (not yet connected to the graph)
+        tempNode = (count++ % _goalBiasCount != 0) ? _configspaceGraph.generateRandomNode() : _configspaceGraph.generateBiasedNode(_workspaceGraph.goalRegion().x(), _workspaceGraph.goalRegion().y());
+        // find the closest graph node and set it as the parent
+        parentNode = _configspaceGraph.findClosestNode(tempNode);
+
+        // skip if the parent node is already in the goal region
+        if (!_workspaceGraph.checkAtGoal(parentNode))
+        {
+            // create a new node by extending from the parent to the temp node
+            // (this includes a collision check); then compute cost
+            newNode = _configspaceGraph.extendToNode(parentNode, tempNode, epsilon);
+
+            // if there is a collision, newNode id will be set to its parent's id
+            if (_workspaceGraph.nodeIsSafe(newNode) && _workspaceGraph.pathIsSafe(newNode, parentNode))
+            {
+                neighbors = _configspaceGraph.findNeighbors(newNode, epsilon, _maxNumNeighbors);
+
+                for (auto itr = neighbors.begin(); itr < neighbors.end(); ++itr)
+                    if (!_workspaceGraph.pathIsSafe(newNode, *itr))
+                        neighbors.erase(itr);
+
+                if (!neighbors.empty())
+                {
+                    _tryConnectToBestNeighbor(neighbors, newNode, parentNode);
+                }
+
+                // add new node and edge to the config graph
+                tempId = _configspaceGraph.addNode(newNode);
+                newNode = _configspaceGraph.nodes[tempId];
+                _configspaceGraph.addEdge(parentNode, newNode);
+
+                // if we haven't reached the goal yet and the added node is in the
+                // goal region, then set goalRegionReached to true
+                if (!goalRegionReached && _workspaceGraph.checkAtGoal(newNode))
+                    goalRegionReached = true;
+
+                // do the rewiring while there are nodes left in remainingNodes
+                _rewireNodes(neighbors, newNode);
+            }
+        }
+    }
+
+    auto stop = high_resolution_clock::now();
+    auto duration = duration_cast<milliseconds>(stop - start);
+
+    // find the best node in the goal region
+    ConfigspaceNode finalNode = _findBestNode();
+
+    // print all the results to files
+    printf("Total number of points: %lu\n", _configspaceGraph.nodes.size());
+    printf("Final node at: (%f, %f)\n", finalNode.x(), finalNode.y());
+    printf("Final cost is: %f\n", finalNode.cost());
+    printf("Total runtime is %lld ms\n", duration.count());
+    _configspaceGraph.printData(finalNode);
+}
+
+void ArrtsService::_rewireNodes(vector<ConfigspaceNode>& remainingNodes, ConfigspaceNode& addedNode)
+{
+    ConfigspaceNode remainingNodeParent, newNode;
+
+    for (ConfigspaceNode rn : remainingNodes)
+    {
+        // check if it is cheaper for the current remaining node to use the added node as
+        // its parent node
+        if (!_compareNodes(rn, addedNode) && _workspaceGraph.pathIsSafe(rn, addedNode))
+        {
+            // if it's cheaper, then create the new node, set the new cost, and set
+            // the parent (now the added node)
+            newNode = _configspaceGraph.connectNodes(addedNode, rn);
+
+            // get the old parent of the current remaining node, remove the old
+            // edge, add the new edge, and replace the old remaining node
+            remainingNodeParent = _configspaceGraph.nodes[rn.parentId()];
+            _configspaceGraph.removeEdge(remainingNodeParent.id(), rn.id());
+            _configspaceGraph.addEdge(addedNode, newNode);
+            _configspaceGraph.replaceNode(rn, newNode);
+
+            // propagate the cost update from using the new node down the tree
+            _configspaceGraph.propagateCost(newNode.id());
+        }
+    }
+}
+
+void ArrtsService::_tryConnectToBestNeighbor(vector<ConfigspaceNode>& neighbors, ConfigspaceNode& newNode, ConfigspaceNode& parentNode)
+{
+    // find the best safe neighbor and connect newNode and the bestNeighbor
+    // assign the resulting node to tempNode
+    auto bestNeighbor = _configspaceGraph.findBestNeighbor(newNode, neighbors);
+    auto tempNode = _configspaceGraph.connectNodes(bestNeighbor, newNode);
+
+    // if the tempNode is cheaper then make that the newNode
+    if (tempNode.cost() < newNode.cost())
+    {
+        newNode = tempNode;
+        parentNode = bestNeighbor;
+        _configspaceGraph.removeNode(neighbors, bestNeighbor);
+    }
+}
+
+bool ArrtsService::_compareNodes(ConfigspaceNode n1, ConfigspaceNode n2)
+{
+    if (n1.cost() < (n2.cost() + _configspaceGraph.computeCost(n1, n2)))
+        return true;
+    return false;
+}
+
+ConfigspaceNode ArrtsService::_findBestNode()
+{
+    double tempCost = 0, finalCost = INFINITY;
+    ConfigspaceNode finalNode;
+    
+    for (auto itr = _configspaceGraph.nodes.begin(); itr != _configspaceGraph.nodes.end(); ++itr)
+    {
+        if (_workspaceGraph.checkAtGoal(itr->second))
+        {
+            tempCost = itr->second.cost();
+            if (tempCost)
+            {
+                finalCost = tempCost;
+                finalNode = itr->second;
+            }
+        }
+    }
+    return finalNode;
+}
+
 State ArrtsService::goalState() const
 {
     return _goalState;
@@ -218,10 +357,17 @@ void ArrtsService::initializeFromDataDirectory(string dataDirectory)
     _removeObstaclesNotInLimits();
 }
 
-vector<State> ArrtsService::calculatePath(double goalRadius)
+vector<State> ArrtsService::calculatePath(double goalRadius, int maxCount, int goalBiasCount, int maxNumNeighbors)
 {
     _goalRadius = goalRadius;
+    _maxCount = maxCount;
+    _goalBiasCount = goalBiasCount;
+    _maxNumNeighbors = maxNumNeighbors;
+
     _configureWorkspace();
     _configureConfigspace();
-    return vector<State>(0);
+
+    _runAlgorithm();
+
+    return _path;
 }
