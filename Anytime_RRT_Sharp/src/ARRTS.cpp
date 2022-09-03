@@ -76,7 +76,7 @@ void ArrtsService::_configureWorkspace()
 void ArrtsService::_configureConfigspace()
 {
     _configspaceGraph.defineFreespace(_limits, _dimension, _obstacleVolume);
-    _configspaceGraph.setRootNode(goalState());
+    _configspaceGraph.setRootNode(startState());
 }
 
 State ArrtsService::goalState() const
@@ -122,6 +122,16 @@ Vehicle ArrtsService::vehicle() const
 void ArrtsService::setVehicle(vector<double> x, vector<double> y)
 {
     _vehicle = Vehicle(x, y);
+}
+
+ConfigspaceGraph& ArrtsService::configspaceGraph()
+{
+    return _configspaceGraph;
+}
+
+WorkspaceGraph& ArrtsService::workspaceGraph()
+{
+    return _workspaceGraph;
 }
 
 vector<Obstacle> ArrtsService::obstacles() const
