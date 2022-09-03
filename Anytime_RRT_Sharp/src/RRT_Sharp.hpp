@@ -1,4 +1,3 @@
-#include <tuple>
 #include <chrono>
 #include "ARRTS.hpp"
 #include "ConfigspaceGraph.hpp"
@@ -9,23 +8,19 @@
     #define M_PI 3.14159265358979323846
 #endif
 
-// computes the gate (root) node based on the approximate gate location
-// and orientation; outputs a ConfigspaceNode to add to the graph
-ConfigspaceNode calcGateNode(double xPosition, double yPosition, double gateOrientation, double standOffRange);
-
 // iterates through remainingNodes, determines if the addedNode is a better (cheaper) parent, and
 // rewires the graphs if it is.
-void rewireRemainingNodes(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_workspace, vector<ConfigspaceNode>& remainingNodes, ConfigspaceNode addedNode);
+void rewireRemainingNodes(ArrtsService& service, vector<ConfigspaceNode>& remainingNodes, ConfigspaceNode addedNode);
 
 // compares two nodes to determine which has a cheaper cost-to-go;
 // returns true if nodeA is cheaper, and false otherwise
-bool compareNodes(ConfigspaceNode nodeA, ConfigspaceNode nodeB, ConfigspaceGraph& G_configspace);
+bool compareNodes(ConfigspaceNode nodeA, ConfigspaceNode nodeB, ArrtsService& service);
 
 // checks if any of the newNode's (safe) neighbors function as a better (cheaper) parent than
 // newNode's current parent, and updates newNode if it is (note this does NOT rewire the graphs
 // on this update, and should only be used PRIOR to adding newNode to the graphs)
-void tryConnectToBestNeighbor(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_workspace, vector<ConfigspaceNode>& neighbors, ConfigspaceNode& newNode, ConfigspaceNode& parentNode);
+void tryConnectToBestNeighbor(ArrtsService& service, vector<ConfigspaceNode>& neighbors, ConfigspaceNode& newNode, ConfigspaceNode& parentNode);
 
 // iterates through all nodes in the graphs and finds the node within
 // the goal region with the lowest cost-to-go
-ConfigspaceNode findBestNode(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_workspace);
+ConfigspaceNode findBestNode(ArrtsService& service);
