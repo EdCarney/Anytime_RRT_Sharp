@@ -90,27 +90,18 @@ void Vehicle::addOffsetNodesFromFile(FILE* file)
     if (file == NULL)
         throw runtime_error("NULL file pointer in AddOffsetNodesFromFile");
 
-    // get num of points for allocation
-    int pointCount = 0;
-    double xVal, yVal;
-    while (fscanf(file, "%lf,%lf", &xVal, &yVal) != EOF)
-        pointCount++;
+    // ignore first line (formatting)
+    fscanf(file, "%*[^\n]\n");
 
-    // get points
-    vector<double> x(pointCount);
-    vector<double> y(pointCount);
-    rewind(file);
-    for (int i = 0; i < pointCount; ++i)
+    double xVal, yVal;
+    vector<double> x, y;
+    while (fscanf(file, "%lf,%lf", &xVal, &yVal) != EOF)
     {
-        fscanf(file, "%lf,%lf", &xVal, &yVal);
-        x[i] = xVal;
-        y[i] = yVal;
+        x.push_back(xVal);
+        y.push_back(yVal);
     }
 
-    // close file
     fclose(file);
-
-    // add points
     addOffsetNodes(x, y);
 }
 
