@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # configure a header file to pass in some config settings
-configure_file(ARRTSConfig.h.in ARRTSConfig.h)
+configure_file(ArrtsServiceConfig.h.in ArrtsServiceConfig.h)
 
 # add libraries
 add_library(ConfigspaceGraph ConfigspaceGraph.cpp)
