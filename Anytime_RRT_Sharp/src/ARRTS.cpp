@@ -1,5 +1,49 @@
 #include "ARRTS.hpp"
 
+void ArrtsService::_updateLimitsFromStates()
+{
+    double minX, maxX, minY, maxY;
+
+    // include buffer percentage
+    double bufferX = abs(startState().x() - goalState().x());
+    double bufferY = abs(startState().y() - goalState().y());
+    double buffer = max(bufferX, bufferY);
+    buffer *= 0.5;
+
+    if (startState().x() < goalState().x())
+    {
+        minX = startState().x() - buffer;
+        maxX = goalState().x() + buffer;
+    }
+    else
+    {
+        minX = goalState().x() - buffer;
+        maxX = startState().x() + buffer;
+    }
+
+    if (startState().y() < goalState().y())
+    {
+        minY = startState().y() - buffer;
+        maxY = goalState().y() + buffer;
+    }
+    else
+    {
+        minY = goalState().y() - buffer;
+        maxY = startState().y() + buffer;
+    }
+    
+    setLimits(minX, minY, maxX, maxY);
+}
+
+void ArrtsService::_removeObstaclesNotInLimits()
+{
+    vector<Obstacle> newObstacles;
+    for (Obstacle o : obstacles())
+        if (o.intersects(_limits))
+            newObstacles.push_back(o);
+    _obstacles = newObstacles;
+}
+
 State ArrtsService::goalState() const
 {
     return _goalState;
@@ -122,6 +166,9 @@ void ArrtsService::initializeFromDataDirectory(string dataDir)
     readStatesFromFile(fopen(statesFile.c_str(), "r"));
     readVehicleFromFile(fopen(vehicleFile.c_str(), "r"));
     readObstaclesFromFile(fopen(obstaclesFile.c_str(), "r"));
+
+    _updateLimitsFromStates();
+    _removeObstaclesNotInLimits();
 }
 
 vector<State> ArrtsService::calculatePath(double standoffRange, double positionBuffer, double freespaceBuffer)

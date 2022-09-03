@@ -12,13 +12,7 @@ int main()
     const double standOffRange = 5.0;
     const double uavGoalRadius = 2.5;
 
-    // initialize variables for the graph limits
-    double xMin = 0.0, yMin = 0.0, xMax = 0.0, yMax = 0.0;
     const double thetaMin = 0.0, thetaMax = 2 * M_PI;
-
-    // define a buffer region and the side length to use when
-    // defining the square freespace
-    const double buffer = 40.0;
 
     // seed for random node generation
     srand (time(NULL));
@@ -33,15 +27,14 @@ int main()
 
     auto gateNode = calcGateNode(service.startState().x(), service.startState().y(), service.startState().theta(), standOffRange);
     G_workspace.setGoalRegion(service.goalState().x(), service.goalState().y(), service.goalState().theta(), uavGoalRadius);
-    tie(xMin, xMax, yMin, yMax) = calculateGraphLimits(G_workspace, gateNode, buffer);
-    G_workspace.defineFreespace(xMin, yMin, xMax, yMax);
+    G_workspace.defineFreespace(service.limits().minPoint().x(), service.limits().minPoint().y(), service.limits().maxPoint().x(), service.limits().maxPoint().y());
     G_workspace.addObstacles(service.obstacles());
     G_workspace.setVehicle(service.vehicle());
 
-    G_configspace.defineFreespace(xMin, yMin, thetaMin, xMax, yMax, thetaMax, dimension, G_workspace.obstacleVolume());
+    G_configspace.defineFreespace(service.limits().minPoint().x(), service.limits().minPoint().y(), thetaMin, service.limits().maxPoint().x(), service.limits().maxPoint().y(), thetaMax, dimension, G_workspace.obstacleVolume());
     G_configspace.addNode(gateNode);
 
-    printf("ObsVol: %f, NumObs: %lu, Freespace: [%f, %f, %f, %f]\n", G_workspace.obstacleVolume(), G_workspace.obstacles().size(), xMin, xMax, yMin, yMax);
+    printf("ObsVol: %f, NumObs: %lu, Freespace: [%f, %f, %f, %f]\n", G_workspace.obstacleVolume(), G_workspace.obstacles().size(), service.limits().minPoint().x(), service.limits().minPoint().y(), service.limits().maxPoint().x(), service.limits().maxPoint().y());
     printf("UAV Location: %f, %f, %f\n", G_workspace.goalRegion().x(), G_workspace.goalRegion().y(), G_workspace.goalRegion().radius());
     printf("Root Node:    %f, %f, %f\n", G_configspace.nodes[1].x(), G_configspace.nodes[1].y(), G_configspace.nodes[1].theta());
 
@@ -122,33 +115,6 @@ int main()
 }
 
 #pragma endregion Primary code for the Anytime RRT# implementation
-
-tuple<double, double, double, double> calculateGraphLimits(WorkspaceGraph G_workspace, ConfigspaceNode gateNode, double buffer)
-{
-    double xMin, xMax, yMin, yMax;
-    if (gateNode.x() < G_workspace.goalRegion().x())
-    {
-        xMin = gateNode.x() - buffer;
-        xMax = G_workspace.goalRegion().x() + buffer;
-    }
-    else
-    {
-        xMin = G_workspace.goalRegion().x() - buffer;
-        xMax = gateNode.x() + buffer;
-    }
-
-    if (gateNode.y() < G_workspace.goalRegion().y())
-    {
-        yMin = gateNode.y() - buffer;
-        yMax = G_workspace.goalRegion().y() + buffer;
-    }
-    else
-    {
-        yMin = G_workspace.goalRegion().y() - buffer;
-        yMax = gateNode.y() + buffer;
-    }
-    return make_tuple(xMin, xMax, yMin, yMax);
-}
 
 ConfigspaceNode findBestNode(ConfigspaceGraph& G_configspace, WorkspaceGraph& G_workspace)
 {

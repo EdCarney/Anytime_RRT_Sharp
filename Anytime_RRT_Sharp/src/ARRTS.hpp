@@ -28,6 +28,9 @@ class DLL_EXPORT ArrtsService
         Rectangle _limits;
         Vehicle _vehicle;
         vector<Obstacle> _obstacles;
+
+        void _updateLimitsFromStates();
+        void _removeObstaclesNotInLimits();
         // ConfigspaceGraph _configspaceGraph;
         // WorkspaceGraph _workspaceGraph;
 
