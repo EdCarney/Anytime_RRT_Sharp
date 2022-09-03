@@ -350,28 +350,6 @@ TEST(ARRTS_Obstacles, GetSecondObstacleWhenOne)
     EXPECT_ANY_THROW(service.obstacles(1));
 }
 
-TEST(ARRTS_Obstacles, InitializeFromDataDirectoryAndGet)
-{
-    ArrtsService service;
-    service.initializeFromDataDirectory("./test");
-    
-    Obstacle obs1 = service.obstacles(0);
-    Obstacle obs2 = service.obstacles(11);
-    Obstacle obs3 = service.obstacles(22);
-
-    GTEST_ASSERT_EQ(obs1.x(), 80);
-    GTEST_ASSERT_EQ(obs2.x(), 35);
-    GTEST_ASSERT_EQ(obs3.x(), 60);
-
-    GTEST_ASSERT_EQ(obs1.y(), 40);
-    GTEST_ASSERT_EQ(obs2.y(), 80);
-    GTEST_ASSERT_EQ(obs3.y(), 100);
-
-    GTEST_ASSERT_EQ(obs1.radius(), 8);
-    GTEST_ASSERT_EQ(obs2.radius(), 8);
-    GTEST_ASSERT_EQ(obs3.radius(), 8);
-}
-
 #pragma endregion //ARRTS_Obstacles
 
 #pragma region ARRTS_Limits
