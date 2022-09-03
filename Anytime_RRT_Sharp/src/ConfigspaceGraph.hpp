@@ -1,7 +1,6 @@
 #include <unordered_map>
 #include <math.h>
 #include <fstream>
-#include <cstring>
 #include <vector>
 #include "cppshrhelp.hpp"
 #include "ConfigspaceNode.hpp"
