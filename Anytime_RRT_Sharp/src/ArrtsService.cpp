@@ -7,12 +7,6 @@ ArrtsService::ArrtsService(string dataDirectory)
     initializeFromDataDirectory(dataDirectory);
 }
 
-//TEMP
-double ArrtsService::obstacleVolume()
-{
-    return _obstacleVolume;
-}
-
 void ArrtsService::_calculateObstacleVolume()
 {
     _obstacleVolume = 0.0;
@@ -82,8 +76,8 @@ void ArrtsService::_configureConfigspace()
 void ArrtsService::_runAlgorithm()
 {
     printf("ObsVol: %f, NumObs: %lu, Freespace: [%f, %f, %f, %f]\n", _obstacleVolume, obstacles().size(), limits().minPoint().x(), limits().minPoint().y(), limits().maxPoint().x(), limits().maxPoint().y());
-    printf("UAV Location: %f, %f, %f\n", startState().x(), startState().y(), startState().theta());
-    printf("Root Node:    %f, %f, %f\n", goalState().x(), goalState().y(), goalState().theta());
+    printf("UAV Location: %f, %f, %f\n", goalState().x(), goalState().y(), goalState().theta());
+    printf("Root Node:    %f, %f, %f\n", startState().x(), startState().y(), startState().theta());
 
     ConfigspaceNode tempNode, parentNode, newNode;
     vector<ConfigspaceNode> neighbors;
@@ -211,7 +205,7 @@ void ArrtsService::_getFinalPath()
         _path.push_back(node);
     }
 
-    _path.push_back(_configspaceGraph.nodes[0]);
+    _path.push_back(_configspaceGraph.nodes[1]);
 }
 
 bool ArrtsService::_compareNodes(ConfigspaceNode n1, ConfigspaceNode n2)

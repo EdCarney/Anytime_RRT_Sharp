@@ -51,9 +51,6 @@ class DLL_EXPORT ArrtsService
         ConfigspaceNode _findBestNode();
 
     public:
-        //TEMP
-        double obstacleVolume();
-
         ArrtsService();
         ArrtsService(string dataDirectory);
 
