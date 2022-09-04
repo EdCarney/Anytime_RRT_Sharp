@@ -55,7 +55,7 @@ end
 
 function inObstacle = inObstacle(x, y, obsX, obsY, obsR)
     inObstacle = false;
-    num = size(x,2);
+    num = size(obsX,2);
     for i = 1:num
         dist = hypot(x - obsX(i), y - obsY(i));
         if (dist <= obsR(i))
