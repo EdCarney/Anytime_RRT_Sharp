@@ -2,7 +2,6 @@
 
 void ConfigspaceGraph::buildGraph()
 {
-    printf("Constructing a default empty configspace graph.\n");
     numNodeInd = 0;
     _minPoint = Point(0, 0);
     _maxPoint = Point(0, 0);
@@ -163,10 +162,10 @@ void ConfigspaceGraph::printData(int finalNodeId, string outputDir)
     }
     outputPathFile << nodes[1].x() << ", " << nodes[1].y() << ", " << nodes[1].theta() << "\n";
 
-    printf("Printing nodes to nodes.txt.\n");
-    printf("Printing edges to edges.txt.\n");
-    printf("Printing search tree to search_tree.txt.\n");
-    printf("Printing output path to output_path.txt.\n");
+    printf("Printing nodes to %s/nodes.txt.\n", outputDir.c_str());
+    printf("Printing edges to %sedges.txt.\n", outputDir.c_str());
+    printf("Printing search tree to %ssearch_tree.txt.\n", outputDir.c_str());
+    printf("Printing output path to %soutput_path.txt.\n", outputDir.c_str());
 
     // close files
     nodeFile.close();
