@@ -3,7 +3,6 @@
 using namespace std;
 using namespace std::chrono;
 
-//TODO have directory read in from cmd args
 int main(int argc, char** argv)
 {
     double uavGoalRadius = 2.5;
