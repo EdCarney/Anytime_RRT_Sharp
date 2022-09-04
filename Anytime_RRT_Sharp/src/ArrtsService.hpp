@@ -25,7 +25,7 @@ using namespace std::chrono;
 class DLL_EXPORT ArrtsService
 {
     private:
-        int _maxCount, _goalBiasCount, _maxNumNeighbors;
+        int _minNodeCount, _goalBiasCount, _maxNumNeighbors;
         double _dimension = 2; // hard-coded
         double _goalRadius, _obstacleVolume;
         string _dataDirectory;
