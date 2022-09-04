@@ -70,25 +70,24 @@ function outputData(startX, startY, goalX, goalY, obsX, obsY, obsR, xMin, xMax, 
     folder = "testData_" + string(t);
     mkdir(folder);
     
+    obsInfo = [];
+    numObs = size(obsX, 2);
+    for i = 1:numObs
+        obsInfo = [obsInfo, obsX(i), obsY(i), obsR(i)];
+    end
+
     obsFormat = "%f, %f, %f\n";
     obsFile = fullfile(folder, "obstacles.txt");
     writelines("FORMAT: (x, y, radius)", obsFile);
     fid = fopen(obsFile, "a+");
-    fprintf(fid, obsFormat, obsX, obsY, obsR);
+    fprintf(fid, obsFormat, obsInfo);
     fclose(fid);
 
     stateFormat = "%f, %f, %f\n";
     stateFile = fullfile(folder, "states.txt");
     writelines("FORMAT: (startX, startY, startTheta) (goalX, goalY, goalTheta)", stateFile);
     fid = fopen(stateFile, "a+");
-    fprintf(fid, stateFormat, [startX, goalX], [startY, goalY], [0, 0]);
-    fclose(fid);
-
-    limitsFormat = "%f, %f\n";
-    limitsFile = fullfile(folder, "limits.txt");
-    writelines(" ", limitsFile);
-    fid = fopen(limitsFile, "a+");
-    fprintf(fid, limitsFormat, [xMin, yMin], [xMax, yMax]);
+    fprintf(fid, stateFormat, [startX, startY, 0], [goalX, goalY, 0]);
     fclose(fid);
 end
 
