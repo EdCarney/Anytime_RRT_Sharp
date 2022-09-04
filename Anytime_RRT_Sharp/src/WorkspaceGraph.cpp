@@ -27,7 +27,6 @@ Obstacle WorkspaceGraph::obstacles(int i)
 
 void WorkspaceGraph::_buildWorkspaceGraph()
 {
-    printf("Constructing a default empty workspace graph.\n");
     _minPoint = Point(0, 0);
     _maxPoint = Point(0, 0);
     _goalRegionReached = false;
