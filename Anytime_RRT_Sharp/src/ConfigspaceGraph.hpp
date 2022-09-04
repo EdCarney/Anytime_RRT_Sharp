@@ -53,9 +53,8 @@ class ConfigspaceGraph : Rectangle
         void defineFreespace(double minX, double minY, double minTheta, double maxX,
             double maxY, double maxTheta, int dimension, double obstacleVol);
         void defineFreespace(Rectangle limits, int dimension, double obstacleVol);
-
-        // print data from the graph for displaying
-        void printData(ConfigspaceNode finalNode, int probNum = 1);
+        
+        void printData(ConfigspaceNode finalNode);
 
         ConfigspaceNode findClosestNode(GraphNode node);
         ConfigspaceNode generateRandomNode();

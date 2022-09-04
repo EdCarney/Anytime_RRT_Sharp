@@ -13,29 +13,33 @@ clear all
 close all
 clc
 
-problemNum = 1     %% CHANGE THIS
-nodeOffset = 0;
+folder = "testData_20220903235850"; %% change this
 
-search_tree_raw = csvread(['search_tree_' num2str(problemNum + nodeOffset,'%d') '.txt']);
-path_raw = csvread(['output_path_' num2str(problemNum + nodeOffset,'%d') '.txt']);
-nodes_raw = csvread(['nodes_' num2str(problemNum + nodeOffset,'%d') '.txt']);
-edges_raw = csvread(['edges_' num2str(problemNum + nodeOffset,'%d') '.txt']);
-obstacles_raw = csvread('obstacles.txt');
+node_file = fullfile(folder, 'nodes.txt');
+edge_file = fullfile(folder, 'edges.txt');
+path_file = fullfile(folder, 'output_path.txt');
+search_tree_file = fullfile(folder, 'search_tree.txt');
+obstacles_file = fullfile(folder, 'obstacles.txt');
+state_file = fullfile(folder, 'states.txt');
+
+nodes = readmatrix(node_file);
+edges_raw = readmatrix(edge_file);
+path = readmatrix(path_file);
+search_tree_raw = readmatrix(search_tree_file);
+obstacles_raw = readmatrix(obstacles_file);
+state_raw = readmatrix(state_file);
 
 % specify goal region [x, y, radius] and start point [x, y]
-root_node = [5, 60];
-uav_start = [100, 60, 0.0];
+root_node = state_raw(1,1:2);
+uav_start = [state_raw(2,1:2), 2.5];
 
 % a bit of data processing for faster plotting
 search_tree = nan(3*size(search_tree_raw, 1), 2);
-
 search_tree(1:3:end-2, 1) = search_tree_raw(:, 2);
 search_tree(2:3:end-1, 1) = search_tree_raw(:, 5);
 search_tree(1:3:end-2, 2) = search_tree_raw(:, 3);
 search_tree(2:3:end-1, 2) = search_tree_raw(:, 6);
 
-nodes = nodes_raw(2:end,:);
-edges_raw = edges_raw(2:end,:);
 edges = nan(3*size(edges_raw, 1), 2);
 
 for i = 1:length(edges_raw(:,1))
@@ -67,7 +71,7 @@ plot(edges(:,1), edges(:,2), 'k')
 plot(search_tree(:, 1), search_tree(:, 2), 'm', 'LineWidth', 0.5);
 plot(root_node(1), root_node(2), 'or', 'MarkerSize', 10,...
     'MarkerFaceColor', 'r')
-plot(path_raw(:,1), path_raw(:,2), 'g:', 'LineWidth', 4);
+plot(path(:,1), path(:,2), 'g:', 'LineWidth', 4);
 
 axis([-35.000000, 140.000000, 15.000000, 100.000000])
 
