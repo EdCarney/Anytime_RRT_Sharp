@@ -38,6 +38,7 @@ class DLL_EXPORT ArrtsService
         ConfigspaceGraph _configspaceGraph;
         WorkspaceGraph _workspaceGraph;
 
+        void _buildDefaultService();
         void _calculateObstacleVolume();
         void _updateLimitsFromStates();
         void _removeObstaclesNotInLimits();
@@ -76,9 +77,9 @@ class DLL_EXPORT ArrtsService
         void addObstacle(double x, double y, double r);
         void addObstacles(const vector<double>& x, const vector<double>& y, const vector<double>& r);
 
-        void readStatesFromFile(FILE* file);
-        void readVehicleFromFile(FILE* file);
-        void readObstaclesFromFile(FILE* file);
+        void readStatesFromFile(FILE* file, bool isOptional = false);
+        void readVehicleFromFile(FILE* file, bool isOptional = false);
+        void readObstaclesFromFile(FILE* file, bool isOptional = false);
         void initializeFromDataDirectory(string dataDirectory);
 
         // runs ARRTS algorithm

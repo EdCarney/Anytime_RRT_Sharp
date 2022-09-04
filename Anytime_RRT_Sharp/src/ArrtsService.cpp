@@ -1,6 +1,23 @@
 #include "ArrtsService.hpp"
 
-ArrtsService::ArrtsService() { }
+void ArrtsService::_buildDefaultService()
+{
+    _obstacleVolume = 0;
+    _dataDirectory = "";
+    _startState = State();
+    _goalState = State();
+    _limits = Rectangle();
+    _vehicle = Vehicle();
+    _obstacles = vector<Obstacle>();
+    _path = vector<State>();
+    _configspaceGraph = ConfigspaceGraph();
+    _workspaceGraph = WorkspaceGraph();
+}
+
+ArrtsService::ArrtsService()
+{
+    _buildDefaultService();
+}
 
 ArrtsService::ArrtsService(string dataDirectory)
 {
@@ -317,10 +334,15 @@ void ArrtsService::addObstacles(const vector<double>& x, const vector<double>& y
     _calculateObstacleVolume();
 }
 
-void ArrtsService::readStatesFromFile(FILE* file)
+void ArrtsService::readStatesFromFile(FILE* file, bool isOptional)
 {
-    if (file == NULL)
-        throw runtime_error("NULL file pointer in readStatesFromFile()");
+    if (file == NULL && !isOptional)
+    {
+        if (!isOptional)
+            throw runtime_error("NULL file pointer in readStatesFromFile()");
+        printf("WARN: Error loading state information, skipping...\n");
+        return;
+    }
 
     double startX, startY, startTheta;
     double goalX, goalY, goalTheta;
@@ -335,15 +357,29 @@ void ArrtsService::readStatesFromFile(FILE* file)
     setGoalState(goalX, goalY, goalTheta);
 }
 
-void ArrtsService::readVehicleFromFile(FILE* file)
+void ArrtsService::readVehicleFromFile(FILE* file, bool isOptional)
 {
-    _vehicle = Vehicle(file);
+    try
+    {
+        _vehicle = Vehicle(file);
+    }
+    catch(const std::exception& e)
+    {
+        if (!isOptional)
+            throw;
+        printf("WARN: Error loading vehicle information, skipping...\n");
+    }
 }
 
-void ArrtsService::readObstaclesFromFile(FILE* file)
+void ArrtsService::readObstaclesFromFile(FILE* file, bool isOptional)
 {
-    if (file == NULL)
-        throw runtime_error("NULL file pointer in readObstaclesFromFile()");
+    if (file == NULL && !isOptional)
+    {
+        if (!isOptional)
+            throw runtime_error("NULL file pointer in readObstaclesFromFile()");
+        printf("WARN: Error loading obstacle information, skipping...\n");
+        return;
+    }
 
     double xVal, yVal, rVal;
     vector<double> x, y, r;
@@ -362,13 +398,16 @@ void ArrtsService::readObstaclesFromFile(FILE* file)
 
 void ArrtsService::initializeFromDataDirectory(string dataDirectory)
 {
+    printf("Initializing data from %s\n", dataDirectory.c_str());
+    _buildDefaultService();
+
     _dataDirectory = dataDirectory;
     string statesFile = dataDirectory + "/" + DEFAULT_STATES_FILE;
     string vehicleFile = dataDirectory + "/" + DEFAULT_VEHICLE_FILE;
     string obstaclesFile = dataDirectory + "/" + DEFAULT_OBSTACLES_FILE;
 
     readStatesFromFile(fopen(statesFile.c_str(), "r"));
-    readVehicleFromFile(fopen(vehicleFile.c_str(), "r"));
+    readVehicleFromFile(fopen(vehicleFile.c_str(), "r"), true);
     readObstaclesFromFile(fopen(obstaclesFile.c_str(), "r"));
 
     _updateLimitsFromStates();
