@@ -28,6 +28,7 @@ class DLL_EXPORT ArrtsService
         int _maxCount, _goalBiasCount, _maxNumNeighbors;
         double _dimension = 2; // hard-coded
         double _goalRadius, _obstacleVolume;
+        string _dataDirectory;
         State _startState;
         State _goalState;
         Rectangle _limits;
@@ -81,7 +82,7 @@ class DLL_EXPORT ArrtsService
         void initializeFromDataDirectory(string dataDirectory);
 
         // runs ARRTS algorithm
-        vector<State> calculatePath(double goalRadius, int maxCount, int goalBiasCount, int maxNumNeighbors);
+        vector<State> calculatePath(double goalRadius, int minNodeCount, int goalBiasCount, int maxNumNeighbors);
 };
 
 #endif
