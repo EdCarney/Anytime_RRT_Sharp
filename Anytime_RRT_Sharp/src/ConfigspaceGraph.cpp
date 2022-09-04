@@ -124,37 +124,31 @@ double ConfigspaceGraph::_computeRadius(double epsilon)
     return circleRadius;
 }
 
-void ConfigspaceGraph::printData(ConfigspaceNode finalNode, int probNum)
+void ConfigspaceGraph::printData(ConfigspaceNode finalNode)
 {
     std::ofstream nodeFile, edgeFile, searchTreeFile, outputPathFile, highFidelityPath;
 
     // initialize all output files
-    nodeFile.open("nodes_" + std::to_string(probNum) + ".txt");
-    edgeFile.open("edges_" + std::to_string(probNum) + ".txt");
-    searchTreeFile.open("search_tree_" + std::to_string(probNum) + ".txt");
-    outputPathFile.open("output_path_" + std::to_string(probNum) + ".txt");
+    nodeFile.open("nodes.txt");
+    edgeFile.open("edges.txt");
+    searchTreeFile.open("search_tree.txt");
+    outputPathFile.open("output_path.txt");
 
     int numNodes = nodes.size();
     int numEdges = edges.size();
 
     // print out node file
-    nodeFile << numNodes << "\n";
-
     for (auto itr = nodes.begin(); itr != nodes.end(); ++itr)
         nodeFile << itr->second.x() << ", " << itr->second.y() << ", " << itr->second.theta() << ", " << itr->first << "\n";
 
     // print out edge file
-    edgeFile << numEdges << "\n";
-
     for (int i = 0; i < numEdges; ++i)
         edgeFile << edges[i].start().id() << ", " << edges[i].end().id() << "\n";
 
     // print out search tree file
     for (int i = 0; i < numEdges; ++i)
-    {
         searchTreeFile << edges[i].start().id() << ", " << edges[i].start().x() << ", " << edges[i].start().y()
             << ", " << edges[i].end().id() << ", " << edges[i].end().x() << ", " << edges[i].end().y() << "\n";
-    }
 
     // print out output path
     ConfigspaceNode currentNode = finalNode;
@@ -169,10 +163,10 @@ void ConfigspaceGraph::printData(ConfigspaceNode finalNode, int probNum)
     }
     outputPathFile << nodes[1].x() << ", " << nodes[1].y() << ", " << nodes[1].theta() << "\n";
 
-    printf("Printing nodes to nodes_%d.txt.\n", probNum);
-    printf("Printing edges to edges_%d.txt.\n", probNum);
-    printf("Printing search tree to search_tree_%d.txt.\n", probNum);
-    printf("Printing output path to output_path_%d.txt.\n", probNum);
+    printf("Printing nodes to nodes.txt.\n");
+    printf("Printing edges to edges.txt.\n");
+    printf("Printing search tree to search_tree.txt.\n");
+    printf("Printing output path to output_path.txt.\n");
 
     // close files
     nodeFile.close();
