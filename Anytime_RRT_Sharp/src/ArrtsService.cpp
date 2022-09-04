@@ -146,7 +146,7 @@ void ArrtsService::_runAlgorithm()
     printf("Final node at: (%f, %f)\n", finalNode.x(), finalNode.y());
     printf("Final cost is: %f\n", finalNode.cost());
     printf("Total runtime is %lld ms\n", duration.count());
-    _configspaceGraph.printData(finalNode);
+    _configspaceGraph.printData(finalNode.id(), _dataDirectory);
 }
 
 void ArrtsService::_rewireNodes(vector<ConfigspaceNode>& remainingNodes, ConfigspaceNode& addedNode)
@@ -362,6 +362,7 @@ void ArrtsService::readObstaclesFromFile(FILE* file)
 
 void ArrtsService::initializeFromDataDirectory(string dataDirectory)
 {
+    _dataDirectory = dataDirectory;
     string statesFile = dataDirectory + "/" + DEFAULT_STATES_FILE;
     string vehicleFile = dataDirectory + "/" + DEFAULT_VEHICLE_FILE;
     string obstaclesFile = dataDirectory + "/" + DEFAULT_OBSTACLES_FILE;
@@ -374,10 +375,10 @@ void ArrtsService::initializeFromDataDirectory(string dataDirectory)
     _removeObstaclesNotInLimits();
 }
 
-vector<State> ArrtsService::calculatePath(double goalRadius, int maxCount, int goalBiasCount, int maxNumNeighbors)
+vector<State> ArrtsService::calculatePath(double goalRadius, int minNodeCount, int goalBiasCount, int maxNumNeighbors)
 {
     _goalRadius = goalRadius;
-    _maxCount = maxCount;
+    _maxCount = minNodeCount;
     _goalBiasCount = goalBiasCount;
     _maxNumNeighbors = maxNumNeighbors;
 

@@ -124,15 +124,15 @@ double ConfigspaceGraph::_computeRadius(double epsilon)
     return circleRadius;
 }
 
-void ConfigspaceGraph::printData(ConfigspaceNode finalNode)
+void ConfigspaceGraph::printData(int finalNodeId, string outputDir)
 {
-    std::ofstream nodeFile, edgeFile, searchTreeFile, outputPathFile, highFidelityPath;
+    ofstream nodeFile, edgeFile, searchTreeFile, outputPathFile, highFidelityPath;
 
     // initialize all output files
-    nodeFile.open("nodes.txt");
-    edgeFile.open("edges.txt");
-    searchTreeFile.open("search_tree.txt");
-    outputPathFile.open("output_path.txt");
+    nodeFile.open(outputDir + "/nodes.txt");
+    edgeFile.open(outputDir + "/edges.txt");
+    searchTreeFile.open(outputDir + "/search_tree.txt");
+    outputPathFile.open(outputDir + "/output_path.txt");
 
     int numNodes = nodes.size();
     int numEdges = edges.size();
@@ -151,7 +151,7 @@ void ConfigspaceGraph::printData(ConfigspaceNode finalNode)
             << ", " << edges[i].end().id() << ", " << edges[i].end().x() << ", " << edges[i].end().y() << "\n";
 
     // print out output path
-    ConfigspaceNode currentNode = finalNode;
+    ConfigspaceNode currentNode = nodes[finalNodeId];
 
     outputPathFile << currentNode.x() << ", " << currentNode.y() << ", " << currentNode.theta() << "\n";
     currentNode = nodes[currentNode.parentId()];
