@@ -1,10 +1,11 @@
 #include <math.h>
+#include "cppshrhelp.hpp"
 #include "Geometry.hpp"
 
 #ifndef OBSTACLE_H
 #define OBSTACLE_H
 
-class Obstacle : public Circle
+class DLL_EXPORT Obstacle : public Circle
 {
     using Circle::Circle;
 

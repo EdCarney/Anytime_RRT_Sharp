@@ -1,6 +1,7 @@
 #include <cstddef>
 #include <math.h>
 #include <vector>
+#include "cppshrhelp.hpp"
 #include "Geometry.hpp"
 
 using namespace std;
@@ -8,7 +9,7 @@ using namespace std;
 #ifndef VEHICLE_H
 #define VEHICLE_H
 
-class Vehicle
+class DLL_EXPORT Vehicle
 {
     vector<Point> _nodes;            // an array of all nodes for the vehicle
     vector<Point> _offsetNodes;      // an array of offset values loaded on vehicle initialization
