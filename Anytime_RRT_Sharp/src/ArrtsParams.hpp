@@ -17,7 +17,7 @@
 
 using namespace std;
 
- class ArrtsParams
+ class DLL_EXPORT ArrtsParams
  {
    int _minNodeCount, _maxNeighborCount;
    double _goalRadius, _obstacleVolume;

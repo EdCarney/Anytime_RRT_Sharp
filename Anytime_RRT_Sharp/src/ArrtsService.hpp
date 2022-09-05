@@ -39,7 +39,7 @@ class DLL_EXPORT ArrtsService
         ConfigspaceNode _findBestNode();
 
     public:
-        vector<State> calculatePath(ArrtsParams params);
+        vector<State> DLL_EXPORT calculatePath(ArrtsParams params);
 };
 
 #endif
