@@ -13,7 +13,7 @@ clear all
 close all
 clc
 
-folder = "testData_20220903235850"; %% change this
+folder = "testData_20220904031203"; %% change this
 
 node_file = fullfile(folder, 'nodes.txt');
 edge_file = fullfile(folder, 'edges.txt');
