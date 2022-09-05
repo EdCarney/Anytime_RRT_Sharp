@@ -3,8 +3,10 @@ cmake_minimum_required(VERSION 3.0)
 project(RRT_Sharp VERSION 1.0)
 
 # specify C++ standard
+set(CMAKE_OSX_ARCHITECTURES "x86_64" CACHE INTERNAL "" FORCE)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+SET(CMAKE_OSX_DEPLOYMENT_TARGET 10.15)
 
 # configure a header file to pass in some config settings
 configure_file(ArrtsServiceConfig.h.in ArrtsServiceConfig.h)
