@@ -2,115 +2,47 @@
 
 void ArrtsService::_buildDefaultService()
 {
-    _obstacleVolume = 0;
-    _dataDirectory = "";
-    _startState = State();
-    _goalState = State();
-    _limits = Rectangle();
-    _vehicle = Vehicle();
-    _obstacles = vector<Obstacle>();
     _path = vector<State>();
     _configspaceGraph = ConfigspaceGraph();
     _workspaceGraph = WorkspaceGraph();
 }
 
-ArrtsService::ArrtsService()
+void ArrtsService::_configureWorkspace(ArrtsParams params)
 {
-    _buildDefaultService();
+    _workspaceGraph.setGoalRegion(params.goal(), params.goalRadius());
+    _workspaceGraph.defineFreespace(params.limits());
+    _workspaceGraph.addObstacles(params.obstacles());
+    _workspaceGraph.setVehicle(params.vehicle());
 }
 
-ArrtsService::ArrtsService(string dataDirectory)
+void ArrtsService::_configureConfigspace(ArrtsParams params)
 {
-    initializeFromDataDirectory(dataDirectory);
+    _configspaceGraph.defineFreespace(params.limits(), params.dimension(), params.obstacleVolume());
+    _configspaceGraph.setRootNode(params.start());
 }
 
-void ArrtsService::_calculateObstacleVolume()
+void ArrtsService::_runAlgorithm(ArrtsParams params)
 {
-    _obstacleVolume = 0.0;
-    for (Obstacle o : _obstacles)
-        _obstacleVolume += o.area();
-}
-
-void ArrtsService::_updateLimitsFromStates()
-{
-    double minX, maxX, minY, maxY;
-
-    // include buffer percentage
-    double bufferX = abs(startState().x() - goalState().x());
-    double bufferY = abs(startState().y() - goalState().y());
-    double buffer = max(bufferX, bufferY);
-    buffer *= 0.5;
-
-    if (startState().x() < goalState().x())
-    {
-        minX = startState().x() - buffer;
-        maxX = goalState().x() + buffer;
-    }
-    else
-    {
-        minX = goalState().x() - buffer;
-        maxX = startState().x() + buffer;
-    }
-
-    if (startState().y() < goalState().y())
-    {
-        minY = startState().y() - buffer;
-        maxY = goalState().y() + buffer;
-    }
-    else
-    {
-        minY = goalState().y() - buffer;
-        maxY = startState().y() + buffer;
-    }
-    
-    setLimits(minX, minY, maxX, maxY);
-}
-
-void ArrtsService::_removeObstaclesNotInLimits()
-{
-    vector<Obstacle> newObstacles;
-    for (Obstacle o : obstacles())
-        if (o.intersects(_limits))
-            newObstacles.push_back(o);
-    _obstacles = newObstacles;
-    _calculateObstacleVolume();
-}
-
-void ArrtsService::_configureWorkspace()
-{
-    _workspaceGraph.setGoalRegion(goalState(), _goalRadius);
-    _workspaceGraph.defineFreespace(limits());
-    _workspaceGraph.addObstacles(obstacles());
-    _workspaceGraph.setVehicle(vehicle());
-}
-
-void ArrtsService::_configureConfigspace()
-{
-    _configspaceGraph.defineFreespace(_limits, _dimension, _obstacleVolume);
-    _configspaceGraph.setRootNode(startState());
-}
-
-void ArrtsService::_runAlgorithm()
-{
-    printf("ObsVol: %f, NumObs: %lu, Freespace: [%f, %f, %f, %f]\n", _obstacleVolume, obstacles().size(), limits().minPoint().x(), limits().minPoint().y(), limits().maxPoint().x(), limits().maxPoint().y());
-    printf("UAV Location: %f, %f, %f\n", goalState().x(), goalState().y(), goalState().theta());
-    printf("Root Node:    %f, %f, %f\n", startState().x(), startState().y(), startState().theta());
+    printf("ObsVol: %f, NumObs: %lu, Freespace: [%f, %f, %f, %f]\n", params.obstacleVolume(), params.obstacles().size(), params.limits().minPoint().x(), params.limits().minPoint().y(), params.limits().maxPoint().x(), params.limits().maxPoint().y());
+    printf("UAV Location: %f, %f, %f\n", params.goal().x(), params.goal().y(), params.goal().theta());
+    printf("Root Node:    %f, %f, %f\n", params.start().x(), params.start().y(), params.start().theta());
 
     ConfigspaceNode tempNode, parentNode, newNode;
     vector<ConfigspaceNode> neighbors;
     bool goalRegionReached = false;
 
     int count = 0, tempId = 0;
+    int goalBiasCount = (int)ceil(params.minNodeCount() * 0.01);
     double epsilon = 10.0;
 
     srand(time(NULL));
 
     auto start = high_resolution_clock::now();
 
-    while(!goalRegionReached || count < _maxCount)
+    while(!goalRegionReached || count < params.minNodeCount())
     {
         // create a new node (not yet connected to the graph)
-        tempNode = (count++ % _goalBiasCount != 0) ? _configspaceGraph.generateRandomNode() : _configspaceGraph.generateBiasedNode(_workspaceGraph.goalRegion().x(), _workspaceGraph.goalRegion().y());
+        tempNode = (count++ % goalBiasCount != 0) ? _configspaceGraph.generateRandomNode() : _configspaceGraph.generateBiasedNode(_workspaceGraph.goalRegion().x(), _workspaceGraph.goalRegion().y());
         // find the closest graph node and set it as the parent
         parentNode = _configspaceGraph.findClosestNode(tempNode);
 
@@ -124,7 +56,7 @@ void ArrtsService::_runAlgorithm()
             // if there is a collision, newNode id will be set to its parent's id
             if (_workspaceGraph.nodeIsSafe(newNode) && _workspaceGraph.pathIsSafe(newNode, parentNode))
             {
-                neighbors = _configspaceGraph.findNeighbors(newNode, epsilon, _maxNumNeighbors);
+                neighbors = _configspaceGraph.findNeighbors(newNode, epsilon, params.maxNeighborCount());
 
                 for (auto itr = neighbors.begin(); itr < neighbors.end(); ++itr)
                     if (!_workspaceGraph.pathIsSafe(newNode, *itr))
@@ -163,7 +95,7 @@ void ArrtsService::_runAlgorithm()
     printf("Final node at: (%f, %f)\n", finalNode.x(), finalNode.y());
     printf("Final cost is: %f\n", finalNode.cost());
     printf("Total runtime is %lld ms\n", duration.count());
-    _configspaceGraph.printData(finalNode.id(), _dataDirectory);
+    _configspaceGraph.printData(finalNode.id(), "");
 }
 
 void ArrtsService::_rewireNodes(vector<ConfigspaceNode>& remainingNodes, ConfigspaceNode& addedNode)
@@ -252,169 +184,12 @@ ConfigspaceNode ArrtsService::_findBestNode()
     return finalNode;
 }
 
-State ArrtsService::goalState() const
+vector<State> ArrtsService::calculatePath(ArrtsParams params)
 {
-    return _goalState;
-}
-
-void ArrtsService::setGoalState(double x, double y, double theta)
-{
-    _goalState = { x, y, theta };
-}
-
-State ArrtsService::startState() const
-{
-    return _startState;
-}
-
-void ArrtsService::setStartState(double x, double y, double theta)
-{
-    _startState = { x, y, theta };
-}
-
-Rectangle ArrtsService::limits() const
-{
-    return _limits;
-}
-
-void ArrtsService::setLimits(Point minPoint, Point maxPoint)
-{
-    _limits = Rectangle(minPoint, maxPoint);
-}
-
-void ArrtsService::setLimits(double minX, double minY, double maxX, double maxY)
-{
-    _limits = Rectangle(minX, minY, maxX, maxY);
-}
-
-Vehicle ArrtsService::vehicle() const
-{
-    return _vehicle;
-}
-
-void ArrtsService::setVehicle(vector<double> x, vector<double> y)
-{
-    _vehicle = Vehicle(x, y);
-}
-
-vector<Obstacle> ArrtsService::obstacles() const
-{
-    return _obstacles;
-}
-
-Obstacle ArrtsService::obstacles(int i) const
-{
-    if (i >= _obstacles.size() || i < 0)
-        throw runtime_error("Attempt to read index beyond array limits in GetObstacle");
-
-    return _obstacles[i];
-}
-
-void ArrtsService::addObstacle(double x, double y, double radius)
-{
-    _obstacles.push_back(Obstacle(x, y, radius));
-    _calculateObstacleVolume();
-}
-
-void ArrtsService::addObstacles(const vector<double>& x, const vector<double>& y, const vector<double>& r)
-{
-    int size = x.size();
-    for (int i = 0; i < size; ++i)
-        _obstacles.push_back(Obstacle(x[i], y[i], r[i]));
-    _calculateObstacleVolume();
-}
-
-void ArrtsService::readStatesFromFile(FILE* file, bool isOptional)
-{
-    if (file == NULL && !isOptional)
-    {
-        if (!isOptional)
-            throw runtime_error("NULL file pointer in readStatesFromFile()");
-        printf("WARN: Error loading state information, skipping...\n");
-        return;
-    }
-
-    double startX, startY, startTheta;
-    double goalX, goalY, goalTheta;
-
-    // ignore first line (formatting)
-    fscanf(file, "%*[^\n]\n");
-    fscanf(file, "%lf,%lf,%lf", &startX, &startY, &startTheta);
-    fscanf(file, "%lf,%lf,%lf", &goalX, &goalY, &goalTheta);
-    fclose(file);
-
-    setStartState(startX, startY, startTheta);
-    setGoalState(goalX, goalY, goalTheta);
-}
-
-void ArrtsService::readVehicleFromFile(FILE* file, bool isOptional)
-{
-    try
-    {
-        _vehicle = Vehicle(file);
-    }
-    catch(const std::exception& e)
-    {
-        if (!isOptional)
-            throw;
-        printf("WARN: Error loading vehicle information, skipping...\n");
-    }
-}
-
-void ArrtsService::readObstaclesFromFile(FILE* file, bool isOptional)
-{
-    if (file == NULL && !isOptional)
-    {
-        if (!isOptional)
-            throw runtime_error("NULL file pointer in readObstaclesFromFile()");
-        printf("WARN: Error loading obstacle information, skipping...\n");
-        return;
-    }
-
-    double xVal, yVal, rVal;
-    vector<double> x, y, r;
-
-    // ignore first line (formatting)
-    fscanf(file, "%*[^\n]\n");
-    while (fscanf(file, "%lf,%lf,%lf", &xVal, &yVal, &rVal) != EOF)
-    {
-        x.push_back(xVal);
-        y.push_back(yVal);
-        r.push_back(rVal);
-    }
-    fclose(file);
-    addObstacles(x, y, r);
-}
-
-void ArrtsService::initializeFromDataDirectory(string dataDirectory)
-{
-    printf("Initializing data from %s\n", dataDirectory.c_str());
     _buildDefaultService();
-
-    _dataDirectory = dataDirectory;
-    string statesFile = dataDirectory + "/" + DEFAULT_STATES_FILE;
-    string vehicleFile = dataDirectory + "/" + DEFAULT_VEHICLE_FILE;
-    string obstaclesFile = dataDirectory + "/" + DEFAULT_OBSTACLES_FILE;
-
-    readStatesFromFile(fopen(statesFile.c_str(), "r"));
-    readVehicleFromFile(fopen(vehicleFile.c_str(), "r"), true);
-    readObstaclesFromFile(fopen(obstaclesFile.c_str(), "r"));
-
-    _updateLimitsFromStates();
-    _removeObstaclesNotInLimits();
-}
-
-vector<State> ArrtsService::calculatePath(double goalRadius, int minNodeCount, int goalBiasCount, int maxNumNeighbors)
-{
-    _goalRadius = goalRadius;
-    _maxCount = minNodeCount;
-    _goalBiasCount = goalBiasCount;
-    _maxNumNeighbors = maxNumNeighbors;
-
-    _configureWorkspace();
-    _configureConfigspace();
-
-    _runAlgorithm();
+    _configureWorkspace(params);
+    _configureConfigspace(params);
+    _runAlgorithm(params);
 
     return _path;
 }
