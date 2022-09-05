@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include "ArrtsParams.hpp"
 #include "ConfigspaceGraph.hpp"
 #include "ConfigspaceNode.hpp"
 #include "cppshrhelp.hpp"
@@ -18,34 +19,19 @@ using namespace std::chrono;
 #ifndef ARRTS_SERVICE_H
 #define ARRTS_SERVICE_H
 
-#define DEFAULT_STATES_FILE "states.txt"
-#define DEFAULT_VEHICLE_FILE "robot.txt"
-#define DEFAULT_OBSTACLES_FILE "obstacles.txt"
-
 class DLL_EXPORT ArrtsService
 {
     private:
-        int _minNodeCount, _goalBiasCount, _maxNumNeighbors;
-        double _dimension = 2; // hard-coded
-        double _goalRadius, _obstacleVolume;
-        string _dataDirectory;
-        State _startState;
-        State _goalState;
-        Rectangle _limits;
-        Vehicle _vehicle;
-        vector<Obstacle> _obstacles;
         vector<State> _path;
         ConfigspaceGraph _configspaceGraph;
         WorkspaceGraph _workspaceGraph;
 
         void _buildDefaultService();
-        void _calculateObstacleVolume();
-        void _updateLimitsFromStates();
-        void _removeObstaclesNotInLimits();
-        void _configureWorkspace();
-        void _configureConfigspace();
 
-        void _runAlgorithm();
+        void _configureWorkspace(ArrtsParams params);
+        void _configureConfigspace(ArrtsParams params);
+        void _runAlgorithm(ArrtsParams params);
+
         void _rewireNodes(vector<ConfigspaceNode>& remainingNodes, ConfigspaceNode& addedNode);
         void _tryConnectToBestNeighbor(vector<ConfigspaceNode>& neighbors, ConfigspaceNode& newNode, ConfigspaceNode& parentNode);
         void _getFinalPath();
@@ -53,34 +39,7 @@ class DLL_EXPORT ArrtsService
         ConfigspaceNode _findBestNode();
 
     public:
-        ArrtsService();
-        ArrtsService(string dataDirectory);
-
-        State goalState() const;
-        void setGoalState(double x, double y, double theta);
-
-        State startState() const;
-        void setStartState(double x, double y, double theta);
-
-        Rectangle limits() const;
-        void setLimits(Point minPoint, Point maxPoint);
-        void setLimits(double minX, double minY, double maxX, double maxY);
-
-        Vehicle vehicle() const;
-        void setVehicle(vector<double> x, vector<double> y);
-
-        vector<Obstacle> obstacles() const;
-        Obstacle obstacles(int i) const;
-        void addObstacle(double x, double y, double r);
-        void addObstacles(const vector<double>& x, const vector<double>& y, const vector<double>& r);
-
-        void readStatesFromFile(FILE* file, bool isOptional = false);
-        void readVehicleFromFile(FILE* file, bool isOptional = false);
-        void readObstaclesFromFile(FILE* file, bool isOptional = false);
-        void initializeFromDataDirectory(string dataDirectory);
-
-        // runs ARRTS algorithm
-        vector<State> calculatePath(double goalRadius, int minNodeCount, int goalBiasCount, int maxNumNeighbors);
+        vector<State> calculatePath(ArrtsParams params);
 };
 
 #endif
