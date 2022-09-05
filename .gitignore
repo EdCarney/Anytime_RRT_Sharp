@@ -15,3 +15,6 @@ build
 Info.plist
 Anytime_RRT_Sharp/helper/*.asv
 Anytime_RRT_Sharp/helper/testData_*
+ArrtsLibraryData.xml
+**/helper/ArrtsLibrary
+defineArrtsLibrary.*
