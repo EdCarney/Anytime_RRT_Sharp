@@ -8,8 +8,12 @@ baseHppPath = fullfile(productPath, "src");
 
 % delete old versions
 delete defineArrtsLibrary.*
-delete ArrtsLibraryData.xml
-rmdir ArrtsLibrary s
+if (isfile("ArrtsLibraryData.xml"))
+    delete ArrtsLibraryData.xml
+end
+if (isfolder("ArrtsLibrary"))
+    rmdir ArrtsLibrary s
+end
 
 % create library array
 libs = ["libArrtsParams.a",...
