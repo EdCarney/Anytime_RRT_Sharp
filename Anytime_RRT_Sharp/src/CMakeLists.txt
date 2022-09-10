@@ -22,6 +22,7 @@ add_library(ArrtsEngine ArrtsEngine.cpp)
 add_library(ArrtsParams ArrtsParams.cpp)
 add_library(ArrtsService ArrtsService.cpp)
 
+# main libs
 list(APPEND EXTRA_LIBS ConfigspaceGraph)
 list(APPEND EXTRA_LIBS ConfigspaceNode)
 list(APPEND EXTRA_LIBS WorkspaceGraph)
@@ -32,6 +33,7 @@ list(APPEND EXTRA_LIBS ArrtsEngine)
 list(APPEND EXTRA_LIBS ArrtsParams)
 list(APPEND EXTRA_LIBS ArrtsService)
 
+# libs for testing
 list(APPEND TEST_LIBS ConfigspaceGraph)
 list(APPEND TEST_LIBS ConfigspaceNode)
 list(APPEND TEST_LIBS WorkspaceGraph)
