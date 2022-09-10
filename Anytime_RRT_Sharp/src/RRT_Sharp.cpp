@@ -10,7 +10,7 @@ int main(int argc, char** argv)
         for (int i = 1; i < argc; ++i)
             service.calculatePath(ArrtsParams(argv[i], uavGoalRadius));
     else
-        service.calculatePath(ArrtsParams("./test", uavGoalRadius));
+        service.calculatePath(ArrtsParams("./test", uavGoalRadius), "./test");
 
     return 0;
 }

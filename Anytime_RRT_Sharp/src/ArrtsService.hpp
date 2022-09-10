@@ -1,6 +1,7 @@
 #include <chrono>
 #include <string>
 #include <vector>
+#include "ArrtsEngine.hpp"
 #include "ArrtsParams.hpp"
 #include "ConfigspaceGraph.hpp"
 #include "ConfigspaceNode.hpp"
@@ -23,20 +24,15 @@ class DLL_EXPORT ArrtsService
         ConfigspaceNode _finalNode;
 
         void _buildDefaultService();
-
+        void _setFinalNode();
+        void _setFinalPathFromFinalNode();
         void _configureWorkspace(ArrtsParams params);
         void _configureConfigspace(ArrtsParams params);
         void _runAlgorithm(ArrtsParams params);
-
-        void _rewireNodes(vector<ConfigspaceNode>& remainingNodes, ConfigspaceNode& addedNode);
-        void _tryConnectToBestNeighbor(vector<ConfigspaceNode>& neighbors, ConfigspaceNode& newNode, ConfigspaceNode& parentNode);
-        void _setFinalPath();
-        void _setFinalNode();
-        bool _compareNodes(ConfigspaceNode n1, ConfigspaceNode n2);
+        void _exportDataToDirectory(string directory);
 
     public:
-        vector<State> DLL_EXPORT calculatePath(ArrtsParams params);
-        void DLL_EXPORT exportDataToDirectory(string directory);
+        vector<State> DLL_EXPORT calculatePath(ArrtsParams params, string dataExportDir = "");
 };
 
 #endif
