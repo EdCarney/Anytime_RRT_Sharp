@@ -2,7 +2,7 @@ clear all
 close all
 clc
 
-folder = "testData_20220903235850"; %% change this
+folder = "testData_20220905205014"; %% change this
 
 % generate params and solve problem
 service = clib.ArrtsLibrary.ArrtsService();
