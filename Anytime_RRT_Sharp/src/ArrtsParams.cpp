@@ -44,10 +44,10 @@ void ArrtsParams::_setLimitsFromStates()
     minX = _start.x() < _goal.x() ? _start.x() - buffer : _goal.x() - buffer;
     maxX = _start.x() > _goal.x() ? _start.x() + buffer : _goal.x() + buffer;
     minY = _start.y() < _goal.y() ? _start.y() - buffer : _goal.y() - buffer;
-    minY = _start.y() < _goal.y() ? _start.y() - buffer : _goal.y() - buffer;
+    maxY = _start.y() > _goal.y() ? _start.y() + buffer : _goal.y() + buffer;
     minZ = _start.z() < _goal.z() ? _start.z() - buffer : _goal.z() - buffer;
     maxZ = _start.z() > _goal.z() ? _start.z() + buffer : _goal.z() + buffer;
-    
+
     _limits = Rectangle(minX, minY, minZ, maxX, maxY, maxZ);
 }
 
