@@ -13,7 +13,7 @@ class WorkspaceGraph : Rectangle
     Vehicle _vehicle;
     void _buildWorkspaceGraph();
     bool _goalRegionReached;
-    bool _obstacleInFreespace(double x, double y, double radius) const;
+    bool _obstacleInFreespace(double x, double y, double z, double radius) const;
     bool _obstacleInFreespace(Obstacle o) const;
 
     public:
@@ -21,19 +21,17 @@ class WorkspaceGraph : Rectangle
         Vehicle vehicle();
         void setVehicle(Vehicle v);
         GoalState goalRegion();
-        void setGoalRegion(double x, double y, double theta, double radius);
+        void setGoalRegion(double x, double y, double z, double theta, double radius);
         void setGoalRegion(State goalState, double radius);
         vector<Obstacle> obstacles();
         Obstacle obstacles(int i);
-        void defineFreespace(double minX, double minY, double maxX, double maxY);
         void defineFreespace(Rectangle limits);
         bool checkAtGoal(GraphNode node);
         bool nodeIsSafe(Point p);
         bool pathIsSafe(Point p1, Point p2);
         bool pathIsSafe(Point p1, vector<Point> points);
-        void addObstacle(double x, double y, double radius);
+        void addObstacle(double x, double y, double z, double radius);
         void addObstacles(vector<Obstacle> obstacles);
-        bool readObstaclesFromFile(const char* obstacleFile);
         bool atGate(GraphNode node);
         WorkspaceGraph() { _buildWorkspaceGraph(); }
 };
