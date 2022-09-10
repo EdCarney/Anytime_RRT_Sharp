@@ -27,68 +27,19 @@ Obstacle WorkspaceGraph::obstacles(int i)
 
 void WorkspaceGraph::_buildWorkspaceGraph()
 {
-    _minPoint = Point(0, 0);
-    _maxPoint = Point(0, 0);
+    _minPoint = Point(0, 0, 0);
+    _maxPoint = Point(0, 0, 0);
     _goalRegionReached = false;
 }
 
-bool WorkspaceGraph::readObstaclesFromFile(const char* obstacleFile)
+void WorkspaceGraph::setGoalRegion(double x, double y, double z, double theta, double radius)
 {
-    FILE* pFile;
-
-    // open the obstacle file
-    pFile = fopen(obstacleFile, "r");
-
-    // check for null pointer
-    if (pFile == NULL)
-    {
-        printf("Unable to open file %s\n", obstacleFile);
-        return false;
-    }
-
-    // confirm reading in file
-    printf("Reading in obstacle data from %s.\n", obstacleFile);
-
-    // determine the number of obstacles in the obstacle file
-    int obstacleCount = 0;
-    double x, y, radius;
-    
-    while (fscanf(pFile, "%lf,%lf,%lf", &x, &y, &radius) != EOF)
-        ++obstacleCount;
-
-    printf("Number of obstacles is %d.\n", obstacleCount); // DEBUG STATEMENT TO CHECK # OF OBSTACLES
-
-    _obstacles.resize(obstacleCount);
-    // assign values
-    rewind(pFile);
-    for (int i = 0; i < obstacleCount; i++)
-    {
-        fscanf(pFile, "%lf,%lf,%lf", &x, &y, &radius);
-        _obstacles[i] = Obstacle(x, y, radius);
-    }
-
-    // close the file
-    fclose(pFile);
-
-    // done reading data
-    printf("Completed reading data.\n");
-    return true;
-}
-
-void WorkspaceGraph::setGoalRegion(double x, double y, double theta, double radius)
-{
-    _goalRegion = GoalState(x, y, radius, theta);
+    _goalRegion = GoalState(x, y, z, radius, theta);
 }
 
 void WorkspaceGraph::setGoalRegion(State goalState, double radius)
 {
-    _goalRegion = GoalState(goalState.x(), goalState.y(), radius, goalState.theta());
-}
-
-void WorkspaceGraph::defineFreespace(double minX, double minY, double maxX, double maxY)
-{
-    _minPoint = Point(minX, minY);
-    _maxPoint = Point(maxX, maxY);
+    _goalRegion = GoalState(goalState.x(), goalState.y(), goalState.z(), radius, goalState.theta());
 }
 
 void WorkspaceGraph::defineFreespace(Rectangle limits)
@@ -97,10 +48,11 @@ void WorkspaceGraph::defineFreespace(Rectangle limits)
     _maxPoint = limits.maxPoint();
 }
 
-bool WorkspaceGraph::_obstacleInFreespace(double x, double y, double radius) const
+bool WorkspaceGraph::_obstacleInFreespace(double x, double y, double z, double radius) const
 {
     if ((x - radius < maxX() && x + radius > minX()) &&
-        (y - radius < maxY() && y + radius > minY()))
+        (y - radius < maxY() && y + radius > minY()) &&
+        (z - radius < maxZ() && z + radius > minZ()))
         return true;
     
     return false;
@@ -108,12 +60,12 @@ bool WorkspaceGraph::_obstacleInFreespace(double x, double y, double radius) con
 
 bool WorkspaceGraph::_obstacleInFreespace(Obstacle o) const
 {
-    return _obstacleInFreespace(o.x(), o.y(), o.radius());
+    return _obstacleInFreespace(o.x(), o.y(), o.z(), o.radius());
 }
 
-void WorkspaceGraph::addObstacle(double x, double y, double radius)
+void WorkspaceGraph::addObstacle(double x, double y, double z, double radius)
 {
-    _obstacles.push_back(Obstacle(x, y, radius));
+    _obstacles.push_back(Obstacle(x, y, z, radius));
 }
 
 void WorkspaceGraph::addObstacles(vector<Obstacle> obstacles)
@@ -148,7 +100,7 @@ bool WorkspaceGraph::pathIsSafe(Point p1, Point p2)
 bool WorkspaceGraph::checkAtGoal(GraphNode node)
 {
     // update vehicle state to temp node
-    State s(node.x(), node.y(), node.theta());
+    State s(node.x(), node.y(), node.z(), node.theta());
     _vehicle.updateState(s);
 
     double distToGoal = _vehicle.state().distanceTo(_goalRegion);

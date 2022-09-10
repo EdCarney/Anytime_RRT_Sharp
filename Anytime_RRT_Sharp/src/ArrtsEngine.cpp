@@ -65,7 +65,9 @@ void ArrtsEngine::runArrtsOnGraphs(ConfigspaceGraph& configGraph, WorkspaceGraph
     while(!goalRegionReached || count < params.minNodeCount())
     {
         // create a new node (not yet connected to the graph)
-        tempNode = (count++ % goalBiasCount != 0) ? configGraph.generateRandomNode() : configGraph.generateBiasedNode(workGraph.goalRegion().x(), workGraph.goalRegion().y());
+        tempNode = (count++ % goalBiasCount != 0)
+                 ? configGraph.generateRandomNode()
+                 : configGraph.generateBiasedNode(workGraph.goalRegion().x(), workGraph.goalRegion().y(), workGraph.goalRegion().z());
         // find the closest graph node and set it as the parent
         parentNode = configGraph.findClosestNode(tempNode);
 

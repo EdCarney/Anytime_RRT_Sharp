@@ -3,8 +3,8 @@
 void ConfigspaceGraph::buildGraph()
 {
     numNodeInd = 0;
-    _minPoint = Point(0, 0);
-    _maxPoint = Point(0, 0);
+    _minPoint = Point(0, 0, 0);
+    _maxPoint = Point(0, 0, 0);
     minTheta = 0;
     maxTheta = 0;
     freeSpaceMeasure = 0;
@@ -74,17 +74,18 @@ vector<ConfigspaceNode> ConfigspaceGraph::removeNode(vector<ConfigspaceNode>& no
 
 ConfigspaceNode ConfigspaceGraph::generateRandomNode()
 {
-    double randX, randY;
+    double randX, randY, randZ;
 
     randX = minX() + (minX() + static_cast <double> (rand())) / (static_cast <double> (RAND_MAX / (maxX() - minX())));
     randY = minY() + (minY() + static_cast <double> (rand())) / (static_cast <double> (RAND_MAX / (maxY() - minY())));
+    randZ = minZ() + (minZ() + static_cast <double> (rand())) / (static_cast <double> (RAND_MAX / (maxZ() - minZ())));
 
-    return ConfigspaceNode(randX, randY, 0, 0, 0, 0);
+    return ConfigspaceNode(randX, randY, randZ, 0, 0, 0, 0);
 }
 
-ConfigspaceNode ConfigspaceGraph::generateBiasedNode(double biasedX, double biasedY)
+ConfigspaceNode ConfigspaceGraph::generateBiasedNode(double biasedX, double biasedY, double biasedZ)
 {
-    return ConfigspaceNode(biasedX, biasedY, 0, 0, 0, 0);
+    return ConfigspaceNode(biasedX, biasedY, biasedZ, 0, 0, 0, 0);
 }
 
 double ConfigspaceGraph::_computeRadius(double epsilon)
@@ -173,7 +174,7 @@ void ConfigspaceGraph::setRootNode(State state)
     nodes.clear();
     _parentChildMap.clear();
     numNodeInd = 0;
-    addNode(ConfigspaceNode(state.x(), state.y(), state.theta(), numNodeInd, 0, 0));
+    addNode(ConfigspaceNode(state.x(), state.y(), state.z(), state.theta(), numNodeInd, 0, 0));
 }
 
 int ConfigspaceGraph::addNode(ConfigspaceNode node)
@@ -235,23 +236,25 @@ ConfigspaceNode ConfigspaceGraph::extendToNode(GraphNode parentNode, GraphNode n
 {
     ConfigspaceNode currentNode;
     double dist = parentNode.distanceTo(newNode);
-    double x, y, theta, cost;
+    double x, y, z, theta, cost;
 
     if (dist >= maxDist)
     {
         x = parentNode.x() + ((newNode.x() - parentNode.x()) / dist) * maxDist;
         y = parentNode.y() + ((newNode.y() - parentNode.y()) / dist) * maxDist;
+        z = parentNode.z() + ((newNode.z() - parentNode.z()) / dist) * maxDist;
         theta = 0;
     }
     else
     {
         x = newNode.x();
         y = newNode.y();
+        z = newNode.z();
         theta = 0;
     }
-    cost = nodes[parentNode.id()].cost() + computeCost(parentNode, Point(x, y));
+    cost = nodes[parentNode.id()].cost() + computeCost(parentNode, Point(x, y, z));
 
-    return ConfigspaceNode(x, y, theta, 0, parentNode.id(), cost);
+    return ConfigspaceNode(x, y, z, theta, 0, parentNode.id(), cost);
 }
 
 ConfigspaceNode ConfigspaceGraph::connectNodes(ConfigspaceNode parentNode, ConfigspaceNode newNode)

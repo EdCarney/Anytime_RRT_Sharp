@@ -6,10 +6,11 @@ Point::Point()
     _y = 0;
 }
 
-Point::Point(double x, double y)
+Point::Point(double x, double y, double z)
 {
     _x = x;
     _y = y;
+    _z = z;
 }
 
 double Point::x() const
@@ -22,9 +23,17 @@ double Point::y() const
     return _y;
 }
 
-double Point::distanceTo(Point p) const
+double Point::z() const
 {
-    return hypot(_x - p.x(), _y - p.y());
+    return _z;
+}
+
+double Point::distanceTo(Point& p) const
+{
+    double xVal = pow(_x - p.x(), 2);
+    double yVal = pow(_y - p.y(), 2);
+    double zVal = pow(_z - p.z(), 2);
+    return sqrt(xVal + yVal + zVal);
 }
 
 Line::Line()
@@ -38,7 +47,7 @@ Line::Line()
     _c = 0;
 }
 
-Line::Line(Point p1, Point p2)
+Line::Line(Point& p1, Point& p2)
 {
     _p1 = p1;
     _p2 = p2;
@@ -60,51 +69,85 @@ double Line::length() const
     return _length;
 }
 
-double Line::dotProduct(Line line) const
-{
-    double dx1 = _p2.x() - _p1.x();
-    double dy1 = _p2.y() - _p1.y();
-    double dx2 = line.p2().x() - line.p1().x();
-    double dy2 = line.p2().y() - line.p1().y();
-
-    return dx1 * dx2 + dy1 * dy2;
-}
-
-Circle::Circle()
+Vector::Vector()
 {
     _x = 0;
     _y = 0;
+    _z = 0;
+    _magnitude = 0;
+}
+
+Vector::Vector(double x, double y, double z)
+{
+    _x = x;
+    _y = y;
+    _z = z;
+    _magnitude = sqrt(_x*_x + _y*_y + _z*_z);
+}
+
+double Vector::x() const
+{
+    return _x;
+}
+
+double Vector::y() const
+{
+    return _y;
+}
+
+double Vector::z() const
+{
+    return _z;
+}
+
+double Vector::magnitude() const
+{
+    return _magnitude;
+}
+
+double Vector::dot(Vector& v) const
+{
+    return x() * v.x() + y() * v.y() + z() * v.z();
+}
+
+Sphere::Sphere()
+{
+    _x = 0;
+    _y = 0;
+    _z = 0;
     _radius = 0;
     _area = 0;
 }
 
-Circle::Circle(Point p, double radius)
+Sphere::Sphere(Point p, double radius)
 {
     _x = p.x();
     _y = p.y();
+    _z = p.z();
     _radius = radius;
-    _area = _calculateArea();
+    _area = _calculateVolume();
 }
 
-Circle::Circle(double x, double y, double radius)
+Sphere::Sphere(double x, double y, double z, double radius)
 {
     _x = x;
     _y = y;
+    _z = z;
     _radius = radius;
-    _area = _calculateArea();
+    _area = _calculateVolume();
 }
 
-double Circle::_calculateArea()
+double Sphere::_calculateVolume() const
 {
-    return M_PI * _radius * _radius;
+    return (4.0/3.0) * M_PI * pow(radius(), 3);
 }
 
-double Circle::radius() const
+double Sphere::radius() const
 {
     return _radius;
 }
 
-double Circle::area() const
+double Sphere::volume() const
 {
     return _area;
 }
@@ -121,10 +164,10 @@ Rectangle::Rectangle(Point minPoint, Point maxPoint)
     _maxPoint = maxPoint;
 }
 
-Rectangle::Rectangle(double minX, double minY, double maxX, double maxY)
+Rectangle::Rectangle(double minX, double minY, double minZ, double maxX, double maxY, double maxZ)
 {
-    _minPoint = Point(minX, minY);
-    _maxPoint = Point(maxX, maxY);
+    _minPoint = Point(minX, minY, minZ);
+    _maxPoint = Point(maxX, maxY, maxZ);
 }
 
 Point Rectangle::minPoint() const
@@ -147,6 +190,11 @@ double Rectangle::minY() const
     return _minPoint.y();
 }
 
+double Rectangle::minZ() const
+{
+    return _minPoint.z();
+}
+
 double Rectangle::maxX() const
 {
     return _maxPoint.x();
@@ -157,10 +205,16 @@ double Rectangle::maxY() const
     return _maxPoint.y();
 }
 
+double Rectangle::maxZ() const
+{
+    return _maxPoint.z();
+}
+
 State::State()
 {
     _x = 0;
     _y = 0;
+    _z = 0;
     _theta = 0;
 }
 
@@ -168,6 +222,7 @@ State::State(GraphNode node)
 {
     _x = node.x();
     _y = node.y();
+    _z = node.z();
     _theta = node.theta();
 }
 
@@ -175,13 +230,15 @@ State::State(Point p, double theta)
 {
     _x = p.x();
     _y = p.y();
+    _z = p.z();
     _theta = theta;
 }
 
-State::State(double x, double y, double theta)
+State::State(double x, double y, double z, double theta)
 {
     _x = x;
     _y = y;
+    _z = z;
     _theta = theta;
 }
 
@@ -194,14 +251,16 @@ GoalState::GoalState()
 {
     _x = 0;
     _y = 0;
+    _z = 0;
     _radius = 0;
     _theta = 0;
 }
 
-GoalState::GoalState(double x, double y, double radius, double theta)
+GoalState::GoalState(double x, double y, double z, double radius, double theta)
 {
     _x = x;
     _y = y;
+    _z = z;
     _radius = radius;
     _theta = theta;
 }
@@ -226,15 +285,16 @@ GraphNode::GraphNode(Point p, double theta, int id, int parentId)
     _buildGraphNode(p, theta, id, parentId);
 }
 
-GraphNode::GraphNode(double x, double y, double theta, int id, int parentId)
+GraphNode::GraphNode(double x, double y, double z, double theta, int id, int parentId)
 {
-    _buildGraphNode(x, y, theta, id, parentId);
+    _buildGraphNode(x, y, z, theta, id, parentId);
 }
 
 void GraphNode::_buildGraphNode()
 {
     _x = 0;
     _y = 0;
+    _z = 0;
     _theta = 0;
     _id = 0;
     _parentId = 0;
@@ -244,6 +304,7 @@ void GraphNode::_buildGraphNode(GraphNode n)
 {
     _x = n.x();
     _y = n.y();
+    _z = n.z();
     _theta = n.theta();
     _id = n.id();
     _parentId = n.parentId();
@@ -253,15 +314,17 @@ void GraphNode::_buildGraphNode(Point p, double theta, int id, int parentId)
 {
     _x = p.x();
     _y = p.y();
+    _z = p.z();
     _theta = theta;
     _id = id;
     _parentId = parentId;
 }
 
-void GraphNode::_buildGraphNode(double x, double y, double theta, int id, int parentId)
+void GraphNode::_buildGraphNode(double x, double y, double z, double theta, int id, int parentId)
 {
     _x = x;
     _y = y;
+    _z = z;
     _theta = theta;
     _id = id;
     _parentId = parentId;

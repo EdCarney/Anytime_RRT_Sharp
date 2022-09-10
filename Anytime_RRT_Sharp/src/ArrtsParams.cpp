@@ -33,19 +33,22 @@ ArrtsParams::ArrtsParams(string dataDirectory, double goalRadius, int minNodeCou
 
 void ArrtsParams::_setLimitsFromStates()
 {
-    double minX, maxX, minY, maxY;
+    double minX, maxX, minY, maxY, minZ, maxZ;
 
     // 50% buffer
     double bufferX = abs(_start.x() - _goal.x());
     double bufferY = abs(_start.y() - _goal.y());
-    double buffer = max(bufferX, bufferY) * 0.5;
+    double bufferZ = abs(_start.z() - _goal.z());
+    double buffer = max({ bufferX, bufferY, bufferZ }) * 0.5;
 
     minX = _start.x() < _goal.x() ? _start.x() - buffer : _goal.x() - buffer;
     maxX = _start.x() > _goal.x() ? _start.x() + buffer : _goal.x() + buffer;
     minY = _start.y() < _goal.y() ? _start.y() - buffer : _goal.y() - buffer;
-    maxY = _start.y() > _goal.y() ? _start.y() + buffer : _goal.y() + buffer;
+    minY = _start.y() < _goal.y() ? _start.y() - buffer : _goal.y() - buffer;
+    minZ = _start.z() < _goal.z() ? _start.z() - buffer : _goal.z() - buffer;
+    maxZ = _start.z() > _goal.z() ? _start.z() + buffer : _goal.z() + buffer;
     
-    _limits = Rectangle(minX, minY, maxX, maxY);
+    _limits = Rectangle(minX, minY, minZ, maxX, maxY, maxZ);
 }
 
 void ArrtsParams::_removeObstaclesNotInLimits()
@@ -62,7 +65,7 @@ void ArrtsParams::_calculateObstacleVolume()
 {
     _obstacleVolume = 0.0;
     for (Obstacle o : _obstacles)
-        _obstacleVolume += o.area();
+        _obstacleVolume += o.volume();
 }
 
 void ArrtsParams::_readStatesFromFile(FILE* file, bool isOptional)
@@ -75,17 +78,17 @@ void ArrtsParams::_readStatesFromFile(FILE* file, bool isOptional)
         return;
     }
 
-    double startX, startY, startTheta;
-    double goalX, goalY, goalTheta;
+    double startX, startY, startZ, startTheta;
+    double goalX, goalY, goalZ, goalTheta;
 
     // ignore first line (formatting)
     fscanf(file, "%*[^\n]\n");
-    fscanf(file, "%lf,%lf,%lf", &startX, &startY, &startTheta);
-    fscanf(file, "%lf,%lf,%lf", &goalX, &goalY, &goalTheta);
+    fscanf(file, "%lf,%lf,%lf,%lf", &startX, &startY, &startZ, &startTheta);
+    fscanf(file, "%lf,%lf,%lf,%lf", &goalX, &goalY, &goalZ, &goalTheta);
     fclose(file);
 
-    _start = State(startX, startY, startTheta);
-    _goal = State(goalX, goalY, goalTheta);
+    _start = State(startX, startY, startZ, startTheta);
+    _goal = State(goalX, goalY, goalZ, goalTheta);
 }
 
 void ArrtsParams::_readVehicleFromFile(FILE* file, bool isOptional)
@@ -112,13 +115,13 @@ void ArrtsParams::_readObstaclesFromFile(FILE* file, bool isOptional)
         return;
     }
 
-    double x, y, r;
+    double x, y, z, r;
     _obstacles.clear();
 
     // ignore first line (formatting)
     fscanf(file, "%*[^\n]\n");
-    while (fscanf(file, "%lf,%lf,%lf", &x, &y, &r) != EOF)
-        _obstacles.push_back(Obstacle(x, y, r));
+    while (fscanf(file, "%lf,%lf,%lf,%lf", &x, &y, &z, &r) != EOF)
+        _obstacles.push_back(Obstacle(x, y, z, r));
 
     fclose(file);
 }

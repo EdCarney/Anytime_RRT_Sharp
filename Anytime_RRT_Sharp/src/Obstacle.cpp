@@ -1,10 +1,5 @@
 #include "Obstacle.hpp"
 
-bool approximatelyEqual(double val1, double val2, double delta = 0.001)
-{
-    return abs(val1 - val2) < delta;
-}
-
 bool Obstacle::intersects(Point point)
 {
     double dist = this->distanceTo(point);
@@ -13,53 +8,61 @@ bool Obstacle::intersects(Point point)
 
 bool Obstacle::intersects(Line line)
 {
-    //https://mathworld.wolfram.com/Circle-LineIntersection.html
-    // center about circle
-    double x1 = line.p1().x() - _x;
-    double x2 = line.p2().x() - _x;
-    double y1 = line.p1().y() - _y;
-    double y2 = line.p2().y() - _y;
+    // http://paulbourke.net/geometry/circlesphere/index.html#linesphere
+    double x1 = line.p1().x();
+    double y1 = line.p1().y();
+    double z1 = line.p1().z();
+    double x2 = line.p2().x();
+    double y2 = line.p2().y();
+    double z2 = line.p2().z();
 
     double dx = x2 - x1;
     double dy = y2 - y1;
-    double dr = hypot(dx, dy);
-    double D = x1*y2 - x2*y1;
+    double dz = z2 - z1;
 
-    double det = _radius*_radius * dr*dr - D*D;
+    double a = dx*dx + dy*dy + dz*dz;
+    double b = 2 * (dx * (x1 - x()) + dy * (y1 - y()) + dz * (z1 - z()));
+    double c = x()*x() + y()*y() + z()*z();
+
+    c += x1*x1 + y1*y1 + z1*z1;
+    c -= 2 * (x()*x1 + y()*y1 + z()*z1);
+    c -= radius()*radius();
+
+    double det = b*b - 4*a*c;
 
     // no intersection
     if (det < 0)
         return false;
 
     // get intersection points
-    int sgn_dy = dy < 0 ? -1 : 1;
+    double u1 = (-b + sqrt(det)) / (2 * a);
+    double u2 = (-b - sqrt(det)) / (2 * a);
 
-    double xi1 = ((D*dy + sgn_dy*dx*sqrt(det)) / (dr*dr)) + _x;
-    double xi2 = ((D*dy - sgn_dy*dx*sqrt(det)) / (dr*dr)) + _x;
-    double yi1 = ((-D*dx + abs(dy)*sqrt(det)) / (dr*dr)) + _y;
-    double yi2 = ((-D*dx - abs(dy)*sqrt(det)) / (dr*dr)) + _y;
+    double xi1 = x1 + u1 * (x2 - x1);
+    double yi1 = y1 + u1 * (y2 - y1);
+    double zi1 = z1 + u1 * (z2 - z1);
+
+    double xi2 = x1 + u2 * (x2 - x1);
+    double yi2 = y1 + u2 * (y2 - y1);
+    double zi2 = z1 + u2 * (z2 - z1);
 
     // detmine if either point lies on line segment
     // https://lucidar.me/en/mathematics/check-if-a-point-belongs-on-a-line-segment/
-    double kac1 = line.dotProduct(Line(line.p1(), Point(xi1, yi1)));
-    double kac2 = line.dotProduct(Line(line.p1(), Point(xi2, yi2)));
-    double kab = line.dotProduct(line);
+    Vector kab(x2 - x1, y2 - y1, z2 - z1);
+    Vector kac1(xi1 - x1, yi1 - y1, zi1 - z1);
+    Vector kac2(xi2 - x1, yi2 - y1, zi2 - z1);
 
-    if (approximatelyEqual(kac1, 0) || approximatelyEqual(kac2, 0) || approximatelyEqual(kac1, kab) || approximatelyEqual(kac2, kab))
-    {
-        // at least one intersection point is coincident
+    double dotKab = kab.dot(kab);
+    double dotKac1 = kac1.dot(kab);
+    double dotKac2 = kac2.dot(kab);
+
+    if ((dotKac1 >= 0 && dotKac1 <= dotKab) || (dotKac2 >= 0 && dotKac2 <= dotKab))
         return true;
-    }
-    else if ((kac1 > 0 && kac1 < kab) || (kac2 > 0 && kac2 < kab))
-    {
-        // at least one intersection point lies on line segment
-        return true;
-    }
     
     return false;
 }
 
-bool Obstacle::intersects(Circle circle)
+bool Obstacle::intersects(Sphere circle)
 {
     double dist = this->distanceTo(circle);
     return dist <= _radius + circle.radius();

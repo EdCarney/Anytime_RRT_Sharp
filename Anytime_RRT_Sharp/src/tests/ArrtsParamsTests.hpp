@@ -3,138 +3,138 @@
 
 #pragma region ArrtsParams_StartState
 
-TEST(ArrtsParams_StartState, Initialize_CheckVals)
-{
-    State start(5, 6, 7);
-    State goal(9, 10, -5);
-    vector<Obstacle> obstacles;
-    double goalRadius = 5.5;
-    ArrtsParams params(start, goal, obstacles, goalRadius);
+// TEST(ArrtsParams_StartState, Initialize_CheckVals)
+// {
+//     State start(5, 6, 7);
+//     State goal(9, 10, -5);
+//     vector<Obstacle> obstacles;
+//     double goalRadius = 5.5;
+//     ArrtsParams params(start, goal, obstacles, goalRadius);
 
-    State state = params.start();
-    GTEST_ASSERT_EQ(state.x(), 5);
-    GTEST_ASSERT_EQ(state.y(), 6);
-    GTEST_ASSERT_EQ(state.theta(), 7);
-}
+//     State state = params.start();
+//     GTEST_ASSERT_EQ(state.x(), 5);
+//     GTEST_ASSERT_EQ(state.y(), 6);
+//     GTEST_ASSERT_EQ(state.theta(), 7);
+// }
 
-TEST(ArrtsParams_StartState, InitializeFromDataDirectory_CheckVals)
-{
-    double goalRadius = 5.5;
-    ArrtsParams params("./test", goalRadius);
+// TEST(ArrtsParams_StartState, InitializeFromDataDirectory_CheckVals)
+// {
+//     double goalRadius = 5.5;
+//     ArrtsParams params("./test", goalRadius);
 
-    GTEST_ASSERT_EQ(params.start().x(), 5);
-    GTEST_ASSERT_EQ(params.start().y(), 60);
-    GTEST_ASSERT_EQ(params.start().theta(), 0);
-}
+//     GTEST_ASSERT_EQ(params.start().x(), 5);
+//     GTEST_ASSERT_EQ(params.start().y(), 60);
+//     GTEST_ASSERT_EQ(params.start().theta(), 0);
+// }
 
-#pragma endregion //ArrtsParams_StartState
+// #pragma endregion //ArrtsParams_StartState
 
-#pragma region ArrtsParams_GoalState
+// #pragma region ArrtsParams_GoalState
 
-TEST(ArrtsParams_GoalState, Initialize_CheckVals)
-{
-    State start(5, 6, 7);
-    State goal(9, 10, -5);
-    vector<Obstacle> obstacles;
-    double goalRadius = 5.5;
-    ArrtsParams params(start, goal, obstacles, goalRadius);
+// TEST(ArrtsParams_GoalState, Initialize_CheckVals)
+// {
+//     State start(5, 6, 7);
+//     State goal(9, 10, -5);
+//     vector<Obstacle> obstacles;
+//     double goalRadius = 5.5;
+//     ArrtsParams params(start, goal, obstacles, goalRadius);
 
-    State state = params.goal();
-    GTEST_ASSERT_EQ(state.x(), 9);
-    GTEST_ASSERT_EQ(state.y(), 10);
-    GTEST_ASSERT_EQ(state.theta(), -5);
-}
+//     State state = params.goal();
+//     GTEST_ASSERT_EQ(state.x(), 9);
+//     GTEST_ASSERT_EQ(state.y(), 10);
+//     GTEST_ASSERT_EQ(state.theta(), -5);
+// }
 
-TEST(ArrtsParams_GoalState, InitializeFromDataDirectory_CheckVals)
-{
-    double goalRadius = 5.5;
-    ArrtsParams params("./test", goalRadius);
+// TEST(ArrtsParams_GoalState, InitializeFromDataDirectory_CheckVals)
+// {
+//     double goalRadius = 5.5;
+//     ArrtsParams params("./test", goalRadius);
 
-    GTEST_ASSERT_EQ(params.goal().x(), 100);
-    GTEST_ASSERT_EQ(params.goal().y(), 60);
-    GTEST_ASSERT_EQ(params.goal().theta(), 0);
-}
+//     GTEST_ASSERT_EQ(params.goal().x(), 100);
+//     GTEST_ASSERT_EQ(params.goal().y(), 60);
+//     GTEST_ASSERT_EQ(params.goal().theta(), 0);
+// }
 
-#pragma endregion //ArrtsParams_GoalState
+// #pragma endregion //ArrtsParams_GoalState
 
-#pragma region ArrtsParams_Obstacles
+// #pragma region ArrtsParams_Obstacles
 
-TEST(ArrtsParams_Obstacles, InitializeOneObstacle_CheckNum)
-{
-    State start(5, 6, 7);
-    State goal(9, 10, -5);
-    vector<Obstacle> obstacles = { Obstacle(1, 1, 1) };
-    double goalRadius = 5.5;
-    ArrtsParams params(start, goal, obstacles, goalRadius);
+// TEST(ArrtsParams_Obstacles, InitializeOneObstacle_CheckNum)
+// {
+//     State start(5, 6, 7);
+//     State goal(9, 10, -5);
+//     vector<Obstacle> obstacles = { Obstacle(1, 1, 1) };
+//     double goalRadius = 5.5;
+//     ArrtsParams params(start, goal, obstacles, goalRadius);
 
-    GTEST_ASSERT_EQ(params.obstacles().size(), 1);
-}
+//     GTEST_ASSERT_EQ(params.obstacles().size(), 1);
+// }
 
-TEST(ArrtsParams_Obstacles, InitializeMultipleObstacle_CheckNum)
-{
-    State start(5, 6, 7);
-    State goal(9, 10, -5);
-    vector<Obstacle> obstacles = { Obstacle(1, 1, 1), Obstacle(-1, -1, 3), Obstacle(0, 0, 5)};
-    double goalRadius = 5.5;
-    ArrtsParams params(start, goal, obstacles, goalRadius);
+// TEST(ArrtsParams_Obstacles, InitializeMultipleObstacle_CheckNum)
+// {
+//     State start(5, 6, 7);
+//     State goal(9, 10, -5);
+//     vector<Obstacle> obstacles = { Obstacle(1, 1, 1), Obstacle(-1, -1, 3), Obstacle(0, 0, 5)};
+//     double goalRadius = 5.5;
+//     ArrtsParams params(start, goal, obstacles, goalRadius);
 
-    GTEST_ASSERT_EQ(params.obstacles().size(), 3);
-}
+//     GTEST_ASSERT_EQ(params.obstacles().size(), 3);
+// }
 
-TEST(ArrtsParams_Obstacles, InitializeOneObstacle_CheckVals)
-{
-    State start(5, 6, 7);
-    State goal(9, 10, -5);
-    vector<Obstacle> obstacles = { Obstacle(1, 2, 3) };
-    double goalRadius = 5.5;
-    ArrtsParams params(start, goal, obstacles, goalRadius);
+// TEST(ArrtsParams_Obstacles, InitializeOneObstacle_CheckVals)
+// {
+//     State start(5, 6, 7);
+//     State goal(9, 10, -5);
+//     vector<Obstacle> obstacles = { Obstacle(1, 2, 3) };
+//     double goalRadius = 5.5;
+//     ArrtsParams params(start, goal, obstacles, goalRadius);
 
-    GTEST_ASSERT_EQ(params.obstacles()[0].x(), 1);
-    GTEST_ASSERT_EQ(params.obstacles()[0].y(), 2);
-    GTEST_ASSERT_EQ(params.obstacles()[0].radius(), 3);
-}
+//     GTEST_ASSERT_EQ(params.obstacles()[0].x(), 1);
+//     GTEST_ASSERT_EQ(params.obstacles()[0].y(), 2);
+//     GTEST_ASSERT_EQ(params.obstacles()[0].radius(), 3);
+// }
 
-TEST(ArrtsParams_Obstacles, InitializeMultipleObstacle_CheckVals)
-{
-    State start(5, 6, 7);
-    State goal(9, 10, -5);
-    vector<Obstacle> obstacles = { Obstacle(1, 2, 3), Obstacle(-1, -1, 3), Obstacle(0, 0, 5)};
-    double goalRadius = 5.5;
-    ArrtsParams params(start, goal, obstacles, goalRadius);
+// TEST(ArrtsParams_Obstacles, InitializeMultipleObstacle_CheckVals)
+// {
+//     State start(5, 6, 7);
+//     State goal(9, 10, -5);
+//     vector<Obstacle> obstacles = { Obstacle(1, 2, 3), Obstacle(-1, -1, 3), Obstacle(0, 0, 5)};
+//     double goalRadius = 5.5;
+//     ArrtsParams params(start, goal, obstacles, goalRadius);
 
-    GTEST_ASSERT_EQ(params.obstacles(0).x(), 1);
-    GTEST_ASSERT_EQ(params.obstacles(0).y(), 2);
-    GTEST_ASSERT_EQ(params.obstacles(0).radius(), 3);
+//     GTEST_ASSERT_EQ(params.obstacles(0).x(), 1);
+//     GTEST_ASSERT_EQ(params.obstacles(0).y(), 2);
+//     GTEST_ASSERT_EQ(params.obstacles(0).radius(), 3);
     
-    GTEST_ASSERT_EQ(params.obstacles(1).x(), -1);
-    GTEST_ASSERT_EQ(params.obstacles(1).y(), -1);
-    GTEST_ASSERT_EQ(params.obstacles(1).radius(), 3);
+//     GTEST_ASSERT_EQ(params.obstacles(1).x(), -1);
+//     GTEST_ASSERT_EQ(params.obstacles(1).y(), -1);
+//     GTEST_ASSERT_EQ(params.obstacles(1).radius(), 3);
 
-    GTEST_ASSERT_EQ(params.obstacles(2).x(), 0);
-    GTEST_ASSERT_EQ(params.obstacles(2).y(), 0);
-    GTEST_ASSERT_EQ(params.obstacles(2).radius(), 5);
-}
+//     GTEST_ASSERT_EQ(params.obstacles(2).x(), 0);
+//     GTEST_ASSERT_EQ(params.obstacles(2).y(), 0);
+//     GTEST_ASSERT_EQ(params.obstacles(2).radius(), 5);
+// }
 
-TEST(ArrtsParams_Obstacles, AddFromFile_CheckVals)
-{
-    double goalRadius = 5.5;
-    ArrtsParams params("./test", goalRadius);
+// TEST(ArrtsParams_Obstacles, AddFromFile_CheckVals)
+// {
+//     double goalRadius = 5.5;
+//     ArrtsParams params("./test", goalRadius);
 
-    Obstacle obs1 = params.obstacles(0);
-    Obstacle obs2 = params.obstacles(11);
-    Obstacle obs3 = params.obstacles(22);
+//     Obstacle obs1 = params.obstacles(0);
+//     Obstacle obs2 = params.obstacles(11);
+//     Obstacle obs3 = params.obstacles(22);
 
-    GTEST_ASSERT_EQ(obs1.x(), 80);
-    GTEST_ASSERT_EQ(obs2.x(), 35);
-    GTEST_ASSERT_EQ(obs3.x(), 60);
+//     GTEST_ASSERT_EQ(obs1.x(), 80);
+//     GTEST_ASSERT_EQ(obs2.x(), 35);
+//     GTEST_ASSERT_EQ(obs3.x(), 60);
 
-    GTEST_ASSERT_EQ(obs1.y(), 40);
-    GTEST_ASSERT_EQ(obs2.y(), 80);
-    GTEST_ASSERT_EQ(obs3.y(), 100);
+//     GTEST_ASSERT_EQ(obs1.y(), 40);
+//     GTEST_ASSERT_EQ(obs2.y(), 80);
+//     GTEST_ASSERT_EQ(obs3.y(), 100);
 
-    GTEST_ASSERT_EQ(obs1.radius(), 8);
-    GTEST_ASSERT_EQ(obs2.radius(), 8);
-    GTEST_ASSERT_EQ(obs3.radius(), 8);
-}
+//     GTEST_ASSERT_EQ(obs1.radius(), 8);
+//     GTEST_ASSERT_EQ(obs2.radius(), 8);
+//     GTEST_ASSERT_EQ(obs3.radius(), 8);
+// }
 
 #pragma endregion //ArrtsParams_Obstacles

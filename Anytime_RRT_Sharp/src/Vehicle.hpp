@@ -25,11 +25,11 @@ class DLL_EXPORT Vehicle
 
 public:
     Vehicle();
-    Vehicle(vector<double> x, vector<double> y);
+    Vehicle(vector<double> x, vector<double> y, vector<double> z);
     Vehicle(FILE *file);
     void updateState(State newState);
-    void addOffsetNode(double x, double y);
-    void addOffsetNodes(vector<double> x, vector<double> y);
+    void addOffsetNode(double x, double y, double z);
+    void addOffsetNodes(vector<double> x, vector<double> y, vector<double> z);
     void addOffsetNodesFromFile(FILE *file);
     vector<Point> nodes();
     Point nodes(int i);
