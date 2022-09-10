@@ -18,16 +18,16 @@ TEST(ArrtsParams_StartState, Initialize_CheckVals)
     GTEST_ASSERT_EQ(state.theta(), 8);
 }
 
-// TODO: fix state initialization from directory
-// TEST(ArrtsParams_StartState, InitializeFromDataDirectory_CheckVals)
-// {
-//     double goalRadius = 5.5;
-//     ArrtsParams params("./test", goalRadius);
+TEST(ArrtsParams_StartState, InitializeFromDataDirectory_CheckVals)
+{
+    double goalRadius = 5.5;
+    ArrtsParams params("./test", goalRadius);
 
-//     GTEST_ASSERT_EQ(params.start().x(), 5);
-//     GTEST_ASSERT_EQ(params.start().y(), 60);
-//     GTEST_ASSERT_EQ(params.start().theta(), 0);
-// }
+    GTEST_ASSERT_EQ(params.start().x(), 5);
+    GTEST_ASSERT_EQ(params.start().y(), 0);
+    GTEST_ASSERT_EQ(params.start().z(), 100);
+    GTEST_ASSERT_EQ(params.start().theta(), 0);
+}
 
 #pragma endregion //ArrtsParams_StartState
 
@@ -48,16 +48,16 @@ TEST(ArrtsParams_GoalState, Initialize_CheckVals)
     GTEST_ASSERT_EQ(state.theta(), -5);
 }
 
-// TODO: fix state initialization from directory
-// TEST(ArrtsParams_GoalState, InitializeFromDataDirectory_CheckVals)
-// {
-//     double goalRadius = 5.5;
-//     ArrtsParams params("./test", goalRadius);
+TEST(ArrtsParams_GoalState, InitializeFromDataDirectory_CheckVals)
+{
+    double goalRadius = 5.5;
+    ArrtsParams params("./test", goalRadius);
 
-//     GTEST_ASSERT_EQ(params.goal().x(), 100);
-//     GTEST_ASSERT_EQ(params.goal().y(), 60);
-//     GTEST_ASSERT_EQ(params.goal().theta(), 0);
-// }
+    GTEST_ASSERT_EQ(params.goal().x(), 100);
+    GTEST_ASSERT_EQ(params.goal().y(), 60);
+    GTEST_ASSERT_EQ(params.goal().z(), 5);
+    GTEST_ASSERT_EQ(params.goal().theta(), 0);
+}
 
 #pragma endregion //ArrtsParams_GoalState
 
@@ -124,26 +124,30 @@ TEST(ArrtsParams_Obstacles, InitializeMultipleObstacle_CheckVals)
 }
 
 // TODO: fix obstacle initialization from directory
-// TEST(ArrtsParams_Obstacles, AddFromFile_CheckVals)
-// {
-//     double goalRadius = 5.5;
-//     ArrtsParams params("./test", goalRadius);
+TEST(ArrtsParams_Obstacles, AddFromFile_CheckVals)
+{
+    double goalRadius = 5.5;
+    ArrtsParams params("./test", goalRadius);
 
-//     Obstacle obs1 = params.obstacles(0);
-//     Obstacle obs2 = params.obstacles(11);
-//     Obstacle obs3 = params.obstacles(22);
+    Obstacle obs1 = params.obstacles(0);
+    Obstacle obs2 = params.obstacles(11);
+    Obstacle obs3 = params.obstacles(22);
 
-//     GTEST_ASSERT_EQ(obs1.x(), 80);
-//     GTEST_ASSERT_EQ(obs2.x(), 35);
-//     GTEST_ASSERT_EQ(obs3.x(), 60);
+    GTEST_ASSERT_EQ(obs1.x(), 80);
+    GTEST_ASSERT_EQ(obs2.x(), 35);
+    GTEST_ASSERT_EQ(obs3.x(), 60);
 
-//     GTEST_ASSERT_EQ(obs1.y(), 40);
-//     GTEST_ASSERT_EQ(obs2.y(), 80);
-//     GTEST_ASSERT_EQ(obs3.y(), 100);
+    GTEST_ASSERT_EQ(obs1.y(), 40);
+    GTEST_ASSERT_EQ(obs2.y(), 80);
+    GTEST_ASSERT_EQ(obs3.y(), 100);
 
-//     GTEST_ASSERT_EQ(obs1.radius(), 8);
-//     GTEST_ASSERT_EQ(obs2.radius(), 8);
-//     GTEST_ASSERT_EQ(obs3.radius(), 8);
-// }
+    GTEST_ASSERT_EQ(obs1.z(), 2);
+    GTEST_ASSERT_EQ(obs2.z(), 24);
+    GTEST_ASSERT_EQ(obs3.z(), 46);
+
+    GTEST_ASSERT_EQ(obs1.radius(), 8);
+    GTEST_ASSERT_EQ(obs2.radius(), 8);
+    GTEST_ASSERT_EQ(obs3.radius(), 8);
+}
 
 #pragma endregion //ArrtsParams_Obstacles

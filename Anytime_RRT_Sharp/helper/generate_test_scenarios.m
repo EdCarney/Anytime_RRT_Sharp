@@ -9,15 +9,19 @@ xMin = 0;
 xMax = 150;
 yMin = 0;
 yMax = 150;
+zMin = 0;
+zMax = 150;
 rMin = 1;
 rMax = 10;
 
 x = zeros(1, numObstacles);
 y = zeros(1, numObstacles);
+z = zeros(1, numObstacles);
 r = zeros(1, numObstacles);
 
 xRange = xMax - xMin;
 yRange = yMax - yMin;
+zRange = zMax - zMin;
 rRange = rMax - rMin;
 
 figure()
@@ -26,38 +30,45 @@ hold on
 for i = 1:numObstacles
    x(i) = xMin + rand * xRange;
    y(i) = yMin + rand * yRange;
+   z(i) = zMin + rand * zRange;
    r(i) = rMin + rand * rRange;
-   circle(x(i), y(i), r(i))
+   spherePlot(x(i), y(i), z(i), r(i))
 end
 
-[goalX, goalY] = generatePoint(xMin, xMax, yMin, yMax, x, y, r);
-[startX, startY] = generatePoint(xMin, xMax, yMin, yMax, x, y, r);
+[goalX, goalY, goalZ] = generatePoint(xMin, xMax, yMin, yMax, zMin, zMax, x, y, z, r);
+[startX, startY, startZ] = generatePoint(xMin, xMax, yMin, yMax, zMin, zMax, x, y, z, r);
 
-plot(goalX, goalY, 'g*');
-plot(startX, startY, 'b*');
+plot3(goalX, goalY, goalZ, 'g*');
+plot3(startX, startY, startZ, 'b*');
 
 hold off
 
-outputData(startX, startY, goalX, goalY, x, y, r, xMin, xMax, yMin, yMax)
+outputData(startX, startY, startZ, goalX, goalY, goalZ, x, y, z, r)
 
-function [x, y] = generatePoint(xMin, xMax, yMin, yMax, obsX, obsY, obsR)
+function [x, y, z] = generatePoint(xMin, xMax, yMin, yMax, zMin, zMax, obsX, obsY, obsZ, obsR)
     xRange = xMax - xMin;
     yRange = yMax - yMin;
+    zRange = zMax - zMin;
     
     x = xMin + rand * xRange;
     y = yMin + rand * yRange;
+    z = zMin + rand * zRange;
 
-    while (inObstacle(x, y, obsX, obsY, obsR))
+    while (inObstacle(x, y, z, obsX, obsY, obsZ, obsR))
         x = xMin + rand * xRange;
         y = yMin + rand * yRange;
+        z = zMin + rand * zRange;
     end
 end
 
-function inObstacle = inObstacle(x, y, obsX, obsY, obsR)
+function inObstacle = inObstacle(x, y, z, obsX, obsY, obsZ, obsR)
     inObstacle = false;
     num = size(obsX,2);
     for i = 1:num
-        dist = hypot(x - obsX(i), y - obsY(i));
+        xDiff = (x - obsX(i))^2;
+        yDiff = (y - obsY(i))^2;
+        zDiff = (z - obsZ(i))^2;
+        dist = sqrt(xDiff + yDiff + zDiff);
         if (dist <= obsR(i))
             inObstacle = true;
             break;
@@ -65,7 +76,7 @@ function inObstacle = inObstacle(x, y, obsX, obsY, obsR)
     end
 end
 
-function outputData(startX, startY, goalX, goalY, obsX, obsY, obsR, xMin, xMax, yMin, yMax)
+function outputData(startX, startY, startZ, goalX, goalY, goalZ, obsX, obsY, obsZ, obsR)
     t = datetime('now','TimeZone','utc','Format','yyyyMMddHHmmss');
     folder = "testData_" + string(t);
     mkdir(folder);
@@ -73,21 +84,21 @@ function outputData(startX, startY, goalX, goalY, obsX, obsY, obsR, xMin, xMax, 
     obsInfo = [];
     numObs = size(obsX, 2);
     for i = 1:numObs
-        obsInfo = [obsInfo, obsX(i), obsY(i), obsR(i)];
+        obsInfo = [obsInfo, obsX(i), obsY(i), obsZ(i), obsR(i)];
     end
 
-    obsFormat = "%f, %f, %f\n";
+    obsFormat = "%f, %f, %f, %f\n";
     obsFile = fullfile(folder, "obstacles.txt");
-    writelines("FORMAT: (x, y, radius)", obsFile);
+    writelines("FORMAT: (x, y, z, radius)", obsFile);
     fid = fopen(obsFile, "a+");
     fprintf(fid, obsFormat, obsInfo);
     fclose(fid);
 
-    stateFormat = "%f, %f, %f\n";
+    stateFormat = "%f, %f, %f, %f\n";
     stateFile = fullfile(folder, "states.txt");
-    writelines("FORMAT: (startX, startY, startTheta) (goalX, goalY, goalTheta)", stateFile);
+    writelines("FORMAT: (startX, startY, startZ, startTheta) (goalX, goalY, goalZ, goalTheta)", stateFile);
     fid = fopen(stateFile, "a+");
-    fprintf(fid, stateFormat, [startX, startY, 0], [goalX, goalY, 0]);
+    fprintf(fid, stateFormat, [startX, startY, startZ, 0], [goalX, goalY, goalZ, 0]);
     fclose(fid);
 end
 

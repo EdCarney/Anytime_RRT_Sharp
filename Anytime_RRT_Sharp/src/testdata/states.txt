@@ -1,3 +1,3 @@
-FORMAT: (startX, startY, startTheta) (goalX, goalY, goalTheta)
-5, 60, 0
-100, 60, 0
+FORMAT: (startX, startY, startZ, startTheta) (goalX, goalY, goalZ, goalTheta)
+5, 0, 100, 0
+100, 60, 5, 0
