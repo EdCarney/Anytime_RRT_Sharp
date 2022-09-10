@@ -107,7 +107,7 @@ void ArrtsService::_exportDataToDirectory(string directory)
 
     // print out node file
     for (auto itr = _configspaceGraph.nodes.begin(); itr != _configspaceGraph.nodes.end(); ++itr)
-        nodeFile << itr->second.x() << ", " << itr->second.y() << ", " << itr->second.theta() << ", " << itr->first << "\n";
+        nodeFile << itr->second.x() << ", " << itr->second.y() << ", " << itr->second.z() << ", " << itr->second.theta() << ", " << itr->first << "\n";
 
     // print out edge file
     for (int i = 0; i < numEdges; ++i)
@@ -116,21 +116,22 @@ void ArrtsService::_exportDataToDirectory(string directory)
     // print out search tree file
     for (int i = 0; i < numEdges; ++i)
         searchTreeFile << _configspaceGraph.edges[i].start().id() << ", " << _configspaceGraph.edges[i].start().x() << ", "
-            << _configspaceGraph.edges[i].start().y() << ", " << _configspaceGraph.edges[i].end().id() << ", " <<
-            _configspaceGraph.edges[i].end().x() << ", " << _configspaceGraph.edges[i].end().y() << "\n";
+            << _configspaceGraph.edges[i].start().y() << ", " << _configspaceGraph.edges[i].start().z() << ", "
+            << _configspaceGraph.edges[i].end().id() << ", " << _configspaceGraph.edges[i].end().x() << ", "
+            << _configspaceGraph.edges[i].end().y() << ", " << _configspaceGraph.edges[i].end().z() << "\n";
 
     // print out output path
     ConfigspaceNode currentNode = _configspaceGraph.nodes[_finalNode.id()];
 
-    outputPathFile << currentNode.x() << ", " << currentNode.y() << ", " << currentNode.theta() << "\n";
+    outputPathFile << currentNode.x() << ", " << currentNode.y() << ", " << currentNode.z() << ", " << currentNode.theta() << "\n";
     currentNode = _configspaceGraph.nodes[currentNode.parentId()];
 
     while (currentNode.parentId())
     {
-        outputPathFile << currentNode.x() << ", " << currentNode.y() << ", " << currentNode.theta() << "\n";
+        outputPathFile << currentNode.x() << ", " << currentNode.y() << ", " << currentNode.z() << ", "  << currentNode.theta() << "\n";
         currentNode = _configspaceGraph.nodes[currentNode.parentId()];
     }
-    outputPathFile << _configspaceGraph.nodes[1].x() << ", " << _configspaceGraph.nodes[1].y() << ", " << _configspaceGraph.nodes[1].theta() << "\n";
+    outputPathFile << _configspaceGraph.nodes[1].x() << ", " << _configspaceGraph.nodes[1].y() << ", " << _configspaceGraph.nodes[1].z() << ", "  << _configspaceGraph.nodes[1].theta() << "\n";
 
     printf("Printing nodes to %s/nodes.txt.\n", directory.c_str());
     printf("Printing edges to %s/edges.txt.\n", directory.c_str());
