@@ -101,35 +101,7 @@ TEST(Geometry_Line, InitializeWithPoints_CheckVals)
     GTEST_ASSERT_EQ(l.length(), dist);
 }
 
-// TODO: move these to vector tests
-// TEST(Geometry_Line, DotProduct_SameLine)
-// {
-//     Point p1(0, 0), p2(1, 1);
-//     Point p3(0, 0), p4(1, 1);
-//     Line l1(p1, p2), l2(p3, p4);
-//     GTEST_ASSERT_EQ(l1.dot(l2), 2);
-//     GTEST_ASSERT_EQ(l2.dot(l1), 2);
-// }
-
-// TEST(Geometry_Line, DotProduct_OppositeLine)
-// {
-//     Point p1(0, 0), p2(1, 1);
-//     Point p3(0, 0), p4(-1, -1);
-//     Line l1(p1, p2), l2(p3, p4);
-//     GTEST_ASSERT_EQ(l1.dot(l2), -2);
-//     GTEST_ASSERT_EQ(l2.dot(l1), -2);
-// }
-
-// TEST(Geometry_Line, DotProduct_PerpendicularLine)
-// {
-//     Point p1(0, 0), p2(1, 0);
-//     Point p3(0, 0), p4(0, 1);
-//     Line l1(p1, p2), l2(p3, p4);
-//     GTEST_ASSERT_EQ(l1.dot(l2), 0);
-//     GTEST_ASSERT_EQ(l2.dot(l1), 0);
-// }
-
-#pragma endregion //Line
+#pragma endregion //Geometry_Line
 
 #pragma region Geometry_Circle
 
@@ -163,4 +135,50 @@ TEST(Geometry_Circle, InitializeWithPointRadius_CheckVals)
     GTEST_ASSERT_EQ(c.volume(), (4.0 / 3.0) * M_PI * pow(c.radius(), 3));
 }
 
-#pragma endregion //Circle
+#pragma endregion //Geometry_Circle
+
+#pragma region Geometry_Vector
+
+TEST(Geometry_Vector, DefaultInitialize_CheckVals)
+{
+    Vector v;
+    GTEST_ASSERT_EQ(v.x(), 0);
+    GTEST_ASSERT_EQ(v.y(), 0);
+    GTEST_ASSERT_EQ(v.z(), 0);
+    GTEST_ASSERT_EQ(v.magnitude(), 0);
+}
+
+TEST(Geometry_Vector, InitializeWithVals_CheckVals)
+{
+    Vector v(1, 2, 3);
+    GTEST_ASSERT_EQ(v.x(), 1);
+    GTEST_ASSERT_EQ(v.y(), 2);
+    GTEST_ASSERT_EQ(v.z(), 3);
+    GTEST_ASSERT_EQ(v.magnitude(), sqrt(1 + 4 + 9));
+}
+
+TEST(Geometry_Vector, DotProduct_SameVector)
+{
+    Vector v1(1, 2, 3);
+    Vector v2(1, 2, 3);
+    GTEST_ASSERT_EQ(v1.dot(v2), 14);
+    GTEST_ASSERT_EQ(v2.dot(v1), 14);
+}
+
+TEST(Geometry_Vector, DotProduct_OppositeLine)
+{
+    Vector v1(1, 1, 1);
+    Vector v2(-1, -1, -1);
+    GTEST_ASSERT_EQ(v1.dot(v2), -3);
+    GTEST_ASSERT_EQ(v2.dot(v1), -3);
+}
+
+TEST(Geometry_Vector, DotProduct_PerpendicularLine)
+{
+    Vector v1(1, 0, 0);
+    Vector v2(0, 0, 1);
+    GTEST_ASSERT_EQ(v1.dot(v2), 0);
+    GTEST_ASSERT_EQ(v2.dot(v1), 0);
+}
+
+#pragma endregion //Geometry_Vector
