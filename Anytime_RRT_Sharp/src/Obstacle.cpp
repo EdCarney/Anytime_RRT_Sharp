@@ -62,10 +62,10 @@ bool Obstacle::intersects(Line line)
     return false;
 }
 
-bool Obstacle::intersects(Sphere circle)
+bool Obstacle::intersects(Sphere sphere)
 {
-    double dist = this->distanceTo(circle);
-    return dist <= _radius + circle.radius();
+    double dist = this->distanceTo(sphere);
+    return dist <= _radius + sphere.radius();
 }
 
 bool Obstacle::intersects(Rectangle rect)
@@ -74,9 +74,12 @@ bool Obstacle::intersects(Rectangle rect)
     double maxX = _x + _radius;
     double minY = _y - _radius;
     double maxY = _y + _radius;
+    double minZ = _z - _radius;
+    double maxZ = _z + _radius;
 
     bool inXLimits = minX < rect.maxX() && maxX > rect.minX();
     bool inYLimits = minY < rect.maxY() && maxY > rect.minY();
+    bool inZLimits = minZ < rect.maxZ() && maxZ > rect.minZ();
 
-    return inXLimits && inYLimits;
+    return inXLimits && inYLimits && inZLimits;
 }
