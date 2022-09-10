@@ -4,6 +4,7 @@ Point::Point()
 {
     _x = 0;
     _y = 0;
+    _z = 0;
 }
 
 Point::Point(double x, double y, double z)
