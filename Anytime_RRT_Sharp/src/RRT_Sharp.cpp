@@ -1,9 +1,6 @@
 #include "ArrtsParams.hpp"
 #include "ArrtsService.hpp"
 
-using namespace std;
-using namespace std::chrono;
-
 int main(int argc, char** argv)
 {
     ArrtsService service;
