@@ -48,13 +48,7 @@ class ConfigspaceGraph : Rectangle
         // creates an edge between nodes
         void addEdge(GraphNode parentNode, GraphNode newNode);
 
-        // defines freespace for problem
-        // used when extending to a new node
-        void defineFreespace(double minX, double minY, double minTheta, double maxX,
-            double maxY, double maxTheta, int dimension, double obstacleVol);
         void defineFreespace(Rectangle limits, int dimension, double obstacleVol);
-        
-        void printData(int finalNodeId, string outputDir);
 
         ConfigspaceNode findClosestNode(GraphNode node);
         ConfigspaceNode generateRandomNode();
@@ -64,7 +58,7 @@ class ConfigspaceGraph : Rectangle
 
         // get the k-nearest neighbors from the current node
         // will not return the centerNode's parent node in the array
-        vector<ConfigspaceNode> findNeighbors(GraphNode centerNode, double radius, int k);
+        vector<ConfigspaceNode> findNeighbors(GraphNode centerNode, double radius, int maxNumNeighbors);
         ConfigspaceNode findBestNeighbor(ConfigspaceNode newNode, vector<ConfigspaceNode> safeNeighbors);
         void propagateCost(vector<int> updatedNodeIds);
         void propagateCost(int updatedNodeId);

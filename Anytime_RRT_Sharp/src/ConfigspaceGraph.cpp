@@ -26,21 +26,6 @@ void ConfigspaceGraph::_removeParentChildRelation(int id)
             _parentChildMap[node.parentId()].erase(itr);
 }
 
-void ConfigspaceGraph::defineFreespace(double minX, double minY, double newMinTheta, double maxX, double maxY, double newMaxTheta, int dimension, double obstacleVol)
-{
-    // set graph parameters
-    _minPoint = Point(minX, minY);
-    _maxPoint = Point(maxX, maxY);
-    minTheta = newMinTheta;
-    maxTheta = newMaxTheta;
-
-    // compute dependent variables
-    dim = dimension;
-    zeta = 3.14159;
-    freeSpaceMeasure = ((maxX - minX) * (maxY - minY)) - obstacleVol;
-    gamma_star = 2 * pow((1.0 + 1.0 / dim) * (freeSpaceMeasure / (zeta * dim)), 1.0 / float(dim));
-}
-
 void ConfigspaceGraph::defineFreespace(Rectangle limits, int dimension, double obstacleVol)
 {
     // set graph parameters
@@ -51,7 +36,7 @@ void ConfigspaceGraph::defineFreespace(Rectangle limits, int dimension, double o
 
     // compute dependent variables
     dim = dimension;
-    zeta = 3.14159;
+    zeta = M_PI;
     freeSpaceMeasure = ((limits.maxPoint().x() - limits.minPoint().x()) * (limits.maxPoint().y() - limits.minPoint().y())) - obstacleVol;
     gamma_star = 2 * pow((1.0 + 1.0 / dim) * (freeSpaceMeasure / (zeta * dim)), 1.0 / float(dim));
 }
@@ -121,57 +106,6 @@ double ConfigspaceGraph::_computeRadius(double epsilon)
     circleRadius = percDist < epsilon ? percDist : epsilon;
 
     return circleRadius;
-}
-
-void ConfigspaceGraph::printData(int finalNodeId, string outputDir)
-{
-    ofstream nodeFile, edgeFile, searchTreeFile, outputPathFile, highFidelityPath;
-
-    // initialize all output files
-    nodeFile.open(outputDir + "/nodes.txt");
-    edgeFile.open(outputDir + "/edges.txt");
-    searchTreeFile.open(outputDir + "/search_tree.txt");
-    outputPathFile.open(outputDir + "/output_path.txt");
-
-    int numNodes = nodes.size();
-    int numEdges = edges.size();
-
-    // print out node file
-    for (auto itr = nodes.begin(); itr != nodes.end(); ++itr)
-        nodeFile << itr->second.x() << ", " << itr->second.y() << ", " << itr->second.theta() << ", " << itr->first << "\n";
-
-    // print out edge file
-    for (int i = 0; i < numEdges; ++i)
-        edgeFile << edges[i].start().id() << ", " << edges[i].end().id() << "\n";
-
-    // print out search tree file
-    for (int i = 0; i < numEdges; ++i)
-        searchTreeFile << edges[i].start().id() << ", " << edges[i].start().x() << ", " << edges[i].start().y()
-            << ", " << edges[i].end().id() << ", " << edges[i].end().x() << ", " << edges[i].end().y() << "\n";
-
-    // print out output path
-    ConfigspaceNode currentNode = nodes[finalNodeId];
-
-    outputPathFile << currentNode.x() << ", " << currentNode.y() << ", " << currentNode.theta() << "\n";
-    currentNode = nodes[currentNode.parentId()];
-
-    while (currentNode.parentId())
-    {
-        outputPathFile << currentNode.x() << ", " << currentNode.y() << ", " << currentNode.theta() << "\n";
-        currentNode = nodes[currentNode.parentId()];
-    }
-    outputPathFile << nodes[1].x() << ", " << nodes[1].y() << ", " << nodes[1].theta() << "\n";
-
-    printf("Printing nodes to %s/nodes.txt.\n", outputDir.c_str());
-    printf("Printing edges to %sedges.txt.\n", outputDir.c_str());
-    printf("Printing search tree to %ssearch_tree.txt.\n", outputDir.c_str());
-    printf("Printing output path to %soutput_path.txt.\n", outputDir.c_str());
-
-    // close files
-    nodeFile.close();
-    edgeFile.close();
-    searchTreeFile.close();
-    outputPathFile.close();
 }
 
 ConfigspaceNode ConfigspaceGraph::findClosestNode(GraphNode node)

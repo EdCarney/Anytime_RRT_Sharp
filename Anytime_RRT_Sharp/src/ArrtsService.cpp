@@ -87,15 +87,14 @@ void ArrtsService::_runAlgorithm(ArrtsParams params)
     auto duration = duration_cast<milliseconds>(stop - start);
 
     // find the best node in the goal region
-    ConfigspaceNode finalNode = _findBestNode();
-    _getFinalPath();
+    _setFinalNode();
+    _setFinalPath();
 
     // print all the results to files
     printf("Total number of points: %lu\n", _configspaceGraph.nodes.size());
-    printf("Final node at: (%f, %f)\n", finalNode.x(), finalNode.y());
-    printf("Final cost is: %f\n", finalNode.cost());
+    printf("Final node at: (%f, %f)\n", _finalNode.x(), _finalNode.y());
+    printf("Final cost is: %f\n", _finalNode.cost());
     printf("Total runtime is %lld ms\n", duration.count());
-    _configspaceGraph.printData(finalNode.id(), "");
 }
 
 void ArrtsService::_rewireNodes(vector<ConfigspaceNode>& remainingNodes, ConfigspaceNode& addedNode)
@@ -141,9 +140,9 @@ void ArrtsService::_tryConnectToBestNeighbor(vector<ConfigspaceNode>& neighbors,
     }
 }
 
-void ArrtsService::_getFinalPath()
+void ArrtsService::_setFinalPath()
 {
-    auto node = _findBestNode();
+    auto node = _finalNode;
 
     _path.clear();
     _path.push_back(node);
@@ -164,7 +163,7 @@ bool ArrtsService::_compareNodes(ConfigspaceNode n1, ConfigspaceNode n2)
     return false;
 }
 
-ConfigspaceNode ArrtsService::_findBestNode()
+void ArrtsService::_setFinalNode()
 {
     double tempCost = 0, finalCost = INFINITY;
     ConfigspaceNode finalNode;
@@ -181,7 +180,7 @@ ConfigspaceNode ArrtsService::_findBestNode()
             }
         }
     }
-    return finalNode;
+    _finalNode = finalNode;
 }
 
 vector<State> ArrtsService::calculatePath(ArrtsParams params)
@@ -192,4 +191,56 @@ vector<State> ArrtsService::calculatePath(ArrtsParams params)
     _runAlgorithm(params);
 
     return _path;
+}
+
+void ArrtsService::exportDataToDirectory(string directory)
+{
+    ofstream nodeFile, edgeFile, searchTreeFile, outputPathFile, highFidelityPath;
+
+    // initialize all output files
+    nodeFile.open(directory + "/nodes.txt");
+    edgeFile.open(directory + "/edges.txt");
+    searchTreeFile.open(directory + "/search_tree.txt");
+    outputPathFile.open(directory + "/output_path.txt");
+
+    int numNodes = _configspaceGraph.nodes.size();
+    int numEdges = _configspaceGraph.edges.size();
+
+    // print out node file
+    for (auto itr = _configspaceGraph.nodes.begin(); itr != _configspaceGraph.nodes.end(); ++itr)
+        nodeFile << itr->second.x() << ", " << itr->second.y() << ", " << itr->second.theta() << ", " << itr->first << "\n";
+
+    // print out edge file
+    for (int i = 0; i < numEdges; ++i)
+        edgeFile << _configspaceGraph.edges[i].start().id() << ", " << _configspaceGraph.edges[i].end().id() << "\n";
+
+    // print out search tree file
+    for (int i = 0; i < numEdges; ++i)
+        searchTreeFile << _configspaceGraph.edges[i].start().id() << ", " << _configspaceGraph.edges[i].start().x() << ", "
+            << _configspaceGraph.edges[i].start().y() << ", " << _configspaceGraph.edges[i].end().id() << ", " <<
+            _configspaceGraph.edges[i].end().x() << ", " << _configspaceGraph.edges[i].end().y() << "\n";
+
+    // print out output path
+    ConfigspaceNode currentNode = _configspaceGraph.nodes[_finalNode.id()];
+
+    outputPathFile << currentNode.x() << ", " << currentNode.y() << ", " << currentNode.theta() << "\n";
+    currentNode = _configspaceGraph.nodes[currentNode.parentId()];
+
+    while (currentNode.parentId())
+    {
+        outputPathFile << currentNode.x() << ", " << currentNode.y() << ", " << currentNode.theta() << "\n";
+        currentNode = _configspaceGraph.nodes[currentNode.parentId()];
+    }
+    outputPathFile << _configspaceGraph.nodes[1].x() << ", " << _configspaceGraph.nodes[1].y() << ", " << _configspaceGraph.nodes[1].theta() << "\n";
+
+    printf("Printing nodes to %s/nodes.txt.\n", directory.c_str());
+    printf("Printing edges to %sedges.txt.\n", directory.c_str());
+    printf("Printing search tree to %ssearch_tree.txt.\n", directory.c_str());
+    printf("Printing output path to %soutput_path.txt.\n", directory.c_str());
+
+    // close files
+    nodeFile.close();
+    edgeFile.close();
+    searchTreeFile.close();
+    outputPathFile.close();
 }
