@@ -11,9 +11,9 @@
 #define DEFAULT_STATES_FILE "states.txt"
 #define DEFAULT_VEHICLE_FILE "robot.txt"
 #define DEFAULT_OBSTACLES_FILE "obstacles.txt"
-#define DEFAULT_MIN_NODE_COUNT 10000
+#define DEFAULT_MIN_NODE_COUNT 20000
 #define DEFAULT_MAX_NEIGHBOR_COUNT 15
-#define DIMENSION 2
+#define DIMENSION 3
 
 using namespace std;
 
