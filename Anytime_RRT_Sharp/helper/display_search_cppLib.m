@@ -13,7 +13,7 @@ clear all
 close all
 clc
 
-folder = "testData"; %% change this
+folder = "testData_20220911152311"; %% change this
 
 node_file = fullfile(folder, 'nodes.txt');
 edge_file = fullfile(folder, 'edges.txt');
@@ -74,9 +74,9 @@ hold on
 %plot3(nodes(:,1), nodes(:,2), nodes(:,3), '.k')
 %plot3(edges(:,1), edges(:,2), edges(:,3), 'k')
 %plot3(search_tree(:, 1), search_tree(:, 2), search_tree(:, 3), 'm', 'LineWidth', 0.5);
-plot3(root_node(1), root_node(2), root_node(3), 'or', 'MarkerSize', 10,...
+plot3(root_node(1), root_node(2), root_node(3), 'or', 'MarkerSize', 7,...
     'MarkerFaceColor', 'r')
-plot3(path(:,1), path(:,2), path(:,3), 'g:', 'LineWidth', 4);
+plot3(path(:,1), path(:,2), path(:,3), 'g:*', 'LineWidth', 4);
 
 
 % plot obstacles
