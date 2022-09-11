@@ -8,7 +8,7 @@ int main(int argc, char** argv)
 
     if (argc > 1)
         for (int i = 1; i < argc; ++i)
-            service.calculatePath(ArrtsParams(argv[i], uavGoalRadius));
+            service.calculatePath(ArrtsParams(argv[i], uavGoalRadius), argv[i]);
     else
         service.calculatePath(ArrtsParams("./test", uavGoalRadius), "./test");
 
