@@ -63,6 +63,11 @@ pos = [
     ]; 
 % rectangle('Position',pos,'Curvature',[1 1], 'FaceColor',[0 .5 .5],...
 %    'EdgeColor','b', 'LineWidth',3)
+[xs,ys,zs] = sphere();
+xs = xs*uav_start(4);
+ys = ys*uav_start(4);
+zs = zs*uav_start(4);
+surf(xs + uav_start(1),ys + uav_start(2),zs + uav_start(3),'EdgeColor','none')
 
 hold on
 
