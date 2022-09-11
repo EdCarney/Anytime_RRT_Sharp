@@ -6,7 +6,7 @@
 #ifndef WORKSPACE_H
 #define WORKSPACE_H
 
-class WorkspaceGraph : Rectangle
+class WorkspaceGraph : public Rectangle
 {
     GoalState _goalRegion;
     vector<Obstacle> _obstacles;

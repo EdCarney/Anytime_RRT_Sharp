@@ -46,6 +46,7 @@ void WorkspaceGraph::defineFreespace(Rectangle limits)
 {
     _minPoint = limits.minPoint();
     _maxPoint = limits.maxPoint();
+    _volume = _calculateVolume();
 }
 
 bool WorkspaceGraph::_obstacleInFreespace(double x, double y, double z, double radius) const

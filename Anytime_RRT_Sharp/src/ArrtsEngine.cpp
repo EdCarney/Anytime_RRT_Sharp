@@ -58,7 +58,11 @@ void ArrtsEngine::runArrtsOnGraphs(ConfigspaceGraph& configGraph, WorkspaceGraph
 
     int count = 0, tempId = 0;
     int goalBiasCount = (int)ceil(params.minNodeCount() * 0.01);
-    double epsilon = 10.0;
+    double epsilonToVolRatio = 0.00001;
+    double epsilon = workGraph.volume() * epsilonToVolRatio;
+
+    printf("Epsilon/Volume ratio: %f\n", epsilon / workGraph.volume());
+    printf("Epsilon: %f\n", epsilon);
 
     srand(time(NULL));
 
