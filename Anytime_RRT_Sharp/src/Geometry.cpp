@@ -157,18 +157,29 @@ Rectangle::Rectangle()
 {
     _minPoint = Point();
     _maxPoint = Point();
+    _volume = 0;
 }
 
 Rectangle::Rectangle(Point minPoint, Point maxPoint)
 {
     _minPoint = minPoint;
     _maxPoint = maxPoint;
+    _volume = _calculateVolume();
 }
 
 Rectangle::Rectangle(double minX, double minY, double minZ, double maxX, double maxY, double maxZ)
 {
     _minPoint = Point(minX, minY, minZ);
     _maxPoint = Point(maxX, maxY, maxZ);
+    _volume = _calculateVolume();
+}
+
+double Rectangle::_calculateVolume() const
+{
+    double xDiff = maxX() - minX();
+    double yDiff = maxY() - minY();
+    double zDiff = maxZ() - minZ();
+    return xDiff * yDiff * zDiff;
 }
 
 Point Rectangle::minPoint() const
@@ -179,6 +190,11 @@ Point Rectangle::minPoint() const
 Point Rectangle::maxPoint() const
 {
     return _maxPoint;
+}
+
+double Rectangle::volume() const
+{
+    return _volume;
 }
 
 double Rectangle::minX() const

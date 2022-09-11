@@ -70,10 +70,12 @@ class DLL_EXPORT Sphere : public Point, public HasVolume
         double volume() const;
 };
 
-class DLL_EXPORT Rectangle
+class DLL_EXPORT Rectangle: public HasVolume
 {
     protected:
+        double _volume;
         Point _minPoint, _maxPoint;
+        double _calculateVolume() const;
 
     public:
         Rectangle();
@@ -81,6 +83,7 @@ class DLL_EXPORT Rectangle
         Rectangle(double minX, double minY, double minZ, double maxX, double maxY, double maxZ);
         Point minPoint() const;
         Point maxPoint() const;
+        double volume() const;
         double minX() const;
         double minY() const;
         double minZ() const;
