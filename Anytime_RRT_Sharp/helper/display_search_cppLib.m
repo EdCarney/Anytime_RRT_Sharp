@@ -34,13 +34,17 @@ root_node = state_raw(1,1:3);
 uav_start = [state_raw(2,1:3), 2.5];
 
 % a bit of data processing for faster plotting
-search_tree = nan(3*size(search_tree_raw, 1), 2);
-search_tree(1:3:end-2, 1) = search_tree_raw(:, 2);
-search_tree(2:3:end-1, 1) = search_tree_raw(:, 5);
-search_tree(1:3:end-2, 2) = search_tree_raw(:, 3);
-search_tree(2:3:end-1, 2) = search_tree_raw(:, 6);
+search_tree = nan(3*size(search_tree_raw, 1), 3);
 
-edges = nan(3*size(edges_raw, 1), 2);
+search_tree(1:3:end-2, 1) = search_tree_raw(:, 2);
+search_tree(1:3:end-2, 2) = search_tree_raw(:, 3);
+search_tree(1:3:end-2, 3) = search_tree_raw(:, 4);
+
+search_tree(2:3:end-1, 1) = search_tree_raw(:, 6);
+search_tree(2:3:end-1, 2) = search_tree_raw(:, 7);
+search_tree(2:3:end-1, 3) = search_tree_raw(:, 8);
+
+edges = nan(3*size(edges_raw, 1), 3);
 
 for i = 1:length(edges_raw(:,1))
     edges_raw(i, 1) = find(nodes(:,5) == edges_raw(i, 1));
@@ -48,21 +52,15 @@ for i = 1:length(edges_raw(:,1))
 end
 
 edges(1:3:end-2, 1) = nodes(edges_raw(:, 1),1);
-edges(2:3:end-1, 1) = nodes(edges_raw(:, 2),1);
 edges(1:3:end-2, 2) = nodes(edges_raw(:, 1),2);
+edges(1:3:end-2, 3) = nodes(edges_raw(:, 1),3);
+edges(2:3:end-1, 1) = nodes(edges_raw(:, 2),1);
 edges(2:3:end-1, 2) = nodes(edges_raw(:, 2),2);
+edges(2:3:end-1, 3) = nodes(edges_raw(:, 2),3);
 
 figure('Renderer', 'painters', 'Position', [50 50 600 600])
 
 % plot the goal region
-pos = [
-    (uav_start(1) - uav_start(3)),...
-    (uav_start(2) - uav_start(3)),...
-    uav_start(3) * 2,...
-    uav_start(3) * 2
-    ]; 
-% rectangle('Position',pos,'Curvature',[1 1], 'FaceColor',[0 .5 .5],...
-%    'EdgeColor','b', 'LineWidth',3)
 [xs,ys,zs] = sphere();
 xs = xs*uav_start(4);
 ys = ys*uav_start(4);
