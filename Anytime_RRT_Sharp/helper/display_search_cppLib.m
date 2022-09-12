@@ -13,7 +13,7 @@ clear all
 close all
 clc
 
-folder = "testData_20220911152311"; %% change this
+folder = "testData"; %% change this
 
 node_file = fullfile(folder, 'nodes.txt');
 edge_file = fullfile(folder, 'edges.txt');
@@ -27,11 +27,11 @@ edges_raw = readmatrix(edge_file);
 path = readmatrix(path_file);
 search_tree_raw = readmatrix(search_tree_file);
 obstacles_raw = readmatrix(obstacles_file);
-state_raw = readmatrix(state_file);
+state_raw = readmatrix(state_file, "Range",1:1);
 
 % specify goal region [x, y, z, radius] and start point [x, y, z]
-root_node = state_raw(1,1:3);
-uav_start = [state_raw(2,1:3), 2.5];
+root_node = state_raw(2,1:3);
+uav_start = [state_raw(3,1:3), state_raw(3,5)];
 
 % a bit of data processing for faster plotting
 search_tree = nan(3*size(search_tree_raw, 1), 3);

@@ -35,7 +35,7 @@ using namespace std;
 
    public:
       ArrtsParams(State start, State goal, vector<Obstacle> obstacles, double goalRadius, int minNodeCount = DEFAULT_MIN_NODE_COUNT, int maxNieghborCount = DEFAULT_MAX_NEIGHBOR_COUNT);
-      ArrtsParams(string dataDirectory, double goalRadius, int minNodeCount = DEFAULT_MIN_NODE_COUNT, int maxNieghborCount = DEFAULT_MAX_NEIGHBOR_COUNT);
+      ArrtsParams(string dataDirectory, int minNodeCount = DEFAULT_MIN_NODE_COUNT, int maxNieghborCount = DEFAULT_MAX_NEIGHBOR_COUNT);
 
       int dimension();
       int minNodeCount();

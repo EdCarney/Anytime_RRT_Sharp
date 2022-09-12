@@ -20,8 +20,7 @@ TEST(ArrtsParams_StartState, Initialize_CheckVals)
 
 TEST(ArrtsParams_StartState, InitializeFromDataDirectory_CheckVals)
 {
-    double goalRadius = 5.5;
-    ArrtsParams params("./test", goalRadius);
+    ArrtsParams params("./test");
 
     GTEST_ASSERT_EQ(params.start().x(), 5);
     GTEST_ASSERT_EQ(params.start().y(), 0);
@@ -50,13 +49,13 @@ TEST(ArrtsParams_GoalState, Initialize_CheckVals)
 
 TEST(ArrtsParams_GoalState, InitializeFromDataDirectory_CheckVals)
 {
-    double goalRadius = 5.5;
-    ArrtsParams params("./test", goalRadius);
+    ArrtsParams params("./test");
 
     GTEST_ASSERT_EQ(params.goal().x(), 100);
     GTEST_ASSERT_EQ(params.goal().y(), 60);
     GTEST_ASSERT_EQ(params.goal().z(), 5);
     GTEST_ASSERT_EQ(params.goal().theta(), 0);
+    GTEST_ASSERT_EQ(params.goalRadius(), 2.5);
 }
 
 #pragma endregion //ArrtsParams_GoalState
@@ -123,11 +122,9 @@ TEST(ArrtsParams_Obstacles, InitializeMultipleObstacle_CheckVals)
     GTEST_ASSERT_EQ(params.obstacles(2).radius(), 5);
 }
 
-// TODO: fix obstacle initialization from directory
 TEST(ArrtsParams_Obstacles, AddFromFile_CheckVals)
 {
-    double goalRadius = 5.5;
-    ArrtsParams params("./test", goalRadius);
+    ArrtsParams params("./test");
 
     Obstacle obs1 = params.obstacles(0);
     Obstacle obs2 = params.obstacles(11);
