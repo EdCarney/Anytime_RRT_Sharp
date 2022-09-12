@@ -14,23 +14,10 @@ Point::Point(double x, double y, double z)
     _z = z;
 }
 
-double Point::x() const
-{
-    return _x;
-}
+double Point::x() const { return _x; }
 
-double Point::y() const
-{
-    return _y;
-}
-
-double Point::z() const
-{
-    return _z;
-}
-
-double Point::distanceTo(Point& p) const
-{
+double Point::y() const { return _y; }
+ double Point::z() const { return _z; } ble Point::distanceTo(Point& p) const {
     double xVal = pow(_x - p.x(), 2);
     double yVal = pow(_y - p.y(), 2);
     double zVal = pow(_z - p.z(), 2);
@@ -55,20 +42,11 @@ Line::Line(Point& p1, Point& p2)
     _length = p1.distanceTo(p2);
 }
 
-Point Line::p1() const
-{
-    return _p1;
-}
+Point Line::p1() const { return _p1; }
 
-Point Line::p2() const
-{
-    return _p2;
-}
+Point Line::p2() const { return _p2; }
 
-double Line::length() const
-{
-    return _length;
-}
+double Line::length() const { return _length; }
 
 Vector::Vector()
 {
@@ -86,25 +64,13 @@ Vector::Vector(double x, double y, double z)
     _magnitude = sqrt(_x*_x + _y*_y + _z*_z);
 }
 
-double Vector::x() const
-{
-    return _x;
-}
+double Vector::x() const { return _x; }
 
-double Vector::y() const
-{
-    return _y;
-}
+double Vector::y() const { return _y; }
 
-double Vector::z() const
-{
-    return _z;
-}
+double Vector::z() const { return _z; }
 
-double Vector::magnitude() const
-{
-    return _magnitude;
-}
+double Vector::magnitude() const { return _magnitude; }
 
 double Vector::dot(Vector& v) const
 {
@@ -143,15 +109,9 @@ double Sphere::_calculateVolume() const
     return (4.0/3.0) * M_PI * pow(radius(), 3);
 }
 
-double Sphere::radius() const
-{
-    return _radius;
-}
+double Sphere::radius() const { return _radius; }
 
-double Sphere::volume() const
-{
-    return _area;
-}
+double Sphere::volume() const { return _area; }
 
 Rectangle::Rectangle()
 {
@@ -182,50 +142,23 @@ double Rectangle::_calculateVolume() const
     return xDiff * yDiff * zDiff;
 }
 
-Point Rectangle::minPoint() const
-{
-    return _minPoint;
-}
+Point Rectangle::minPoint() const { return _minPoint; }
 
-Point Rectangle::maxPoint() const
-{
-    return _maxPoint;
-}
+Point Rectangle::maxPoint() const { return _maxPoint; }
 
-double Rectangle::volume() const
-{
-    return _volume;
-}
+double Rectangle::volume() const { return _volume; }
 
-double Rectangle::minX() const
-{
-    return _minPoint.x();
-}
+double Rectangle::minX() const { return _minPoint.x(); }
 
-double Rectangle::minY() const
-{
-    return _minPoint.y();
-}
+double Rectangle::minY() const { return _minPoint.y(); }
 
-double Rectangle::minZ() const
-{
-    return _minPoint.z();
-}
+double Rectangle::minZ() const { return _minPoint.z(); }
 
-double Rectangle::maxX() const
-{
-    return _maxPoint.x();
-}
+double Rectangle::maxX() const { return _maxPoint.x(); }
 
-double Rectangle::maxY() const
-{
-    return _maxPoint.y();
-}
+double Rectangle::maxY() const { return _maxPoint.y(); }
 
-double Rectangle::maxZ() const
-{
-    return _maxPoint.z();
-}
+double Rectangle::maxZ() const { return _maxPoint.z(); }
 
 State::State()
 {
@@ -259,10 +192,7 @@ State::State(double x, double y, double z, double theta)
     _theta = theta;
 }
 
-double State::theta() const
-{
-    return _theta;
-}
+double State::theta() const { return _theta; }
 
 GoalState::GoalState()
 {
@@ -282,20 +212,11 @@ GoalState::GoalState(double x, double y, double z, double radius, double theta)
     _theta = theta;
 }
 
-double GoalState::theta() const
-{
-    return _theta;
-}
+double GoalState::theta() const { return _theta; }
 
-double GoalState::radius() const
-{
-    return _radius;
-}
+double GoalState::radius() const { return _radius; }
 
-GraphNode::GraphNode()
-{
-    _buildGraphNode();
-}
+GraphNode::GraphNode() { _buildGraphNode(); }
 
 GraphNode::GraphNode(Point p, double theta, int id, int parentId)
 {
@@ -347,35 +268,17 @@ void GraphNode::_buildGraphNode(double x, double y, double z, double theta, int 
     _parentId = parentId;
 }
 
-double GraphNode::theta() const
-{
-    return _theta;
-}
+double GraphNode::theta() const { return _theta; }
 
-int GraphNode::id() const
-{
-    return _id;
-}
+int GraphNode::id() const { return _id; }
 
-int GraphNode::parentId() const
-{
-    return _parentId;
-}
+int GraphNode::parentId() const { return _parentId; }
 
-void GraphNode::setTheta(double theta)
-{
-    _theta = theta;
-}
+void GraphNode::setTheta(double theta) { _theta = theta; }
 
-void GraphNode::setId(int id)
-{
-    _id = id;
-}
+void GraphNode::setId(int id) { _id = id; }
 
-void GraphNode::setParentId(int parentId)
-{
-    _parentId = parentId;
-}
+void GraphNode::setParentId(int parentId) { _parentId = parentId; }
 
 Edge::Edge()
 {
@@ -389,12 +292,6 @@ Edge::Edge(GraphNode start, GraphNode end)
     _end = end;
 }
 
-GraphNode Edge::start()
-{
-    return _start;
-}
+GraphNode Edge::start() { return _start; }
 
-GraphNode Edge::end()
-{
-    return _end;
-}
+GraphNode Edge::end() { return _end; }
