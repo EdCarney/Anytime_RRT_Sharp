@@ -13,7 +13,7 @@ ArrtsParams::ArrtsParams(State start, State goal, vector<Obstacle> obstacles, do
     _removeObstaclesNotInLimits();
 }
 
-ArrtsParams::ArrtsParams(string dataDirectory, double goalRadius, int minNodeCount, int maxNieghborCount)
+ArrtsParams::ArrtsParams(string dataDirectory, int minNodeCount, int maxNieghborCount)
 {   
     printf("Initializing data from %s\n", dataDirectory.c_str());
 
@@ -23,7 +23,6 @@ ArrtsParams::ArrtsParams(string dataDirectory, double goalRadius, int minNodeCou
 
     _readStatesFromFile(fopen(statesFile.c_str(), "r"));
     _readObstaclesFromFile(fopen(obstaclesFile.c_str(), "r"));
-    _goalRadius = goalRadius;
     _minNodeCount = minNodeCount;
     _maxNeighborCount = maxNieghborCount;
 
@@ -79,16 +78,17 @@ void ArrtsParams::_readStatesFromFile(FILE* file, bool isOptional)
     }
 
     double startX, startY, startZ, startTheta;
-    double goalX, goalY, goalZ, goalTheta;
+    double goalX, goalY, goalZ, goalTheta, goalRadius;
 
     // ignore first line (formatting)
     fscanf(file, "%*[^\n]\n");
     fscanf(file, "%lf,%lf,%lf,%lf", &startX, &startY, &startZ, &startTheta);
-    fscanf(file, "%lf,%lf,%lf,%lf", &goalX, &goalY, &goalZ, &goalTheta);
+    fscanf(file, "%lf,%lf,%lf,%lf,%lf", &goalX, &goalY, &goalZ, &goalTheta, &goalRadius);
     fclose(file);
 
     _start = State(startX, startY, startZ, startTheta);
     _goal = State(goalX, goalY, goalZ, goalTheta);
+    _goalRadius = goalRadius;
 }
 
 void ArrtsParams::_readVehicleFromFile(FILE* file, bool isOptional)
