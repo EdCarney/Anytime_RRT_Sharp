@@ -1,12 +1,12 @@
 #include "Obstacle.hpp"
 
-bool Obstacle::intersects(Point point)
+bool SphereObstacle::intersects(Point point) const
 {
     double dist = this->distanceTo(point);
     return dist <= _radius;
 }
 
-bool Obstacle::intersects(Line line)
+bool SphereObstacle::intersects(Line line) const
 {
     // http://paulbourke.net/geometry/circlesphere/index.html#linesphere
     double x1 = line.p1().x();
@@ -62,13 +62,7 @@ bool Obstacle::intersects(Line line)
     return false;
 }
 
-bool Obstacle::intersects(Sphere sphere)
-{
-    double dist = this->distanceTo(sphere);
-    return dist <= _radius + sphere.radius();
-}
-
-bool Obstacle::intersects(Rectangle rect)
+bool SphereObstacle::intersects(Rectangle rect) const
 {
     double minX = _x - _radius;
     double maxX = _x + _radius;
@@ -80,6 +74,36 @@ bool Obstacle::intersects(Rectangle rect)
     bool inXLimits = minX < rect.maxX() && maxX > rect.minX();
     bool inYLimits = minY < rect.maxY() && maxY > rect.minY();
     bool inZLimits = minZ < rect.maxZ() && maxZ > rect.minZ();
+
+    return inXLimits && inYLimits && inZLimits;
+}
+
+bool RectangleObstacle::intersects(Point point) const
+{
+    bool inXLimits = point.x() >= minX() && point.x() <= maxX();
+    bool inYLimits = point.y() >= minY() && point.y() <= maxY();
+    bool inZLimits = point.z() >= minZ() && point.z() <= maxZ();
+    return inXLimits && inYLimits && inZLimits;
+}
+
+bool RectangleObstacle::intersects(Line line) const
+{
+    
+}
+
+bool RectangleObstacle::intersects(Rectangle rect) const
+{
+    bool minInXLimits = (rect.minX() >= minX() && rect.minX() <= maxX());
+    bool minInYLimits = (rect.minY() >= minY() && rect.minY() <= maxY());
+    bool minInZLimits = (rect.minZ() >= minZ() && rect.minZ() <= maxZ());
+
+    bool maxInXLimits = (rect.maxX() >= minX() && rect.maxX() <= maxX());
+    bool maxInYLimits = (rect.maxY() >= minY() && rect.maxY() <= maxY());
+    bool maxInZLimits = (rect.maxZ() >= minZ() && rect.maxZ() <= maxZ());
+
+    bool inXLimits = minInXLimits || maxInXLimits;
+    bool inYLimits = minInYLimits || maxInYLimits;
+    bool inZLimits = minInZLimits || maxInZLimits;
 
     return inXLimits && inYLimits && inZLimits;
 }

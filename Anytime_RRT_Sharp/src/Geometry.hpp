@@ -10,6 +10,21 @@ struct HasVolume
     virtual double volume() const = 0;
 };
 
+class DLL_EXPORT Vector
+{
+    protected:
+        double _x, _y, _z, _magnitude;
+
+    public:
+        Vector();
+        Vector(double x, double y, double z);
+        double x() const;
+        double y() const;
+        double z() const;
+        double magnitude() const;
+        double dot(Vector& v) const;
+};
+
 class DLL_EXPORT Point
 {
     protected:
@@ -18,6 +33,7 @@ class DLL_EXPORT Point
     public:
         Point();
         Point(double x, double y, double z);
+        Vector operator-(Point& p) const;
         double x() const;
         double y() const;
         double z() const;
@@ -40,19 +56,16 @@ class DLL_EXPORT Line
         double length() const;
 };
 
-class DLL_EXPORT Vector
+class DLL_EXPORT Plane
 {
-    protected:
-        double _x, _y, _z, _magnitude;
+    Point _point;
+    Vector _normal;
 
     public:
-        Vector();
-        Vector(double x, double y, double z);
-        double x() const;
-        double y() const;
-        double z() const;
-        double magnitude() const;
-        double dot(Vector& v) const;
+        Plane();
+        Plane(Point p, Vector normal);
+        Point point() const;
+        Vector normal() const;
 };
 
 class DLL_EXPORT Sphere : public Point, public HasVolume

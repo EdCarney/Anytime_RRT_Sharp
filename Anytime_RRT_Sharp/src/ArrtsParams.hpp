@@ -24,7 +24,7 @@ using namespace std;
    State _start, _goal;
    Rectangle _limits;
    Vehicle _vehicle;
-   vector<Obstacle> _obstacles;
+   vector<SphereObstacle> _obstacles;
 
    void _setLimitsFromStates();
    void _removeObstaclesNotInLimits();
@@ -34,7 +34,7 @@ using namespace std;
    void _readObstaclesFromFile(FILE* file, bool isOptional = false);
 
    public:
-      ArrtsParams(State start, State goal, vector<Obstacle> obstacles, double goalRadius, int minNodeCount = DEFAULT_MIN_NODE_COUNT, int maxNieghborCount = DEFAULT_MAX_NEIGHBOR_COUNT);
+      ArrtsParams(State start, State goal, vector<SphereObstacle> obstacles, double goalRadius, int minNodeCount = DEFAULT_MIN_NODE_COUNT, int maxNieghborCount = DEFAULT_MAX_NEIGHBOR_COUNT);
       ArrtsParams(string dataDirectory, int minNodeCount = DEFAULT_MIN_NODE_COUNT, int maxNieghborCount = DEFAULT_MAX_NEIGHBOR_COUNT);
 
       int dimension();
@@ -46,8 +46,8 @@ using namespace std;
       State goal();
       Rectangle limits();
       Vehicle vehicle();
-      vector<Obstacle> obstacles();
-      Obstacle obstacles(int i);
+      vector<SphereObstacle> obstacles();
+      SphereObstacle obstacles(int i);
  };
 
  #endif //ARRTS_PARAMS_H

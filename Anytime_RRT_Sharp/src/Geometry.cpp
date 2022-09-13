@@ -1,5 +1,34 @@
 #include "Geometry.hpp"
 
+Vector::Vector()
+{
+    _x = 0;
+    _y = 0;
+    _z = 0;
+    _magnitude = 0;
+}
+
+Vector::Vector(double x, double y, double z)
+{
+    _x = x;
+    _y = y;
+    _z = z;
+    _magnitude = sqrt(_x*_x + _y*_y + _z*_z);
+}
+
+double Vector::x() const { return _x; }
+
+double Vector::y() const { return _y; }
+
+double Vector::z() const { return _z; }
+
+double Vector::magnitude() const { return _magnitude; }
+
+double Vector::dot(Vector& v) const
+{
+    return x() * v.x() + y() * v.y() + z() * v.z();
+}
+
 Point::Point()
 {
     _x = 0;
@@ -14,10 +43,21 @@ Point::Point(double x, double y, double z)
     _z = z;
 }
 
+Vector Point::operator-(Point& p) const
+{
+    double xDiff = x() - p.x();
+    double yDiff = y() - p.y();
+    double zDiff = z() - p.z();
+    return Vector(xDiff, yDiff, zDiff);
+}
+
 double Point::x() const { return _x; }
 
 double Point::y() const { return _y; }
- double Point::z() const { return _z; } ble Point::distanceTo(Point& p) const {
+ 
+double Point::z() const { return _z; }
+
+double Point::distanceTo(Point& p) const {
     double xVal = pow(_x - p.x(), 2);
     double yVal = pow(_y - p.y(), 2);
     double zVal = pow(_z - p.z(), 2);
@@ -48,34 +88,21 @@ Point Line::p2() const { return _p2; }
 
 double Line::length() const { return _length; }
 
-Vector::Vector()
+Plane::Plane()
 {
-    _x = 0;
-    _y = 0;
-    _z = 0;
-    _magnitude = 0;
+    _point = Point();
+    _normal = Vector();
 }
 
-Vector::Vector(double x, double y, double z)
+Plane::Plane(Point point, Vector normal)
 {
-    _x = x;
-    _y = y;
-    _z = z;
-    _magnitude = sqrt(_x*_x + _y*_y + _z*_z);
+    _point = point;
+    _normal = normal;
 }
 
-double Vector::x() const { return _x; }
+Point Plane::point() const { return _point; }
 
-double Vector::y() const { return _y; }
-
-double Vector::z() const { return _z; }
-
-double Vector::magnitude() const { return _magnitude; }
-
-double Vector::dot(Vector& v) const
-{
-    return x() * v.x() + y() * v.y() + z() * v.z();
-}
+Vector Plane::normal() const { return _normal; }
 
 Sphere::Sphere()
 {
