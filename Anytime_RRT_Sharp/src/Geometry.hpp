@@ -50,15 +50,15 @@ class DLL_EXPORT Line
 {
     protected:
         Point _p1, _p2;
-        double _slope, _length;
-        // standard form values
-        double _a, _b, _c;
+        Vector _tangent;
+        double _length;
 
     public:
         Line();
         Line(Point& p1, Point& p2);
         Point p1() const;
         Point p2() const;
+        Vector tangent() const;
         double length() const;
 };
 

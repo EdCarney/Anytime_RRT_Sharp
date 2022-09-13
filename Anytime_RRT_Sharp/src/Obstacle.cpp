@@ -9,23 +9,15 @@ bool SphereObstacle::intersects(Point point) const
 bool SphereObstacle::intersects(Line line) const
 {
     // http://paulbourke.net/geometry/circlesphere/index.html#linesphere
-    double x1 = line.p1().x();
-    double y1 = line.p1().y();
-    double z1 = line.p1().z();
-    double x2 = line.p2().x();
-    double y2 = line.p2().y();
-    double z2 = line.p2().z();
+    Point p1 = line.p1();
+    Vector u = line.tangent();
 
-    double dx = x2 - x1;
-    double dy = y2 - y1;
-    double dz = z2 - z1;
-
-    double a = dx*dx + dy*dy + dz*dz;
-    double b = 2 * (dx * (x1 - x()) + dy * (y1 - y()) + dz * (z1 - z()));
+    double a = u.x()*u.x() + u.y()*u.y() + u.z()*u.z();
+    double b = 2 * (u.x() * (p1.x() - x()) + u.y() * (p1.y() - y()) + u.z() * (p1.z() - z()));
     double c = x()*x() + y()*y() + z()*z();
 
-    c += x1*x1 + y1*y1 + z1*z1;
-    c -= 2 * (x()*x1 + y()*y1 + z()*z1);
+    c += p1.x()*p1.x() + p1.y()*p1.y() + p1.z()*p1.z();
+    c -= 2 * (x()*p1.x() + y()*p1.y() + z()*p1.z());
     c -= radius()*radius();
 
     double det = b*b - 4*a*c;
@@ -35,28 +27,22 @@ bool SphereObstacle::intersects(Line line) const
         return false;
 
     // get intersection points
-    double u1 = (-b + sqrt(det)) / (2 * a);
-    double u2 = (-b - sqrt(det)) / (2 * a);
+    double mu1 = (-b + sqrt(det)) / (2 * a);
+    double mu2 = (-b - sqrt(det)) / (2 * a);
 
-    double xi1 = x1 + u1 * (x2 - x1);
-    double yi1 = y1 + u1 * (y2 - y1);
-    double zi1 = z1 + u1 * (z2 - z1);
-
-    double xi2 = x1 + u2 * (x2 - x1);
-    double yi2 = y1 + u2 * (y2 - y1);
-    double zi2 = z1 + u2 * (z2 - z1);
+    Point pi1 = line.p1() + u * mu1;
+    Point pi2 = line.p1() + u * mu2;
 
     // detmine if either point lies on line segment
     // https://lucidar.me/en/mathematics/check-if-a-point-belongs-on-a-line-segment/
-    Vector kab(x2 - x1, y2 - y1, z2 - z1);
-    Vector kac1(xi1 - x1, yi1 - y1, zi1 - z1);
-    Vector kac2(xi2 - x1, yi2 - y1, zi2 - z1);
+    Vector kac1 = pi1 - line.p1();
+    Vector kac2 = pi2 - line.p1();
 
-    double dotKab = kab.dot(kab);
-    double dotKac1 = kac1.dot(kab);
-    double dotKac2 = kac2.dot(kab);
+    double dotU = u.dot(u);
+    double dotKac1 = kac1.dot(u);
+    double dotKac2 = kac2.dot(u);
 
-    if ((dotKac1 >= 0 && dotKac1 <= dotKab) || (dotKac2 >= 0 && dotKac2 <= dotKab))
+    if ((dotKac1 >= 0 && dotKac1 <= dotU) || (dotKac2 >= 0 && dotKac2 <= dotU))
         return true;
     
     return false;
