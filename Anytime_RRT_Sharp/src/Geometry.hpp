@@ -1,9 +1,12 @@
 #include <float.h>
 #include <math.h>
+#include <vector>
 #include "cppshrhelp.hpp"
 
 #ifndef GEOMETRY_H
 #define GEOMETRY_H
+
+using namespace std;
 
 struct HasVolume
 {
@@ -88,7 +91,9 @@ class DLL_EXPORT Rectangle: public HasVolume
     protected:
         double _volume;
         Point _minPoint, _maxPoint;
+        vector<Plane> _surfaces;
         double _calculateVolume() const;
+        vector<Plane> _calculateSurfaces() const;
 
     public:
         Rectangle();
@@ -96,6 +101,8 @@ class DLL_EXPORT Rectangle: public HasVolume
         Rectangle(double minX, double minY, double minZ, double maxX, double maxY, double maxZ);
         Point minPoint() const;
         Point maxPoint() const;
+        const vector<Plane>& surfaces() const;
+        const Plane& surfaces(int i) const;
         double volume() const;
         double minX() const;
         double minY() const;

@@ -152,6 +152,7 @@ Rectangle::Rectangle(Point minPoint, Point maxPoint)
     _minPoint = minPoint;
     _maxPoint = maxPoint;
     _volume = _calculateVolume();
+    _surfaces = _calculateSurfaces();
 }
 
 Rectangle::Rectangle(double minX, double minY, double minZ, double maxX, double maxY, double maxZ)
@@ -159,6 +160,7 @@ Rectangle::Rectangle(double minX, double minY, double minZ, double maxX, double 
     _minPoint = Point(minX, minY, minZ);
     _maxPoint = Point(maxX, maxY, maxZ);
     _volume = _calculateVolume();
+    _surfaces = _calculateSurfaces();
 }
 
 double Rectangle::_calculateVolume() const
@@ -169,9 +171,25 @@ double Rectangle::_calculateVolume() const
     return xDiff * yDiff * zDiff;
 }
 
+vector<Plane> Rectangle::_calculateSurfaces() const
+{
+    vector<Plane> surfaces(6);
+    surfaces[0] = Plane(Point(minX(), 0, 0), Vector(1, 0, 0));
+    surfaces[1] = Plane(Point(maxX(), 0, 0), Vector(1, 0, 0));
+    surfaces[2] = Plane(Point(0, minY(), 0), Vector(0, 1, 0));
+    surfaces[3] = Plane(Point(0, maxY(), 0), Vector(0, 1, 0));
+    surfaces[4] = Plane(Point(0, 0, minZ()), Vector(0, 0, 1));
+    surfaces[5] = Plane(Point(0, 0, maxZ()), Vector(0, 0, 1));
+    return surfaces;
+}
+
 Point Rectangle::minPoint() const { return _minPoint; }
 
 Point Rectangle::maxPoint() const { return _maxPoint; }
+
+const vector<Plane>& Rectangle::surfaces() const { return _surfaces; }
+
+const Plane& Rectangle::surfaces(int i) const { return _surfaces[i]; }
 
 double Rectangle::volume() const { return _volume; }
 
