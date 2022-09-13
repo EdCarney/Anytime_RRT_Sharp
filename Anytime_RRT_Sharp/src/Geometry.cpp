@@ -16,6 +16,11 @@ Vector::Vector(double x, double y, double z)
     _magnitude = sqrt(_x*_x + _y*_y + _z*_z);
 }
 
+Vector Vector::operator*(double val) const
+{
+    return Vector(x() * val, y() * val, z() * val);
+}
+
 double Vector::x() const { return _x; }
 
 double Vector::y() const { return _y; }
@@ -24,7 +29,7 @@ double Vector::z() const { return _z; }
 
 double Vector::magnitude() const { return _magnitude; }
 
-double Vector::dot(Vector& v) const
+double Vector::dot(const Vector& v) const
 {
     return x() * v.x() + y() * v.y() + z() * v.z();
 }
@@ -43,7 +48,17 @@ Point::Point(double x, double y, double z)
     _z = z;
 }
 
-Vector Point::operator-(Point& p) const
+Point Point::operator-(const Vector& v) const
+{
+    return Point(x() - v.x(), y() - v.y(), z() - v.z());
+}
+
+Point Point::operator+(const Vector& v) const
+{
+    return Point(x() + v.x(), y() + v.y(), z() + v.z());
+}
+
+Vector Point::operator-(const Point& p) const
 {
     double xDiff = x() - p.x();
     double yDiff = y() - p.y();
@@ -103,6 +118,28 @@ Plane::Plane(Point point, Vector normal)
 Point Plane::point() const { return _point; }
 
 Vector Plane::normal() const { return _normal; }
+
+Point Plane::getIntersectionPoint(Line line) const
+{
+    Vector u = line.p2() - line.p1();
+    Vector w = line.p1() - point();
+    Vector n = normal();
+
+    double denom = n.dot(u);
+    double numer = -1 * n.dot(w);
+
+    if (denom == 0)
+    {
+        Point *p;
+        p = NULL;
+        return *p;
+    }
+    else
+    {
+        double s = numer / denom;
+        return line.p1() + u * s;
+    }
+}
 
 Sphere::Sphere()
 {
