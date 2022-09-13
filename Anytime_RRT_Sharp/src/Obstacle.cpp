@@ -74,6 +74,7 @@ bool RectangleObstacle::intersects(Point point) const
 
 bool RectangleObstacle::intersects(Line line) const
 {
+    // https://stackoverflow.com/questions/66523293/intersection-of-line-with-rectangular-prism-python
     Point* p;
     double epsilon = 0.001;
     bool inXLimits, inYLimits, inZLimits;
