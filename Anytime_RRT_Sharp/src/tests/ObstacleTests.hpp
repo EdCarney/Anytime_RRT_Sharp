@@ -50,13 +50,6 @@ TEST(SphereObstacle, SphereIntersect_DoesIntersectPoint)
     EXPECT_TRUE(o.intersects(s));
 }
 
-TEST(SphereObstacle, SphereIntersect_DoesIntersectRadius)
-{
-    SphereObstacle o(1, 1, 0, 5);
-    Sphere s = { 7, 0, 0, 5 };
-    EXPECT_TRUE(o.intersects(s));
-}
-
 TEST(SphereObstacle, SphereIntersect_DoesNotIntersect)
 {
     SphereObstacle o(1, 1, 1, 5);
