@@ -7,7 +7,7 @@ TEST(ArrtsParams_StartState, Initialize_CheckVals)
 {
     State start(5, 6, 7, 8);
     State goal(9, 10, 11, -5);
-    vector<Obstacle> obstacles;
+    vector<SphereObstacle> obstacles;
     double goalRadius = 5.5;
     ArrtsParams params(start, goal, obstacles, goalRadius);
 
@@ -36,7 +36,7 @@ TEST(ArrtsParams_GoalState, Initialize_CheckVals)
 {
     State start(5, 6, 7, 8);
     State goal(9, 10, 11, -5);
-    vector<Obstacle> obstacles;
+    vector<SphereObstacle> obstacles;
     double goalRadius = 5.5;
     ArrtsParams params(start, goal, obstacles, goalRadius);
 
@@ -66,7 +66,7 @@ TEST(ArrtsParams_Obstacles, InitializeOneObstacle_CheckNum)
 {
     State start(5, 6, 1, 8);
     State goal(9, 10, 11, -5);
-    vector<Obstacle> obstacles = { Obstacle(1, 1, 1, 1) };
+    vector<SphereObstacle> obstacles = { SphereObstacle(1, 1, 1, 1) };
     double goalRadius = 5.5;
     ArrtsParams params(start, goal, obstacles, goalRadius);
 
@@ -77,7 +77,7 @@ TEST(ArrtsParams_Obstacles, InitializeMultipleObstacle_CheckNum)
 {
     State start(5, 1, 1, 8);
     State goal(9, 10, 11, -5);
-    vector<Obstacle> obstacles = { Obstacle(1, 1, 1, 1), Obstacle(-1, -1, -1, 3), Obstacle(0, 0, 0, 5)};
+    vector<SphereObstacle> obstacles = { SphereObstacle(1, 1, 1, 1), SphereObstacle(-1, -1, -1, 3), SphereObstacle(0, 0, 0, 5)};
     double goalRadius = 5.5;
     ArrtsParams params(start, goal, obstacles, goalRadius);
 
@@ -88,7 +88,7 @@ TEST(ArrtsParams_Obstacles, InitializeOneObstacle_CheckVals)
 {
     State start(5, 6, 7, 8);
     State goal(9, 10, 11, -5);
-    vector<Obstacle> obstacles = { Obstacle(1, 2, 3, 4) };
+    vector<SphereObstacle> obstacles = { SphereObstacle(1, 2, 3, 4) };
     double goalRadius = 5.5;
     ArrtsParams params(start, goal, obstacles, goalRadius);
 
@@ -102,7 +102,7 @@ TEST(ArrtsParams_Obstacles, InitializeMultipleObstacle_CheckVals)
 {
     State start(5, 6, 7, 8);
     State goal(9, 10, 11, -5);
-    vector<Obstacle> obstacles = { Obstacle(1, 2, 3, 4), Obstacle(-1, -1, -1, 3), Obstacle(0, 0, 0, 5)};
+    vector<SphereObstacle> obstacles = { SphereObstacle(1, 2, 3, 4), SphereObstacle(-1, -1, -1, 3), SphereObstacle(0, 0, 0, 5)};
     double goalRadius = 5.5;
     ArrtsParams params(start, goal, obstacles, goalRadius);
 
@@ -126,9 +126,9 @@ TEST(ArrtsParams_Obstacles, AddFromFile_CheckVals)
 {
     ArrtsParams params("./test");
 
-    Obstacle obs1 = params.obstacles(0);
-    Obstacle obs2 = params.obstacles(11);
-    Obstacle obs3 = params.obstacles(22);
+    SphereObstacle obs1 = params.obstacles(0);
+    SphereObstacle obs2 = params.obstacles(11);
+    SphereObstacle obs3 = params.obstacles(22);
 
     GTEST_ASSERT_EQ(obs1.x(), 80);
     GTEST_ASSERT_EQ(obs2.x(), 35);
