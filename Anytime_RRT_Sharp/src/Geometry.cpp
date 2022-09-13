@@ -83,23 +83,23 @@ Line::Line()
 {
     _p1 = Point();
     _p2 = Point();
+    _tangent = Vector();
     _length = 0;
-    _slope = 0;
-    _a = 0;
-    _b = 0;
-    _c = 0;
 }
 
 Line::Line(Point& p1, Point& p2)
 {
     _p1 = p1;
     _p2 = p2;
+    _tangent = _p2 - _p1;
     _length = p1.distanceTo(p2);
 }
 
 Point Line::p1() const { return _p1; }
 
 Point Line::p2() const { return _p2; }
+
+Vector Line::tangent() const { return _tangent; }
 
 double Line::length() const { return _length; }
 
