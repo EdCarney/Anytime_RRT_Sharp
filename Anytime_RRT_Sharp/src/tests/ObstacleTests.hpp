@@ -43,18 +43,52 @@ TEST(SphereObstacle, PointIntersect_DoesNotIntersect)
     EXPECT_FALSE(o.intersects(p));
 }
 
-TEST(SphereObstacle, SphereIntersect_DoesIntersectPoint)
+TEST(SphereObstacle, LineIntersect_DoesIntersect_TwoPoints)
 {
     SphereObstacle o(1, 1, 1, 5);
-    Sphere s = { 2, 2, 2, 1 };
-    EXPECT_TRUE(o.intersects(s));
+    Point p1(1, 1, 1), p2(2, 2, 8);
+    Line l(p1, p2);
+    EXPECT_TRUE(o.intersects(l));
 }
 
-TEST(SphereObstacle, SphereIntersect_DoesNotIntersect)
+TEST(SphereObstacle, LineIntersect_DoesIntersect_TwoPoints_Reverse)
 {
     SphereObstacle o(1, 1, 1, 5);
-    Sphere s = { -5, -5, -5, 1 };
-    EXPECT_FALSE(o.intersects(s));
+    Point p1(1, 1, 1), p2(2, 2, 8);
+    Line l(p2, p1);
+    EXPECT_TRUE(o.intersects(l));
+}
+
+TEST(SphereObstacle, LineIntersect_DoesIntersect_OnePoint)
+{
+    SphereObstacle o(1, 1, 1, 5);
+    Point p1(0, 0, 0), p2(2, 2, 8);
+    Line l(p1, p2);
+    EXPECT_TRUE(o.intersects(l));
+}
+
+TEST(SphereObstacle, LineIntersect_DoesIntersect_OnePoint_Reverse)
+{
+    SphereObstacle o(1, 1, 1, 5);
+    Point p1(0, 0, 0), p2(2, 2, 8);
+    Line l(p2, p1);
+    EXPECT_TRUE(o.intersects(l));
+}
+
+TEST(SphereObstacle, LineIntersect_DoesNotIntersect)
+{
+    SphereObstacle o(4, 4, 4, 5);
+    Point p1(0, 0, 0), p2(-2, -2, -2);
+    Line l(p1, p2);
+    EXPECT_FALSE(o.intersects(l));
+}
+
+TEST(SphereObstacle, LineIntersect_DoesNotIntersect_Reverse)
+{
+    SphereObstacle o(4, 4, 4, 5);
+    Point p1(0, 0, 0), p2(-2, -2, -2);
+    Line l(p2, p1);
+    EXPECT_FALSE(o.intersects(l));
 }
 
 TEST(SphereObstacle, RectagleIntersect_FullyContained)
