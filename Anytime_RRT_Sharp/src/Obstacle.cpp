@@ -88,7 +88,26 @@ bool RectangleObstacle::intersects(Point point) const
 
 bool RectangleObstacle::intersects(Line line) const
 {
-    
+    Point* p;
+    double epsilon = 0.001;
+    bool inXLimits, inYLimits, inZLimits;
+
+    for (Plane plane : surfaces())
+    {
+        *p = plane.getIntersectionPoint(line);
+
+        if (p == NULL)
+            break;
+        
+        inXLimits = p->x() + epsilon >= minX() && p->x() - epsilon <= maxX();
+        inYLimits = p->y() + epsilon >= minY() && p->y() - epsilon <= maxY();
+        inZLimits = p->z() + epsilon >= minZ() && p->z() - epsilon <= maxZ();
+
+        if (inXLimits && inYLimits && inZLimits)
+            return true;
+    }
+
+    return false;
 }
 
 bool RectangleObstacle::intersects(Rectangle rect) const
