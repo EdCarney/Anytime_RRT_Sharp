@@ -10,7 +10,7 @@ void WorkspaceGraph::setVehicle(Vehicle v)
     _vehicle = v;
 }
 
-vector<SphereObstacle> WorkspaceGraph::obstacles()
+vector<Sphere> WorkspaceGraph::obstacles()
 {
     return _obstacles;
 }
@@ -20,7 +20,7 @@ GoalState WorkspaceGraph::goalRegion()
     return _goalRegion;
 }
 
-SphereObstacle WorkspaceGraph::obstacles(int i)
+Sphere WorkspaceGraph::obstacles(int i)
 {
     return _obstacles[i];
 }
@@ -59,19 +59,19 @@ bool WorkspaceGraph::_obstacleInFreespace(double x, double y, double z, double r
     return false;
 }
 
-bool WorkspaceGraph::_obstacleInFreespace(SphereObstacle o) const
+bool WorkspaceGraph::_obstacleInFreespace(Sphere o) const
 {
     return _obstacleInFreespace(o.x(), o.y(), o.z(), o.radius());
 }
 
 void WorkspaceGraph::addObstacle(double x, double y, double z, double radius)
 {
-    _obstacles.push_back(SphereObstacle(x, y, z, radius));
+    _obstacles.push_back(Sphere(x, y, z, radius));
 }
 
-void WorkspaceGraph::addObstacles(vector<SphereObstacle> obstacles)
+void WorkspaceGraph::addObstacles(vector<Sphere> obstacles)
 {
-    for (SphereObstacle o : obstacles)
+    for (Sphere o : obstacles)
         if (_obstacleInFreespace(o))
             _obstacles.push_back(o);
 }
@@ -84,7 +84,7 @@ bool WorkspaceGraph::atGate(GraphNode node)
 
 bool WorkspaceGraph::nodeIsSafe(Point p)
 {
-    for (SphereObstacle o : _obstacles)
+    for (Sphere o : _obstacles)
         if (o.intersects(p))
             return false;
     return true;
@@ -92,8 +92,9 @@ bool WorkspaceGraph::nodeIsSafe(Point p)
 
 bool WorkspaceGraph::pathIsSafe(Point p1, Point p2)
 {
-    for (SphereObstacle o : _obstacles)
-        if (o.intersects(Line(p1, p2)))
+    Line pathSegment(p1, p2);
+    for (Sphere o : _obstacles)
+        if (o.intersects(pathSegment))
             return false;
     return true;
 }

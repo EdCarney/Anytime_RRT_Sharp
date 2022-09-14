@@ -1,17 +1,11 @@
-#include <float.h>
 #include <math.h>
 #include <vector>
 #include "cppshrhelp.hpp"
 
-#ifndef GEOMETRY_H
-#define GEOMETRY_H
+#ifndef GEOMETRY_2D_H
+#define GEOMETRY_2D_H
 
 using namespace std;
-
-struct HasVolume
-{
-    virtual double volume() const = 0;
-};
 
 class DLL_EXPORT Vector
 {
@@ -72,52 +66,7 @@ class DLL_EXPORT Plane
         Plane(Point p, Vector normal);
         Point point() const;
         Vector normal() const;
-        Point getIntersectionPoint(Line line) const;
-};
-
-class DLL_EXPORT Sphere : public Point, public HasVolume
-{
-    protected:
-        double _radius;
-        double _area;
-        double _calculateVolume() const;
-
-    public:
-        Sphere();
-        Sphere(Point p, double radius);
-        Sphere(double x, double y, double z, double radius);
-        double radius() const;
-        double volume() const;
-};
-
-class DLL_EXPORT Rectangle: public HasVolume
-{
-    protected:
-        double _volume;
-        Point _minPoint, _maxPoint;
-        vector<Plane> _surfaces;
-        vector<Point> _points;
-        double _calculateVolume() const;
-        vector<Plane> _calculateSurfaces() const;
-        vector<Point> _calculatePoints() const;
-
-    public:
-        Rectangle();
-        Rectangle(Point minPoint, Point maxPoint);
-        Rectangle(double minX, double minY, double minZ, double maxX, double maxY, double maxZ);
-        Point minPoint() const;
-        Point maxPoint() const;
-        const vector<Plane>& surfaces() const;
-        const Plane& surfaces(int i) const;
-        const vector<Point>& points() const;
-        const Point& points(int i) const;
-        double volume() const;
-        double minX() const;
-        double minY() const;
-        double minZ() const;
-        double maxX() const;
-        double maxY() const;
-        double maxZ() const;
+        Point getIntersectionPoint(Line& line) const;
 };
 
 class DLL_EXPORT GoalState : public Point
@@ -179,4 +128,4 @@ class DLL_EXPORT Edge
         GraphNode end();
 };
 
-#endif
+#endif //GEOMETRY_2D_H

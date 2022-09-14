@@ -1,4 +1,5 @@
-#include "Geometry.hpp"
+#include "Geometry2D.hpp"
+#include "Geometry3D.hpp"
 
 #ifndef CONFIGSPACE_NODE_H
 #define CONFIGSPACE_NODE_H

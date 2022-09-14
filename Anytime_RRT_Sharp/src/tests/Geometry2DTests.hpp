@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <math.h>
-#include "../Geometry.hpp"
+#include "../Geometry2D.hpp"
 
 
 #pragma region Geometry_Point
