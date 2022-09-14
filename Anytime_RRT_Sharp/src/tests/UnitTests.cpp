@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include "ArrtsParamsTests.hpp"
-#include "GeometryTests.hpp"
-#include "ObstacleTests.hpp"
+#include "Geometry2DTests.hpp"
+#include "Geometry3DTests.hpp"
 #include "VehicleTests.hpp"
 
 int main(int argc, char* argv[])

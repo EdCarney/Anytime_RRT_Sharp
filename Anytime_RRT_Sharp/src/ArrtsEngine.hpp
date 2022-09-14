@@ -2,7 +2,8 @@
 #include "ArrtsParams.hpp"
 #include "ConfigspaceGraph.hpp"
 #include "ConfigspaceNode.hpp"
-#include "Geometry.hpp"
+#include "Geometry2D.hpp"
+#include "Geometry3D.hpp"
 #include "WorkspaceGraph.hpp"
 
 #ifndef ARRTS_ENGINE_H

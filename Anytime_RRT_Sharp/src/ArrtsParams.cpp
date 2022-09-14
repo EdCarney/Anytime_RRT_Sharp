@@ -1,6 +1,6 @@
 #include "ArrtsParams.hpp"
 
-ArrtsParams::ArrtsParams(State start, State goal, vector<SphereObstacle> obstacles, double goalRadius, int minNodeCount, int maxNieghborCount)
+ArrtsParams::ArrtsParams(State start, State goal, vector<Sphere> obstacles, double goalRadius, int minNodeCount, int maxNieghborCount)
 {
     _start = start;
     _goal = goal;
@@ -52,8 +52,8 @@ void ArrtsParams::_setLimitsFromStates()
 
 void ArrtsParams::_removeObstaclesNotInLimits()
 {
-    vector<SphereObstacle> newObstacles;
-    for (SphereObstacle o : _obstacles)
+    vector<Sphere> newObstacles;
+    for (Sphere o : _obstacles)
         if (o.intersects(_limits))
             newObstacles.push_back(o);
     _obstacles = newObstacles;
@@ -63,7 +63,7 @@ void ArrtsParams::_removeObstaclesNotInLimits()
 void ArrtsParams::_calculateObstacleVolume()
 {
     _obstacleVolume = 0.0;
-    for (SphereObstacle o : _obstacles)
+    for (Sphere o : _obstacles)
         _obstacleVolume += o.volume();
 }
 
@@ -121,7 +121,7 @@ void ArrtsParams::_readObstaclesFromFile(FILE* file, bool isOptional)
     // ignore first line (formatting)
     fscanf(file, "%*[^\n]\n");
     while (fscanf(file, "%lf,%lf,%lf,%lf", &x, &y, &z, &r) != EOF)
-        _obstacles.push_back(SphereObstacle(x, y, z, r));
+        _obstacles.push_back(Sphere(x, y, z, r));
 
     fclose(file);
 }
@@ -144,6 +144,6 @@ Rectangle ArrtsParams::limits() { return _limits; }
 
 Vehicle ArrtsParams::vehicle() { return _vehicle; }
 
-vector<SphereObstacle> ArrtsParams::obstacles() { return _obstacles; }
+vector<Sphere> ArrtsParams::obstacles() { return _obstacles; }
 
-SphereObstacle ArrtsParams::obstacles(int i) { return _obstacles[i]; }
+Sphere ArrtsParams::obstacles(int i) { return _obstacles[i]; }
