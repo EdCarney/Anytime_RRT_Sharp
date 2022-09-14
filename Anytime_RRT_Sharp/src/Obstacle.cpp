@@ -77,7 +77,7 @@ bool RectangleObstacle::intersects(Line line) const
     // https://stackoverflow.com/questions/66523293/intersection-of-line-with-rectangular-prism-python
     Point* p;
     double epsilon = 0.001;
-    bool inXLimits, inYLimits, inZLimits;
+    bool inXLimits, inYLimits, inZLimits, inLineLimits;
 
     for (Plane plane : surfaces())
     {
@@ -85,12 +85,13 @@ bool RectangleObstacle::intersects(Line line) const
 
         if (p == NULL)
             break;
-        
+
         inXLimits = p->x() + epsilon >= minX() && p->x() - epsilon <= maxX();
         inYLimits = p->y() + epsilon >= minY() && p->y() - epsilon <= maxY();
         inZLimits = p->z() + epsilon >= minZ() && p->z() - epsilon <= maxZ();
+        inLineLimits = line.p1().distanceTo(*p) <= line.length() && line.p2().distanceTo(*p) <= line.length();
 
-        if (inXLimits && inYLimits && inZLimits)
+        if (inXLimits && inYLimits && inZLimits && inLineLimits)
             return true;
     }
 
@@ -99,17 +100,15 @@ bool RectangleObstacle::intersects(Line line) const
 
 bool RectangleObstacle::intersects(Rectangle rect) const
 {
-    bool minInXLimits = (rect.minX() >= minX() && rect.minX() <= maxX());
-    bool minInYLimits = (rect.minY() >= minY() && rect.minY() <= maxY());
-    bool minInZLimits = (rect.minZ() >= minZ() && rect.minZ() <= maxZ());
+    bool inXLimits, inYLimits, inZLimits;
+    for (Point p : points())
+    {
+        bool inXLimits = p.x() >= rect.minX() && p.x() <= rect.maxX();
+        bool inYLimits = p.y() >= rect.minY() && p.y() <= rect.maxY();
+        bool inZLimits = p.z() >= rect.minZ() && p.z() <= rect.maxZ();
+        if (inXLimits && inYLimits && inZLimits)
+            return true;
+    }
 
-    bool maxInXLimits = (rect.maxX() >= minX() && rect.maxX() <= maxX());
-    bool maxInYLimits = (rect.maxY() >= minY() && rect.maxY() <= maxY());
-    bool maxInZLimits = (rect.maxZ() >= minZ() && rect.maxZ() <= maxZ());
-
-    bool inXLimits = minInXLimits || maxInXLimits;
-    bool inYLimits = minInYLimits || maxInYLimits;
-    bool inZLimits = minInZLimits || maxInZLimits;
-
-    return inXLimits && inYLimits && inZLimits;
+    return false;
 }

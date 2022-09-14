@@ -96,8 +96,10 @@ class DLL_EXPORT Rectangle: public HasVolume
         double _volume;
         Point _minPoint, _maxPoint;
         vector<Plane> _surfaces;
+        vector<Point> _points;
         double _calculateVolume() const;
         vector<Plane> _calculateSurfaces() const;
+        vector<Point> _calculatePoints() const;
 
     public:
         Rectangle();
@@ -107,6 +109,8 @@ class DLL_EXPORT Rectangle: public HasVolume
         Point maxPoint() const;
         const vector<Plane>& surfaces() const;
         const Plane& surfaces(int i) const;
+        const vector<Point>& points() const;
+        const Point& points(int i) const;
         double volume() const;
         double minX() const;
         double minY() const;
