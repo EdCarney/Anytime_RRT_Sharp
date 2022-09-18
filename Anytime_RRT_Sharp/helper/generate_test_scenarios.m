@@ -84,12 +84,12 @@ function outputData(startX, startY, startZ, goalX, goalY, goalZ, obsX, obsY, obs
     obsInfo = [];
     numObs = size(obsX, 2);
     for i = 1:numObs
-        obsInfo = [obsInfo, obsX(i), obsY(i), obsZ(i), obsR(i)];
+        obsInfo = [obsInfo, "SPHERE", obsX(i), obsY(i), obsZ(i), obsR(i)];
     end
 
-    obsFormat = "%f, %f, %f, %f\n";
+    obsFormat = "%s %f %f %f %f\n";
     obsFile = fullfile(folder, "obstacles.txt");
-    writelines("FORMAT: (x, y, z, radius)", obsFile);
+    writelines("FORMAT: (SPHERE x y z radius) (RECTANGLE minX minY minZ maxX maxY maxZ)", obsFile);
     fid = fopen(obsFile, "a+");
     fprintf(fid, obsFormat, obsInfo);
     fclose(fid);
