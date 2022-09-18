@@ -21,12 +21,12 @@ void WorkspaceGraph::defineFreespace(Rectangle limits)
 
 void WorkspaceGraph::addObstacle(double x, double y, double z, double radius)
 {
-    _obstacles.push_back(Sphere(x, y, z, radius));
+    _obstacles.push_back(new Sphere(x, y, z, radius));
 }
 
-void WorkspaceGraph::addObstacles(vector<Sphere> obstacles)
+void WorkspaceGraph::addObstacles(vector<Shape3d*>& obstacles)
 {
-    for (Sphere o : obstacles)
+    for (auto o : obstacles)
         _obstacles.push_back(o);
 }
 
@@ -38,8 +38,8 @@ bool WorkspaceGraph::atGate(GraphNode node)
 
 bool WorkspaceGraph::nodeIsSafe(Point p)
 {
-    for (Sphere o : _obstacles)
-        if (o.intersects(p))
+    for (auto o : _obstacles)
+        if (o->intersects(p))
             return false;
     return true;
 }
@@ -47,8 +47,8 @@ bool WorkspaceGraph::nodeIsSafe(Point p)
 bool WorkspaceGraph::pathIsSafe(Point p1, Point p2)
 {
     Line pathSegment(p1, p2);
-    for (Sphere o : _obstacles)
-        if (o.intersects(pathSegment))
+    for (auto o : _obstacles)
+        if (o->intersects(pathSegment))
             return false;
     return true;
 }

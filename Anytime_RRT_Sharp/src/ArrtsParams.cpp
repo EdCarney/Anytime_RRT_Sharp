@@ -1,10 +1,10 @@
 #include "ArrtsParams.hpp"
 
-ArrtsParams::ArrtsParams(State start, State goal, vector<Sphere> obstacles, double goalRadius, int minNodeCount, int maxNieghborCount)
+ArrtsParams::ArrtsParams(State start, State goal, vector<Shape3d*> obstacles, double goalRadius, int minNodeCount, int maxNieghborCount)
 {
     _start = start;
     _goal = goal;
-    _sphereObstacles = obstacles;
+    _obstacles = obstacles;
     _goalRadius = goalRadius;
     _minNodeCount = minNodeCount;
     _maxNeighborCount = maxNieghborCount;
@@ -14,7 +14,7 @@ ArrtsParams::ArrtsParams(State start, State goal, vector<Sphere> obstacles, doub
 }
 
 ArrtsParams::ArrtsParams(string dataDirectory, int minNodeCount, int maxNieghborCount)
-{   
+{
     printf("Initializing data from %s\n", dataDirectory.c_str());
 
     string statesFile = dataDirectory + "/" + DEFAULT_STATES_FILE;
@@ -25,8 +25,6 @@ ArrtsParams::ArrtsParams(string dataDirectory, int minNodeCount, int maxNieghbor
     _readObstaclesFromFile(obstaclesFile);
     _minNodeCount = minNodeCount;
     _maxNeighborCount = maxNieghborCount;
-
-    printf("%d,%d\n", _sphereObstacles.size(), _rectangleObstacles.size());
 
     _setLimitsFromStates();
     _removeObstaclesNotInLimits();
@@ -54,19 +52,19 @@ void ArrtsParams::_setLimitsFromStates()
 
 void ArrtsParams::_removeObstaclesNotInLimits()
 {
-    vector<Sphere> newObstacles;
-    for (Sphere o : _sphereObstacles)
-        if (o.intersects(_limits))
+    vector<Shape3d*> newObstacles;
+    for (auto o : _obstacles)
+        if (o->intersects(_limits))
             newObstacles.push_back(o);
-    _sphereObstacles = newObstacles;
+    _obstacles = newObstacles;
     _calculateObstacleVolume();
 }
 
 void ArrtsParams::_calculateObstacleVolume()
 {
     _obstacleVolume = 0.0;
-    for (Sphere o : _sphereObstacles)
-        _obstacleVolume += o.volume();
+    for (auto o : _obstacles)
+        _obstacleVolume += o->volume();
 }
 
 void ArrtsParams::_readStatesFromFile(FILE* file, bool isOptional)
@@ -116,8 +114,7 @@ void ArrtsParams::_readObstaclesFromFile(string fileName, bool isOptional)
     double x, y, z, r;
     double minX, minY, minZ, maxX, maxY, maxZ;
 
-    _sphereObstacles.clear();
-    _rectangleObstacles.clear();
+    _obstacles.clear();
 
     while (getline(file, line))
     {
@@ -127,12 +124,12 @@ void ArrtsParams::_readObstaclesFromFile(string fileName, bool isOptional)
         if (obstacleType == "SPHERE")
         {
             iss >> x >> y >> z >> r;
-            _sphereObstacles.push_back(Sphere(x, y, z, r));
+            _obstacles.push_back(new Sphere(x, y, z, r));
         }
         else if(obstacleType == "RECTANGLE")
         {
             iss >> minX >> minY >> minZ >> maxX >> maxY >> maxZ;
-            _rectangleObstacles.push_back(Rectangle(minX, minY, minZ, maxX, maxY, maxZ));
+            _obstacles.push_back(new Rectangle(minX, minY, minZ, maxX, maxY, maxZ));
         }
     }
     file.close();
@@ -156,10 +153,6 @@ Rectangle ArrtsParams::limits() { return _limits; }
 
 Vehicle ArrtsParams::vehicle() { return _vehicle; }
 
-vector<Sphere> ArrtsParams::sphereObstacles() { return _sphereObstacles; }
+vector<Shape3d*>& ArrtsParams::obstacles() { return _obstacles; }
 
-Sphere ArrtsParams::sphereObstacles(int i) { return _sphereObstacles[i]; }
-
-vector<Rectangle> ArrtsParams::rectangleObstacles() { return _rectangleObstacles; }
-
-Rectangle ArrtsParams::rectangleObstacles(int i) { return _rectangleObstacles[i]; }
+Shape3d* const ArrtsParams::obstacles(int i) { return _obstacles[i]; }

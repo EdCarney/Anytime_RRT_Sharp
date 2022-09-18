@@ -47,7 +47,7 @@ void ArrtsService::_configureWorkspace(ArrtsParams params)
 {
     _workspaceGraph.setGoalRegion(params.goal(), params.goalRadius());
     _workspaceGraph.defineFreespace(params.limits());
-    _workspaceGraph.addObstacles(params.sphereObstacles());
+    _workspaceGraph.addObstacles(params.obstacles());
     _workspaceGraph.setVehicle(params.vehicle());
 }
 
@@ -59,7 +59,7 @@ void ArrtsService::_configureConfigspace(ArrtsParams params)
 
 void ArrtsService::_runAlgorithm(ArrtsParams params)
 {
-    printf("ObsVol: %f, NumObs: %lu, Freespace: [%f, %f, %f, %f]\n", params.obstacleVolume(), params.sphereObstacles().size(), params.limits().minPoint().x(), params.limits().minPoint().y(), params.limits().maxPoint().x(), params.limits().maxPoint().y());
+    printf("ObsVol: %f, NumObs: %lu, Freespace: [%f, %f, %f, %f]\n", params.obstacleVolume(), params.obstacles().size(), params.limits().minPoint().x(), params.limits().minPoint().y(), params.limits().maxPoint().x(), params.limits().maxPoint().y());
     printf("UAV Location: %f, %f, %f\n", params.goal().x(), params.goal().y(), params.goal().theta());
     printf("Root Node:    %f, %f, %f\n", params.start().x(), params.start().y(), params.start().theta());
     auto start = high_resolution_clock::now();
