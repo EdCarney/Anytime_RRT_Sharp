@@ -1,40 +1,10 @@
 #include "WorkspaceGraph.hpp"
 
-Vehicle WorkspaceGraph::vehicle()
-{
-    return _vehicle;
-}
-
-void WorkspaceGraph::setVehicle(Vehicle v)
-{
-    _vehicle = v;
-}
-
-vector<Sphere> WorkspaceGraph::obstacles()
-{
-    return _obstacles;
-}
-
-GoalState WorkspaceGraph::goalRegion()
-{
-    return _goalRegion;
-}
-
-Sphere WorkspaceGraph::obstacles(int i)
-{
-    return _obstacles[i];
-}
-
 void WorkspaceGraph::_buildWorkspaceGraph()
 {
     _minPoint = Point(0, 0, 0);
     _maxPoint = Point(0, 0, 0);
     _goalRegionReached = false;
-}
-
-void WorkspaceGraph::setGoalRegion(double x, double y, double z, double theta, double radius)
-{
-    _goalRegion = GoalState(x, y, z, radius, theta);
 }
 
 void WorkspaceGraph::setGoalRegion(State goalState, double radius)
@@ -49,21 +19,6 @@ void WorkspaceGraph::defineFreespace(Rectangle limits)
     _volume = _calculateVolume();
 }
 
-bool WorkspaceGraph::_obstacleInFreespace(double x, double y, double z, double radius) const
-{
-    if ((x - radius < maxX() && x + radius > minX()) &&
-        (y - radius < maxY() && y + radius > minY()) &&
-        (z - radius < maxZ() && z + radius > minZ()))
-        return true;
-    
-    return false;
-}
-
-bool WorkspaceGraph::_obstacleInFreespace(Sphere o) const
-{
-    return _obstacleInFreespace(o.x(), o.y(), o.z(), o.radius());
-}
-
 void WorkspaceGraph::addObstacle(double x, double y, double z, double radius)
 {
     _obstacles.push_back(Sphere(x, y, z, radius));
@@ -72,8 +27,7 @@ void WorkspaceGraph::addObstacle(double x, double y, double z, double radius)
 void WorkspaceGraph::addObstacles(vector<Sphere> obstacles)
 {
     for (Sphere o : obstacles)
-        if (_obstacleInFreespace(o))
-            _obstacles.push_back(o);
+        _obstacles.push_back(o);
 }
 
 bool WorkspaceGraph::atGate(GraphNode node)
@@ -108,3 +62,9 @@ bool WorkspaceGraph::checkAtGoal(GraphNode node)
     double distToGoal = _vehicle.state().distanceTo(_goalRegion);
     return distToGoal < (_goalRegion.radius() + _vehicle.boundingRadius());
 }
+
+Vehicle WorkspaceGraph::vehicle() { return _vehicle; }
+
+void WorkspaceGraph::setVehicle(Vehicle v) { _vehicle = v; }
+
+GoalState WorkspaceGraph::goalRegion() { return _goalRegion; }

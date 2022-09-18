@@ -1,3 +1,6 @@
+#include <fstream>
+#include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
 #include "cppshrhelp.hpp"
@@ -24,14 +27,15 @@ using namespace std;
    State _start, _goal;
    Rectangle _limits;
    Vehicle _vehicle;
-   vector<Sphere> _obstacles;
+   vector<Sphere> _sphereObstacles;
+   vector<Rectangle> _rectangleObstacles;
 
    void _setLimitsFromStates();
    void _removeObstaclesNotInLimits();
    void _calculateObstacleVolume();
    void _readStatesFromFile(FILE* file, bool isOptional = false);
    void _readVehicleFromFile(FILE* file, bool isOptional = false);
-   void _readObstaclesFromFile(FILE* file, bool isOptional = false);
+   void _readObstaclesFromFile(string fileName, bool isOptional = false);
 
    public:
       ArrtsParams(State start, State goal, vector<Sphere> obstacles, double goalRadius, int minNodeCount = DEFAULT_MIN_NODE_COUNT, int maxNieghborCount = DEFAULT_MAX_NEIGHBOR_COUNT);
@@ -46,8 +50,10 @@ using namespace std;
       State goal();
       Rectangle limits();
       Vehicle vehicle();
-      vector<Sphere> obstacles();
-      Sphere obstacles(int i);
+      vector<Sphere> sphereObstacles();
+      Sphere sphereObstacles(int i);
+      vector<Rectangle> rectangleObstacles();
+      Rectangle rectangleObstacles(int i);
  };
 
  #endif //ARRTS_PARAMS_H
