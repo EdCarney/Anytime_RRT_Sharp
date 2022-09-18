@@ -1,7 +1,7 @@
-#include <cstddef>
+#include <fstream>
 #include <math.h>
-#include <stdexcept>
-#include <stdio.h>
+#include <sstream>
+#include <string>
 #include <vector>
 #include "cppshrhelp.hpp"
 #include "Geometry2D.hpp"
@@ -27,11 +27,11 @@ class DLL_EXPORT Vehicle
 public:
     Vehicle();
     Vehicle(vector<double> x, vector<double> y, vector<double> z);
-    Vehicle(FILE *file);
+    Vehicle(string fileName);
     void updateState(State newState);
     void addOffsetNode(double x, double y, double z);
     void addOffsetNodes(vector<double> x, vector<double> y, vector<double> z);
-    void addOffsetNodesFromFile(FILE *file);
+    void addOffsetNodesFromFile(string fileName);
     vector<Point> nodes();
     Point nodes(int i);
     vector<Point> offsetNodes();
