@@ -70,7 +70,7 @@ TEST(ArrtsParams_Obstacles, InitializeOneObstacle_CheckNum)
     double goalRadius = 5.5;
     ArrtsParams params(start, goal, obstacles, goalRadius);
 
-    GTEST_ASSERT_EQ(params.obstacles().size(), 1);
+    GTEST_ASSERT_EQ(params.sphereObstacles().size(), 1);
 }
 
 TEST(ArrtsParams_Obstacles, InitializeMultipleObstacle_CheckNum)
@@ -81,7 +81,7 @@ TEST(ArrtsParams_Obstacles, InitializeMultipleObstacle_CheckNum)
     double goalRadius = 5.5;
     ArrtsParams params(start, goal, obstacles, goalRadius);
 
-    GTEST_ASSERT_EQ(params.obstacles().size(), 3);
+    GTEST_ASSERT_EQ(params.sphereObstacles().size(), 3);
 }
 
 TEST(ArrtsParams_Obstacles, InitializeOneObstacle_CheckVals)
@@ -92,10 +92,10 @@ TEST(ArrtsParams_Obstacles, InitializeOneObstacle_CheckVals)
     double goalRadius = 5.5;
     ArrtsParams params(start, goal, obstacles, goalRadius);
 
-    GTEST_ASSERT_EQ(params.obstacles(0).x(), 1);
-    GTEST_ASSERT_EQ(params.obstacles(0).y(), 2);
-    GTEST_ASSERT_EQ(params.obstacles(0).z(), 3);
-    GTEST_ASSERT_EQ(params.obstacles(0).radius(), 4);
+    GTEST_ASSERT_EQ(params.sphereObstacles(0).x(), 1);
+    GTEST_ASSERT_EQ(params.sphereObstacles(0).y(), 2);
+    GTEST_ASSERT_EQ(params.sphereObstacles(0).z(), 3);
+    GTEST_ASSERT_EQ(params.sphereObstacles(0).radius(), 4);
 }
 
 TEST(ArrtsParams_Obstacles, InitializeMultipleObstacle_CheckVals)
@@ -106,29 +106,29 @@ TEST(ArrtsParams_Obstacles, InitializeMultipleObstacle_CheckVals)
     double goalRadius = 5.5;
     ArrtsParams params(start, goal, obstacles, goalRadius);
 
-    GTEST_ASSERT_EQ(params.obstacles(0).x(), 1);
-    GTEST_ASSERT_EQ(params.obstacles(0).y(), 2);
-    GTEST_ASSERT_EQ(params.obstacles(0).z(), 3);
-    GTEST_ASSERT_EQ(params.obstacles(0).radius(), 4);
+    GTEST_ASSERT_EQ(params.sphereObstacles(0).x(), 1);
+    GTEST_ASSERT_EQ(params.sphereObstacles(0).y(), 2);
+    GTEST_ASSERT_EQ(params.sphereObstacles(0).z(), 3);
+    GTEST_ASSERT_EQ(params.sphereObstacles(0).radius(), 4);
     
-    GTEST_ASSERT_EQ(params.obstacles(1).x(), -1);
-    GTEST_ASSERT_EQ(params.obstacles(1).y(), -1);
-    GTEST_ASSERT_EQ(params.obstacles(1).z(), -1);
-    GTEST_ASSERT_EQ(params.obstacles(1).radius(), 3);
+    GTEST_ASSERT_EQ(params.sphereObstacles(1).x(), -1);
+    GTEST_ASSERT_EQ(params.sphereObstacles(1).y(), -1);
+    GTEST_ASSERT_EQ(params.sphereObstacles(1).z(), -1);
+    GTEST_ASSERT_EQ(params.sphereObstacles(1).radius(), 3);
 
-    GTEST_ASSERT_EQ(params.obstacles(2).x(), 0);
-    GTEST_ASSERT_EQ(params.obstacles(2).y(), 0);
-    GTEST_ASSERT_EQ(params.obstacles(2).z(), 0);
-    GTEST_ASSERT_EQ(params.obstacles(2).radius(), 5);
+    GTEST_ASSERT_EQ(params.sphereObstacles(2).x(), 0);
+    GTEST_ASSERT_EQ(params.sphereObstacles(2).y(), 0);
+    GTEST_ASSERT_EQ(params.sphereObstacles(2).z(), 0);
+    GTEST_ASSERT_EQ(params.sphereObstacles(2).radius(), 5);
 }
 
 TEST(ArrtsParams_Obstacles, AddFromFile_CheckVals)
 {
     ArrtsParams params("./test");
 
-    Sphere obs1 = params.obstacles(0);
-    Sphere obs2 = params.obstacles(11);
-    Sphere obs3 = params.obstacles(22);
+    Sphere obs1 = params.sphereObstacles(0);
+    Sphere obs2 = params.sphereObstacles(11);
+    Sphere obs3 = params.sphereObstacles(22);
 
     GTEST_ASSERT_EQ(obs1.x(), 80);
     GTEST_ASSERT_EQ(obs2.x(), 35);

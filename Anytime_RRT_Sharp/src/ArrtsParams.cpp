@@ -4,7 +4,7 @@ ArrtsParams::ArrtsParams(State start, State goal, vector<Sphere> obstacles, doub
 {
     _start = start;
     _goal = goal;
-    _obstacles = obstacles;
+    _sphereObstacles = obstacles;
     _goalRadius = goalRadius;
     _minNodeCount = minNodeCount;
     _maxNeighborCount = maxNieghborCount;
@@ -22,9 +22,11 @@ ArrtsParams::ArrtsParams(string dataDirectory, int minNodeCount, int maxNieghbor
     string obstaclesFile = dataDirectory + "/" + DEFAULT_OBSTACLES_FILE;
 
     _readStatesFromFile(fopen(statesFile.c_str(), "r"));
-    _readObstaclesFromFile(fopen(obstaclesFile.c_str(), "r"));
+    _readObstaclesFromFile(obstaclesFile);
     _minNodeCount = minNodeCount;
     _maxNeighborCount = maxNieghborCount;
+
+    printf("%d,%d\n", _sphereObstacles.size(), _rectangleObstacles.size());
 
     _setLimitsFromStates();
     _removeObstaclesNotInLimits();
@@ -53,17 +55,17 @@ void ArrtsParams::_setLimitsFromStates()
 void ArrtsParams::_removeObstaclesNotInLimits()
 {
     vector<Sphere> newObstacles;
-    for (Sphere o : _obstacles)
+    for (Sphere o : _sphereObstacles)
         if (o.intersects(_limits))
             newObstacles.push_back(o);
-    _obstacles = newObstacles;
+    _sphereObstacles = newObstacles;
     _calculateObstacleVolume();
 }
 
 void ArrtsParams::_calculateObstacleVolume()
 {
     _obstacleVolume = 0.0;
-    for (Sphere o : _obstacles)
+    for (Sphere o : _sphereObstacles)
         _obstacleVolume += o.volume();
 }
 
@@ -105,25 +107,35 @@ void ArrtsParams::_readVehicleFromFile(FILE* file, bool isOptional)
     }
 }
 
-void ArrtsParams::_readObstaclesFromFile(FILE* file, bool isOptional)
+void ArrtsParams::_readObstaclesFromFile(string fileName, bool isOptional)
 {
-    if (file == NULL && !isOptional)
-    {
-        if (!isOptional)
-            throw runtime_error("NULL file pointer in readObstaclesFromFile()");
-        printf("WARN: Error loading obstacle information, skipping...\n");
-        return;
-    }
+    ifstream file(fileName);
 
+    string obstacleType, line;
+    istringstream iss;
     double x, y, z, r;
-    _obstacles.clear();
+    double minX, minY, minZ, maxX, maxY, maxZ;
 
-    // ignore first line (formatting)
-    fscanf(file, "%*[^\n]\n");
-    while (fscanf(file, "%lf,%lf,%lf,%lf", &x, &y, &z, &r) != EOF)
-        _obstacles.push_back(Sphere(x, y, z, r));
+    _sphereObstacles.clear();
+    _rectangleObstacles.clear();
 
-    fclose(file);
+    while (getline(file, line))
+    {
+        obstacleType = line.substr(0, line.find(" "));
+        line = line.substr(line.find(" ") + 1);
+        iss = istringstream(line);
+        if (obstacleType == "SPHERE")
+        {
+            iss >> x >> y >> z >> r;
+            _sphereObstacles.push_back(Sphere(x, y, z, r));
+        }
+        else if(obstacleType == "RECTANGLE")
+        {
+            iss >> minX >> minY >> minZ >> maxX >> maxY >> maxZ;
+            _rectangleObstacles.push_back(Rectangle(minX, minY, minZ, maxX, maxY, maxZ));
+        }
+    }
+    file.close();
 }
 
 int ArrtsParams::dimension() { return DIMENSION; }
@@ -144,6 +156,10 @@ Rectangle ArrtsParams::limits() { return _limits; }
 
 Vehicle ArrtsParams::vehicle() { return _vehicle; }
 
-vector<Sphere> ArrtsParams::obstacles() { return _obstacles; }
+vector<Sphere> ArrtsParams::sphereObstacles() { return _sphereObstacles; }
 
-Sphere ArrtsParams::obstacles(int i) { return _obstacles[i]; }
+Sphere ArrtsParams::sphereObstacles(int i) { return _sphereObstacles[i]; }
+
+vector<Rectangle> ArrtsParams::rectangleObstacles() { return _rectangleObstacles; }
+
+Rectangle ArrtsParams::rectangleObstacles(int i) { return _rectangleObstacles[i]; }

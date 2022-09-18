@@ -13,18 +13,9 @@ class WorkspaceGraph : public Rectangle
     Vehicle _vehicle;
     void _buildWorkspaceGraph();
     bool _goalRegionReached;
-    bool _obstacleInFreespace(double x, double y, double z, double radius) const;
-    bool _obstacleInFreespace(Sphere o) const;
 
     public:
-
-        Vehicle vehicle();
-        void setVehicle(Vehicle v);
-        GoalState goalRegion();
-        void setGoalRegion(double x, double y, double z, double theta, double radius);
         void setGoalRegion(State goalState, double radius);
-        vector<Sphere> obstacles();
-        Sphere obstacles(int i);
         void defineFreespace(Rectangle limits);
         bool checkAtGoal(GraphNode node);
         bool nodeIsSafe(Point p);
@@ -33,6 +24,9 @@ class WorkspaceGraph : public Rectangle
         void addObstacle(double x, double y, double z, double radius);
         void addObstacles(vector<Sphere> obstacles);
         bool atGate(GraphNode node);
+        Vehicle vehicle();
+        void setVehicle(Vehicle v);
+        GoalState goalRegion();
         WorkspaceGraph() { _buildWorkspaceGraph(); }
 };
 
