@@ -13,7 +13,7 @@ clear all
 close all
 clc
 
-folder = "testData"; %% change this
+folder = "testData_20220918194311"; %% change this
 
 node_file = fullfile(folder, 'nodes.txt');
 edge_file = fullfile(folder, 'edges.txt');
@@ -26,7 +26,6 @@ nodes = readmatrix(node_file);
 edges_raw = readmatrix(edge_file);
 path = readmatrix(path_file);
 search_tree_raw = readmatrix(search_tree_file);
-obstacles_raw = readmatrix(obstacles_file);
 state_raw = readmatrix(state_file, "Range",1:1);
 
 % specify goal region [x, y, z, radius] and start point [x, y, z]
@@ -78,9 +77,19 @@ plot3(path(:,1), path(:,2), path(:,3), 'g:*', 'LineWidth', 4);
 
 
 % plot obstacles
-obstacles_raw = obstacles_raw(:,2:5);
-for i = 1:length(obstacles_raw(:,1))
-    spherePlot(obstacles_raw(i,1), obstacles_raw(i,2), obstacles_raw(i,3), obstacles_raw(i,4))
+sphere_obstacles = [];
+rect_obstacles = [];
+obs_fid = fopen(obstacles_file);
+line = fgetl(obs_fid); % ignore format line
+while ischar(line)
+    line_vals = split(line);
+    obs_type = line_vals{1};
+    if obs_type == "SPHERE"
+        spherePlot(str2double(line_vals{2}), str2double(line_vals{3}), str2double(line_vals{4}), str2double(line_vals{5}))
+    elseif obs_type == "RECTANGLE"
+        rectanglePlot(str2double(line_vals{2}), str2double(line_vals{3}), str2double(line_vals{4}), str2double(line_vals{5}), str2double(line_vals{6}), str2double(line_vals{7}))
+    end
+    line = fgetl(obs_fid);
 end
 
 title('Path Search Tree')
