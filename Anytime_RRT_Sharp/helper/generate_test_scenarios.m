@@ -132,11 +132,13 @@ function outputData(startX, startY, startZ, goalX, goalY, goalZ, obsX, obsY, obs
     fprintf(fid, rectFormat, rectInfo);
     fclose(fid);
 
-    stateFormat = "%f, %f, %f, %f\n";
+    startStateFormat = "%f %f %f %f\n";
+    goalStateFormat = "%f %f %f %f %f\n";
     stateFile = fullfile(folder, "states.txt");
-    writelines("FORMAT: (startX, startY, startZ, startTheta) (goalX, goalY, goalZ, goalTheta)", stateFile);
+    writelines("FORMAT: (startX startY startZ startTheta) (goalX goalY goalZ goalTheta)", stateFile);
     fid = fopen(stateFile, "a+");
-    fprintf(fid, stateFormat, [startX, startY, startZ, 0], [goalX, goalY, goalZ, 0]);
+    fprintf(fid, startStateFormat, [startX, startY, startZ, 0]);
+    fprintf(fid, goalStateFormat, [goalX, goalY, goalZ, 0, 2.5]);
     fclose(fid);
 end
 
