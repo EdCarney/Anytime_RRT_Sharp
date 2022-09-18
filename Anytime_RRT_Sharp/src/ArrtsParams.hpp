@@ -1,5 +1,4 @@
 #include <fstream>
-#include <iostream>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -32,8 +31,8 @@ using namespace std;
    void _setLimitsFromStates();
    void _removeObstaclesNotInLimits();
    void _calculateObstacleVolume();
-   void _readStatesFromFile(FILE* file, bool isOptional = false);
-   void _readVehicleFromFile(FILE* file, bool isOptional = false);
+   void _readStatesFromFile(string fileName, bool isOptional = false);
+   void _readVehicleFromFile(string fileName, bool isOptional = false);
    void _readObstaclesFromFile(string fileName, bool isOptional = false);
 
    public:

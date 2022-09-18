@@ -11,10 +11,10 @@ Vehicle::Vehicle(vector<double> x, vector<double> y, vector<double> z)
     addOffsetNodes(x, y, z);
 }
 
-Vehicle::Vehicle(FILE* file)
+Vehicle::Vehicle(string fileName)
 {
     _buildVehicle();
-    addOffsetNodesFromFile(file);
+    addOffsetNodesFromFile(fileName);
 }
 
 void Vehicle::_buildVehicle()
@@ -88,24 +88,25 @@ void Vehicle::addOffsetNodes(vector<double> x, vector<double> y, vector<double> 
     _updateOffsetParams();
 }
 
-void Vehicle::addOffsetNodesFromFile(FILE* file)
+void Vehicle::addOffsetNodesFromFile(string fileName)
 {
-    if (file == NULL)
-        throw runtime_error("NULL file pointer in AddOffsetNodesFromFile");
-
-    // ignore first line (formatting)
-    fscanf(file, "%*[^\n]\n");
-
+    ifstream file(fileName);
+    istringstream iss;
+    string obstacleType, line;
     double xVal, yVal, zVal;
     vector<double> x, y, z;
-    while (fscanf(file, "%lf,%lf,%lf", &xVal, &yVal, &zVal) != EOF)
+
+    getline(file, line); // ignore first line (formatting)
+    while (getline(file, line))
     {
+        iss = istringstream(line);
+        iss >> xVal >> yVal >> zVal;
         x.push_back(xVal);
         y.push_back(yVal);
         z.push_back(zVal);
     }
 
-    fclose(file);
+    file.close();
     addOffsetNodes(x, y, z);
 }
 

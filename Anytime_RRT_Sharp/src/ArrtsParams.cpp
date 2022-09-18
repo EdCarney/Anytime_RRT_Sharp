@@ -21,7 +21,7 @@ ArrtsParams::ArrtsParams(string dataDirectory, int minNodeCount, int maxNieghbor
     string vehicleFile = dataDirectory + "/" + DEFAULT_VEHICLE_FILE;
     string obstaclesFile = dataDirectory + "/" + DEFAULT_OBSTACLES_FILE;
 
-    _readStatesFromFile(fopen(statesFile.c_str(), "r"));
+    _readStatesFromFile(statesFile);
     _readObstaclesFromFile(obstaclesFile);
     _minNodeCount = minNodeCount;
     _maxNeighborCount = maxNieghborCount;
@@ -67,35 +67,36 @@ void ArrtsParams::_calculateObstacleVolume()
         _obstacleVolume += o->volume();
 }
 
-void ArrtsParams::_readStatesFromFile(FILE* file, bool isOptional)
+void ArrtsParams::_readStatesFromFile(string fileName, bool isOptional)
 {
-    if (file == NULL && !isOptional)
-    {
-        if (!isOptional)
-            throw runtime_error("NULL file pointer in _readStatesFromFile()");
-        printf("WARN: Error loading state information, skipping...\n");
-        return;
-    }
-
+    ifstream file(fileName);
+    istringstream iss;
+    string obstacleType, line;
     double startX, startY, startZ, startTheta;
     double goalX, goalY, goalZ, goalTheta, goalRadius;
 
-    // ignore first line (formatting)
-    fscanf(file, "%*[^\n]\n");
-    fscanf(file, "%lf,%lf,%lf,%lf", &startX, &startY, &startZ, &startTheta);
-    fscanf(file, "%lf,%lf,%lf,%lf,%lf", &goalX, &goalY, &goalZ, &goalTheta, &goalRadius);
-    fclose(file);
+    getline(file, line); // ignore first line (formatting)
+
+    getline(file, line);
+    iss = istringstream(line);
+    iss >> startX >> startY >> startZ >> startTheta;
+
+    getline(file, line);
+    iss = istringstream(line);
+    iss >> goalX >> goalY >> goalZ >> goalTheta >> goalRadius;
+
+    file.close();
 
     _start = State(startX, startY, startZ, startTheta);
     _goal = State(goalX, goalY, goalZ, goalTheta);
     _goalRadius = goalRadius;
 }
 
-void ArrtsParams::_readVehicleFromFile(FILE* file, bool isOptional)
+void ArrtsParams::_readVehicleFromFile(string fileName, bool isOptional)
 {
     try
     {
-        _vehicle = Vehicle(file);
+        _vehicle = Vehicle(fileName);
     }
     catch(const std::exception& e)
     {
@@ -108,9 +109,8 @@ void ArrtsParams::_readVehicleFromFile(FILE* file, bool isOptional)
 void ArrtsParams::_readObstaclesFromFile(string fileName, bool isOptional)
 {
     ifstream file(fileName);
-
-    string obstacleType, line;
     istringstream iss;
+    string obstacleType, line;
     double x, y, z, r;
     double minX, minY, minZ, maxX, maxY, maxZ;
 
