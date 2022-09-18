@@ -7,7 +7,7 @@ TEST(ArrtsParams_StartState, Initialize_CheckVals)
 {
     State start(5, 6, 7, 8);
     State goal(9, 10, 11, -5);
-    vector<Sphere> obstacles;
+    vector<Shape3d*> obstacles;
     double goalRadius = 5.5;
     ArrtsParams params(start, goal, obstacles, goalRadius);
 
@@ -36,7 +36,7 @@ TEST(ArrtsParams_GoalState, Initialize_CheckVals)
 {
     State start(5, 6, 7, 8);
     State goal(9, 10, 11, -5);
-    vector<Sphere> obstacles;
+    vector<Shape3d*> obstacles;
     double goalRadius = 5.5;
     ArrtsParams params(start, goal, obstacles, goalRadius);
 
@@ -66,85 +66,91 @@ TEST(ArrtsParams_Obstacles, InitializeOneObstacle_CheckNum)
 {
     State start(5, 6, 1, 8);
     State goal(9, 10, 11, -5);
-    vector<Sphere> obstacles = { Sphere(1, 1, 1, 1) };
+    vector<Shape3d*> obstacles = { new Sphere(1, 1, 1, 1) };
     double goalRadius = 5.5;
     ArrtsParams params(start, goal, obstacles, goalRadius);
 
-    GTEST_ASSERT_EQ(params.sphereObstacles().size(), 1);
+    GTEST_ASSERT_EQ(params.obstacles().size(), 1);
 }
 
 TEST(ArrtsParams_Obstacles, InitializeMultipleObstacle_CheckNum)
 {
     State start(5, 1, 1, 8);
     State goal(9, 10, 11, -5);
-    vector<Sphere> obstacles = { Sphere(1, 1, 1, 1), Sphere(-1, -1, -1, 3), Sphere(0, 0, 0, 5)};
+    vector<Shape3d*> obstacles = { new Sphere(1, 1, 1, 1), new Sphere(-1, -1, -1, 3), new Sphere(0, 0, 0, 5)};
     double goalRadius = 5.5;
     ArrtsParams params(start, goal, obstacles, goalRadius);
 
-    GTEST_ASSERT_EQ(params.sphereObstacles().size(), 3);
+    GTEST_ASSERT_EQ(params.obstacles().size(), 3);
 }
 
 TEST(ArrtsParams_Obstacles, InitializeOneObstacle_CheckVals)
 {
     State start(5, 6, 7, 8);
     State goal(9, 10, 11, -5);
-    vector<Sphere> obstacles = { Sphere(1, 2, 3, 4) };
+    vector<Shape3d*> obstacles = { new Sphere(1, 2, 3, 4) };
     double goalRadius = 5.5;
     ArrtsParams params(start, goal, obstacles, goalRadius);
 
-    GTEST_ASSERT_EQ(params.sphereObstacles(0).x(), 1);
-    GTEST_ASSERT_EQ(params.sphereObstacles(0).y(), 2);
-    GTEST_ASSERT_EQ(params.sphereObstacles(0).z(), 3);
-    GTEST_ASSERT_EQ(params.sphereObstacles(0).radius(), 4);
+    auto s = (Sphere*)params.obstacles(0);
+
+    GTEST_ASSERT_EQ(s->x(), 1);
+    GTEST_ASSERT_EQ(s->y(), 2);
+    GTEST_ASSERT_EQ(s->z(), 3);
+    GTEST_ASSERT_EQ(s->radius(), 4);
 }
 
 TEST(ArrtsParams_Obstacles, InitializeMultipleObstacle_CheckVals)
 {
     State start(5, 6, 7, 8);
     State goal(9, 10, 11, -5);
-    vector<Sphere> obstacles = { Sphere(1, 2, 3, 4), Sphere(-1, -1, -1, 3), Sphere(0, 0, 0, 5)};
+    vector<Shape3d*> obstacles = { new Sphere(1, 2, 3, 4), new Sphere(-1, -1, -1, 3), new Sphere(0, 0, 0, 5)};
     double goalRadius = 5.5;
     ArrtsParams params(start, goal, obstacles, goalRadius);
 
-    GTEST_ASSERT_EQ(params.sphereObstacles(0).x(), 1);
-    GTEST_ASSERT_EQ(params.sphereObstacles(0).y(), 2);
-    GTEST_ASSERT_EQ(params.sphereObstacles(0).z(), 3);
-    GTEST_ASSERT_EQ(params.sphereObstacles(0).radius(), 4);
-    
-    GTEST_ASSERT_EQ(params.sphereObstacles(1).x(), -1);
-    GTEST_ASSERT_EQ(params.sphereObstacles(1).y(), -1);
-    GTEST_ASSERT_EQ(params.sphereObstacles(1).z(), -1);
-    GTEST_ASSERT_EQ(params.sphereObstacles(1).radius(), 3);
+    auto s1 = (Sphere*)params.obstacles(0);
+    auto s2 = (Sphere*)params.obstacles(1);
+    auto s3 = (Sphere*)params.obstacles(2);
 
-    GTEST_ASSERT_EQ(params.sphereObstacles(2).x(), 0);
-    GTEST_ASSERT_EQ(params.sphereObstacles(2).y(), 0);
-    GTEST_ASSERT_EQ(params.sphereObstacles(2).z(), 0);
-    GTEST_ASSERT_EQ(params.sphereObstacles(2).radius(), 5);
+    GTEST_ASSERT_EQ(s1->x(), 1);
+    GTEST_ASSERT_EQ(s1->y(), 2);
+    GTEST_ASSERT_EQ(s1->z(), 3);
+    GTEST_ASSERT_EQ(s1->radius(), 4);
+    
+    GTEST_ASSERT_EQ(s2->x(), -1);
+    GTEST_ASSERT_EQ(s2->y(), -1);
+    GTEST_ASSERT_EQ(s2->z(), -1);
+    GTEST_ASSERT_EQ(s2->radius(), 3);
+
+    GTEST_ASSERT_EQ(s3->x(), 0);
+    GTEST_ASSERT_EQ(s3->y(), 0);
+    GTEST_ASSERT_EQ(s3->z(), 0);
+    GTEST_ASSERT_EQ(s3->radius(), 5);
 }
 
 TEST(ArrtsParams_Obstacles, AddFromFile_CheckVals)
 {
     ArrtsParams params("./test");
 
-    Sphere obs1 = params.sphereObstacles(0);
-    Sphere obs2 = params.sphereObstacles(11);
-    Sphere obs3 = params.sphereObstacles(22);
+    auto obs1 = (Sphere*)params.obstacles(0);
+    auto obs2 = (Sphere*)params.obstacles(11);
+    auto obs3 = (Sphere*)params.obstacles(22);
 
-    GTEST_ASSERT_EQ(obs1.x(), 80);
-    GTEST_ASSERT_EQ(obs2.x(), 35);
-    GTEST_ASSERT_EQ(obs3.x(), 60);
+    GTEST_ASSERT_EQ(obs1->x(), 80);
+    GTEST_ASSERT_EQ(obs2->x(), 35);
+    GTEST_ASSERT_EQ(obs3->x(), 60);
 
-    GTEST_ASSERT_EQ(obs1.y(), 40);
-    GTEST_ASSERT_EQ(obs2.y(), 80);
-    GTEST_ASSERT_EQ(obs3.y(), 100);
+    GTEST_ASSERT_EQ(obs1->y(), 40);
+    GTEST_ASSERT_EQ(obs2->y(), 80);
+    GTEST_ASSERT_EQ(obs3->y(), 100);
 
-    GTEST_ASSERT_EQ(obs1.z(), 2);
-    GTEST_ASSERT_EQ(obs2.z(), 24);
-    GTEST_ASSERT_EQ(obs3.z(), 46);
+    GTEST_ASSERT_EQ(obs1->z(), 2);
+    GTEST_ASSERT_EQ(obs2->z(), 24);
+    GTEST_ASSERT_EQ(obs3->z(), 46);
 
-    GTEST_ASSERT_EQ(obs1.radius(), 8);
-    GTEST_ASSERT_EQ(obs2.radius(), 8);
-    GTEST_ASSERT_EQ(obs3.radius(), 8);
+    GTEST_ASSERT_EQ(obs1->radius(), 8);
+    GTEST_ASSERT_EQ(obs2->radius(), 8);
+    GTEST_ASSERT_EQ(obs3->radius(), 8);
 }
 
 #pragma endregion //ArrtsParams_Obstacles

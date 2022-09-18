@@ -78,6 +78,7 @@ plot3(path(:,1), path(:,2), path(:,3), 'g:*', 'LineWidth', 4);
 
 
 % plot obstacles
+obstacles_raw = obstacles_raw(:,2:5);
 for i = 1:length(obstacles_raw(:,1))
     spherePlot(obstacles_raw(i,1), obstacles_raw(i,2), obstacles_raw(i,3), obstacles_raw(i,4))
 end

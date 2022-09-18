@@ -9,7 +9,7 @@
 class WorkspaceGraph : public Rectangle
 {
     GoalState _goalRegion;
-    vector<Sphere> _obstacles;
+    vector<Shape3d*> _obstacles;
     Vehicle _vehicle;
     void _buildWorkspaceGraph();
     bool _goalRegionReached;
@@ -22,7 +22,7 @@ class WorkspaceGraph : public Rectangle
         bool pathIsSafe(Point p1, Point p2);
         bool pathIsSafe(Point p1, vector<Point> points);
         void addObstacle(double x, double y, double z, double radius);
-        void addObstacles(vector<Sphere> obstacles);
+        void addObstacles(vector<Shape3d*>& obstacles);
         bool atGate(GraphNode node);
         Vehicle vehicle();
         void setVehicle(Vehicle v);
