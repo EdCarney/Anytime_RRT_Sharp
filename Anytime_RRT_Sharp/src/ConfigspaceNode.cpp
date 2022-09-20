@@ -33,7 +33,7 @@ ConfigspaceNode::ConfigspaceNode(double x, double y, double z, double theta, int
     _buildConfigspaceNode(x, y, z, theta, id, parentId, cost);
 }
 
-double ConfigspaceNode::cost()
+double ConfigspaceNode::cost() const
 {
     return _cost;
 }

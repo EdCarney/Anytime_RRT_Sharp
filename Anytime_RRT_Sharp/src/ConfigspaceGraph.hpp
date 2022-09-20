@@ -19,19 +19,17 @@ class ConfigspaceGraph : Rectangle
 
     unordered_map<int, vector<int>> _parentChildMap;
 
-    vector<int> _getAllChildIds(vector<int> ids);
+    vector<int> _getAllChildIds(vector<int>& ids);
     void _addParentChildRelation(int id);
     void _removeParentChildRelation(int id);
-    void _recomputeCost(vector<int> ids);
+    void _recomputeCost(vector<int>& ids);
 
     // calculate the radius of the ball to consider for the k-nearest neighbor
-    double _computeRadius(double epsilon);
+    double _computeRadius(double epsilon) const;
 
     public:
         int numNodeInd;                 // used to set the node id; is NOT modified by pruning
         double minTheta, maxTheta;
-        double freeSpaceMeasure;        // a measure of the free space in the graph
-        double zeta;                    // the volume of a unit ball in the free space
         double gamma_star;              // optimality constraint calculated from percollation theory
         int dim;                        // dimension of the free space
         unordered_map<int, ConfigspaceNode> nodes;
@@ -39,7 +37,7 @@ class ConfigspaceGraph : Rectangle
 
         void setRootNode(State state);
         int addNode(ConfigspaceNode node);
-        vector<ConfigspaceNode> removeNode(vector<ConfigspaceNode>& nodeVec, ConfigspaceNode nodeToRemove);
+        vector<ConfigspaceNode>& removeNode(vector<ConfigspaceNode>& nodeVec, ConfigspaceNode& nodeToRemove);
 
         void removeEdge(int parentId, int childId);
 
@@ -51,19 +49,19 @@ class ConfigspaceGraph : Rectangle
 
         void defineFreespace(Rectangle limits, int dimension, double obstacleVol);
 
-        ConfigspaceNode findClosestNode(GraphNode node);
-        ConfigspaceNode generateRandomNode();
-        ConfigspaceNode generateBiasedNode(double biasedX, double biasedY, double biasedZ);
+        ConfigspaceNode& findClosestNode(GraphNode& node);
+        ConfigspaceNode generateRandomNode() const;
+        ConfigspaceNode generateBiasedNode(double biasedX, double biasedY, double biasedZ) const;
 
-        double computeCost(Point p1, Point p2);
+        double computeCost(Point p1, Point p2) const;
 
         // get the k-nearest neighbors from the current node
         // will not return the centerNode's parent node in the array
-        vector<ConfigspaceNode> findNeighbors(GraphNode centerNode, double radius, int maxNumNeighbors);
-        ConfigspaceNode findBestNeighbor(ConfigspaceNode newNode, vector<ConfigspaceNode> safeNeighbors);
-        void propagateCost(vector<int> updatedNodeIds);
+        vector<ConfigspaceNode> findNeighbors(GraphNode& centerNode, double radius, int maxNumNeighbors);
+        ConfigspaceNode findBestNeighbor(ConfigspaceNode& newNode, vector<ConfigspaceNode>& safeNeighbors);
+        void propagateCost(vector<int>& updatedNodeIds);
         void propagateCost(int updatedNodeId);
-        ConfigspaceNode extendToNode(GraphNode parentNode, GraphNode newNode, double maxDist);
+        ConfigspaceNode extendToNode(GraphNode& parentNode, GraphNode& newNode, double maxDist) const;
         ConfigspaceNode connectNodes(ConfigspaceNode parentNode, ConfigspaceNode newNode);
 
         // default constructor

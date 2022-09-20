@@ -15,7 +15,7 @@ class ConfigspaceNode : public GraphNode
         ConfigspaceNode();
         ConfigspaceNode(GraphNode node);
         ConfigspaceNode(double x, double y, double z, double theta, int id, int parentId, double cost);
-        double cost();
+        double cost() const;
         void setCost(double cost);
 };
 

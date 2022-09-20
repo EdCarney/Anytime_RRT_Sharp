@@ -7,8 +7,6 @@ void ConfigspaceGraph::buildGraph()
     _maxPoint = Point(0, 0, 0);
     minTheta = 0;
     maxTheta = 0;
-    freeSpaceMeasure = 0;
-    zeta = 0;
     dim = 0;
 }
 
@@ -34,10 +32,11 @@ void ConfigspaceGraph::defineFreespace(Rectangle limits, int dimension, double o
     minTheta = 0;
     maxTheta = 2.0 * M_PI;
 
+    double zeta = 4 * M_PI / 3;                                 // the volume of a unit ball in the free space
+    double freeSpaceMeasure = limits.volume() - obstacleVol;    // a measure of the free space in the graph
+
     // compute dependent variables
     dim = dimension;
-    zeta = M_PI;
-    freeSpaceMeasure = ((limits.maxPoint().x() - limits.minPoint().x()) * (limits.maxPoint().y() - limits.minPoint().y())) - obstacleVol;
     gamma_star = 2 * pow((1.0 + 1.0 / dim) * (freeSpaceMeasure / (zeta * dim)), 1.0 / float(dim));
 }
 
@@ -58,7 +57,7 @@ void ConfigspaceGraph::removeEdge(int parentId, int childId)
     }
 }
 
-vector<ConfigspaceNode> ConfigspaceGraph::removeNode(vector<ConfigspaceNode>& nodeVec, ConfigspaceNode nodeToRemove)
+vector<ConfigspaceNode>& ConfigspaceGraph::removeNode(vector<ConfigspaceNode>& nodeVec, ConfigspaceNode& nodeToRemove)
 {
     for (auto itr = nodeVec.begin(); itr < nodeVec.end(); ++itr)
     {
@@ -72,7 +71,7 @@ vector<ConfigspaceNode> ConfigspaceGraph::removeNode(vector<ConfigspaceNode>& no
     return nodeVec;
 }
 
-ConfigspaceNode ConfigspaceGraph::generateRandomNode()
+ConfigspaceNode ConfigspaceGraph::generateRandomNode() const
 {
     double randX, randY, randZ;
 
@@ -83,12 +82,12 @@ ConfigspaceNode ConfigspaceGraph::generateRandomNode()
     return ConfigspaceNode(randX, randY, randZ, 0, 0, 0, 0);
 }
 
-ConfigspaceNode ConfigspaceGraph::generateBiasedNode(double biasedX, double biasedY, double biasedZ)
+ConfigspaceNode ConfigspaceGraph::generateBiasedNode(double biasedX, double biasedY, double biasedZ) const
 {
     return ConfigspaceNode(biasedX, biasedY, biasedZ, 0, 0, 0, 0);
 }
 
-double ConfigspaceGraph::_computeRadius(double epsilon)
+double ConfigspaceGraph::_computeRadius(double epsilon) const
 {
     double percDist = 0.0, circleRadius = 0.0;
 
@@ -109,7 +108,7 @@ double ConfigspaceGraph::_computeRadius(double epsilon)
     return circleRadius;
 }
 
-ConfigspaceNode ConfigspaceGraph::findClosestNode(GraphNode node)
+ConfigspaceNode& ConfigspaceGraph::findClosestNode(GraphNode& node)
 {
     // initialize distance with first node
     // use euclidean distance of given node from existing nodes
@@ -129,12 +128,12 @@ ConfigspaceNode ConfigspaceGraph::findClosestNode(GraphNode node)
     return nodes[closestNodeId];
 }
 
-double ConfigspaceGraph::computeCost(Point p1, Point p2)
+double ConfigspaceGraph::computeCost(Point p1, Point p2) const
 {
     return p1.distanceTo(p2);
 }
 
-vector<ConfigspaceNode> ConfigspaceGraph::findNeighbors(GraphNode centerNode, double epsilon, int k)
+vector<ConfigspaceNode> ConfigspaceGraph::findNeighbors(GraphNode& centerNode, double epsilon, int k)
 {
     double dist, radius = _computeRadius(epsilon);
     vector<ConfigspaceNode> neighbors(0);
@@ -152,7 +151,7 @@ vector<ConfigspaceNode> ConfigspaceGraph::findNeighbors(GraphNode centerNode, do
     return neighbors;
 }
 
-ConfigspaceNode ConfigspaceGraph::findBestNeighbor(ConfigspaceNode newNode, vector<ConfigspaceNode> safeNeighbors)
+ConfigspaceNode ConfigspaceGraph::findBestNeighbor(ConfigspaceNode& newNode, vector<ConfigspaceNode>& safeNeighbors)
 {
     ConfigspaceNode bestNeighbor;
     double tempBestCost = 0, bestCost = INFINITY;
@@ -191,7 +190,7 @@ void ConfigspaceGraph::propagateCost(int updatedNodeId)
     propagateCost(updateNodes);
 }
 
-void ConfigspaceGraph::propagateCost(vector<int> updatedNodeIds)
+void ConfigspaceGraph::propagateCost(vector<int>& updatedNodeIds)
 {
     if (updatedNodeIds.empty())
         return;
@@ -201,7 +200,7 @@ void ConfigspaceGraph::propagateCost(vector<int> updatedNodeIds)
     propagateCost(children);
 }
 
-vector<int> ConfigspaceGraph::_getAllChildIds(vector<int> ids)
+vector<int> ConfigspaceGraph::_getAllChildIds(vector<int>& ids)
 {
     vector<int> childIds, tempChildIds;
     for (int id : ids)
@@ -212,7 +211,7 @@ vector<int> ConfigspaceGraph::_getAllChildIds(vector<int> ids)
     return childIds;
 }
 
-void ConfigspaceGraph::_recomputeCost(vector<int> ids)
+void ConfigspaceGraph::_recomputeCost(vector<int>& ids)
 {
     ConfigspaceNode node, parent;
     for (int id : ids)
@@ -232,7 +231,7 @@ void ConfigspaceGraph::replaceNode(ConfigspaceNode oldNode, ConfigspaceNode newN
     _addParentChildRelation(newNode.id());
 }
 
-ConfigspaceNode ConfigspaceGraph::extendToNode(GraphNode parentNode, GraphNode newNode, double maxDist)
+ConfigspaceNode ConfigspaceGraph::extendToNode(GraphNode& parentNode, GraphNode& newNode, double maxDist) const
 {
     ConfigspaceNode currentNode;
     double dist = parentNode.distanceTo(newNode);
@@ -252,7 +251,7 @@ ConfigspaceNode ConfigspaceGraph::extendToNode(GraphNode parentNode, GraphNode n
         z = newNode.z();
         theta = 0;
     }
-    cost = nodes[parentNode.id()].cost() + computeCost(parentNode, Point(x, y, z));
+    cost = nodes.at(parentNode.id()).cost() + computeCost(parentNode, Point(x, y, z));
 
     return ConfigspaceNode(x, y, z, theta, 0, parentNode.id(), cost);
 }

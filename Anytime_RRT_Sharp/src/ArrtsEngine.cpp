@@ -43,7 +43,7 @@ void ArrtsEngine::_tryConnectToBestNeighbor(ConfigspaceGraph& configGraph, vecto
     }
 }
 
-bool ArrtsEngine::_compareNodes(ConfigspaceGraph& configGraph, ConfigspaceNode n1, ConfigspaceNode n2)
+bool ArrtsEngine::_compareNodes(ConfigspaceGraph& configGraph, ConfigspaceNode& n1, ConfigspaceNode& n2)
 {
     if (n1.cost() < (n2.cost() + configGraph.computeCost(n1, n2)))
         return true;
