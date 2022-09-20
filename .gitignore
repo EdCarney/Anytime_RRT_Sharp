@@ -9,6 +9,7 @@ high_fidelity_path*.csv
 *.exe
 *.vs
 *.o
+*.pyc
 **/RRT_Sharp
 bin
 build
