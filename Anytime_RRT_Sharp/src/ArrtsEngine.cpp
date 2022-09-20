@@ -92,9 +92,7 @@ void ArrtsEngine::runArrtsOnGraphs(ConfigspaceGraph& configGraph, WorkspaceGraph
                         neighbors.erase(itr);
 
                 if (!neighbors.empty())
-                {
                     _tryConnectToBestNeighbor(configGraph, neighbors, newNode, parentNode);
-                }
 
                 // add new node and edge to the config graph
                 tempId = configGraph.addNode(newNode);
