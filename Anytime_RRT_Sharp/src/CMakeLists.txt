@@ -47,6 +47,8 @@ list(APPEND TEST_LIBS gtest)
 add_subdirectory(googletest)
 include_directories(googletest/inlcude)
 
+add_subdirectory(Dubins3d)
+
 # include test data
 file(COPY testdata/ DESTINATION test)
 
