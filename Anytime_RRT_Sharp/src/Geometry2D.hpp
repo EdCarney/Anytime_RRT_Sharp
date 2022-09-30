@@ -80,11 +80,23 @@ class DLL_EXPORT GoalState : public Point
         double radius() const;
 };
 
-class DLL_EXPORT GraphNode : public Point
+class DLL_EXPORT State : public Point
+{
+    protected:
+        double _theta, _rho;
+
+    public:
+        State();
+        State(Point p, double theta);
+        State(double x, double y, double z, double theta);
+        double theta() const;
+        double rho() const;
+};
+
+class DLL_EXPORT GraphNode : public State
 {
     protected:
         int _id, _parentId;
-        double _theta;
         void _buildGraphNode();
         void _buildGraphNode(GraphNode n);
         void _buildGraphNode(Point p, double theta, int id, int parentId);
@@ -94,25 +106,10 @@ class DLL_EXPORT GraphNode : public Point
         GraphNode();
         GraphNode(Point p, double theta, int id, int parentId);
         GraphNode(double x, double y, double z, double theta, int id, int parentId);
-        double theta() const;
-        void setTheta(double theta);
         int id() const;
         void setId(int id);
         int parentId() const;
         void setParentId(int parentId);
-};
-
-class DLL_EXPORT State : public Point
-{
-    protected:
-        double _theta;
-
-    public:
-        State();
-        State(GraphNode node);
-        State(Point p, double theta);
-        State(double x, double y, double z, double theta);
-        double theta() const;
 };
 
 class DLL_EXPORT Edge

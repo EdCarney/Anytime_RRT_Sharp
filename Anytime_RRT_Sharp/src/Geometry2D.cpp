@@ -146,14 +146,6 @@ State::State()
     _theta = 0;
 }
 
-State::State(GraphNode node)
-{
-    _x = node.x();
-    _y = node.y();
-    _z = node.z();
-    _theta = node.theta();
-}
-
 State::State(Point p, double theta)
 {
     _x = p.x();
@@ -171,6 +163,8 @@ State::State(double x, double y, double z, double theta)
 }
 
 double State::theta() const { return _theta; }
+
+double State::rho() const { return _rho; }
 
 GoalState::GoalState()
 {
@@ -246,13 +240,9 @@ void GraphNode::_buildGraphNode(double x, double y, double z, double theta, int 
     _parentId = parentId;
 }
 
-double GraphNode::theta() const { return _theta; }
-
 int GraphNode::id() const { return _id; }
 
 int GraphNode::parentId() const { return _parentId; }
-
-void GraphNode::setTheta(double theta) { _theta = theta; }
 
 void GraphNode::setId(int id) { _id = id; }
 
