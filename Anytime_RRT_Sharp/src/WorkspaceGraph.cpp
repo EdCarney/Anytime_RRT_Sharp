@@ -56,8 +56,7 @@ bool WorkspaceGraph::pathIsSafe(Point p1, Point p2)
 bool WorkspaceGraph::checkAtGoal(GraphNode node)
 {
     // update vehicle state to temp node
-    State s(node.x(), node.y(), node.z(), node.theta());
-    _vehicle.updateState(s);
+    _vehicle.updateState(node);
 
     double distToGoal = _vehicle.state().distanceTo(_goalRegion);
     return distToGoal < (_goalRegion.radius() + _vehicle.boundingRadius());

@@ -87,8 +87,8 @@ void ArrtsParams::_readStatesFromFile(string fileName, bool isOptional)
 
     file.close();
 
-    _start = State(startX, startY, startZ, startTheta);
-    _goal = State(goalX, goalY, goalZ, goalTheta);
+    _start = State(startX, startY, startZ, startTheta, 0);
+    _goal = State(goalX, goalY, goalZ, goalTheta, 0);
     _goalRadius = goalRadius;
 }
 

@@ -87,8 +87,8 @@ class DLL_EXPORT State : public Point
 
     public:
         State();
-        State(Point p, double theta);
-        State(double x, double y, double z, double theta);
+        State(Point p, double theta, double rho);
+        State(double x, double y, double z, double theta, double rho);
         double theta() const;
         double rho() const;
 };

@@ -278,7 +278,7 @@ TEST(Vehicle, Initialize_CheckVals)
 TEST(Vehicle, UpdateState_CheckVals)
 {
     Vehicle v;
-    State p = { 1, 2, 3, 4 };
+    State p = { 1, 2, 3, 4, 0 };
     v.updateState(p);
 
     GTEST_ASSERT_EQ(v.state().x(), 1);
