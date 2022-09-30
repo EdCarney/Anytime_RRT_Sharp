@@ -144,22 +144,25 @@ State::State()
     _y = 0;
     _z = 0;
     _theta = 0;
+    _rho = 0;
 }
 
-State::State(Point p, double theta)
+State::State(Point p, double theta, double rho)
 {
     _x = p.x();
     _y = p.y();
     _z = p.z();
     _theta = theta;
+    _rho = rho;
 }
 
-State::State(double x, double y, double z, double theta)
+State::State(double x, double y, double z, double theta, double rho)
 {
     _x = x;
     _y = y;
     _z = z;
     _theta = theta;
+    _rho = rho;
 }
 
 double State::theta() const { return _theta; }

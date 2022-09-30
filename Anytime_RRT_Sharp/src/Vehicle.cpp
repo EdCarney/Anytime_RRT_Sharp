@@ -19,7 +19,7 @@ Vehicle::Vehicle(string fileName)
 
 void Vehicle::_buildVehicle()
 {
-    _state = { 0, 0, 0, 0 };
+    _state = { 0, 0, 0, 0, 0 };
     _boundingRadius = 0;
 }
 
@@ -53,7 +53,7 @@ void Vehicle::_updateOffsetParams()
 
 void Vehicle::updateState(State newState)
 {
-    _state = { newState.x(), newState.y(), newState.z(), newState.theta() };
+    _state = { newState.x(), newState.y(), newState.z(), newState.theta(), newState.rho() };
 
     double x, y, z;
 

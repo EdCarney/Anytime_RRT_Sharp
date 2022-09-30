@@ -5,8 +5,8 @@
 
 TEST(ArrtsParams_StartState, Initialize_CheckVals)
 {
-    State start(5, 6, 7, 8);
-    State goal(9, 10, 11, -5);
+    State start(5, 6, 7, 8, 0);
+    State goal(9, 10, 11, -5, 0);
     vector<Shape3d*> obstacles;
     double goalRadius = 5.5;
     ArrtsParams params(start, goal, obstacles, goalRadius);
@@ -34,8 +34,8 @@ TEST(ArrtsParams_StartState, InitializeFromDataDirectory_CheckVals)
 
 TEST(ArrtsParams_GoalState, Initialize_CheckVals)
 {
-    State start(5, 6, 7, 8);
-    State goal(9, 10, 11, -5);
+    State start(5, 6, 7, 8, 0);
+    State goal(9, 10, 11, -5, 0);
     vector<Shape3d*> obstacles;
     double goalRadius = 5.5;
     ArrtsParams params(start, goal, obstacles, goalRadius);
@@ -64,8 +64,8 @@ TEST(ArrtsParams_GoalState, InitializeFromDataDirectory_CheckVals)
 
 TEST(ArrtsParams_Obstacles, InitializeOneObstacle_CheckNum)
 {
-    State start(5, 6, 1, 8);
-    State goal(9, 10, 11, -5);
+    State start(5, 6, 1, 8, 0);
+    State goal(9, 10, 11, -5, 0);
     vector<Shape3d*> obstacles = { new Sphere(1, 1, 1, 1) };
     double goalRadius = 5.5;
     ArrtsParams params(start, goal, obstacles, goalRadius);
@@ -75,8 +75,8 @@ TEST(ArrtsParams_Obstacles, InitializeOneObstacle_CheckNum)
 
 TEST(ArrtsParams_Obstacles, InitializeMultipleObstacle_CheckNum)
 {
-    State start(5, 1, 1, 8);
-    State goal(9, 10, 11, -5);
+    State start(5, 1, 1, 8, 0);
+    State goal(9, 10, 11, -5, 0);
     vector<Shape3d*> obstacles = { new Sphere(1, 1, 1, 1), new Sphere(-1, -1, -1, 3), new Sphere(0, 0, 0, 5)};
     double goalRadius = 5.5;
     ArrtsParams params(start, goal, obstacles, goalRadius);
@@ -86,8 +86,8 @@ TEST(ArrtsParams_Obstacles, InitializeMultipleObstacle_CheckNum)
 
 TEST(ArrtsParams_Obstacles, InitializeOneObstacle_CheckVals)
 {
-    State start(5, 6, 7, 8);
-    State goal(9, 10, 11, -5);
+    State start(5, 6, 7, 8, 0);
+    State goal(9, 10, 11, -5, 0);
     vector<Shape3d*> obstacles = { new Sphere(1, 2, 3, 4) };
     double goalRadius = 5.5;
     ArrtsParams params(start, goal, obstacles, goalRadius);
@@ -102,8 +102,8 @@ TEST(ArrtsParams_Obstacles, InitializeOneObstacle_CheckVals)
 
 TEST(ArrtsParams_Obstacles, InitializeMultipleObstacle_CheckVals)
 {
-    State start(5, 6, 7, 8);
-    State goal(9, 10, 11, -5);
+    State start(5, 6, 7, 8, 0);
+    State goal(9, 10, 11, -5, 0);
     vector<Shape3d*> obstacles = { new Sphere(1, 2, 3, 4), new Sphere(-1, -1, -1, 3), new Sphere(0, 0, 0, 5)};
     double goalRadius = 5.5;
     ArrtsParams params(start, goal, obstacles, goalRadius);
