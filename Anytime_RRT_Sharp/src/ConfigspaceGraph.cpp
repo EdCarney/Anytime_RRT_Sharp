@@ -1,5 +1,10 @@
 #include "ConfigspaceGraph.hpp"
 
+double randInRange(double min, double max)
+{
+    return min + (min + static_cast <double> (rand())) / (static_cast <double> (RAND_MAX / (max - min)));
+}
+
 void ConfigspaceGraph::buildGraph()
 {
     numNodeInd = 0;
@@ -73,13 +78,15 @@ vector<ConfigspaceNode>& ConfigspaceGraph::removeNode(vector<ConfigspaceNode>& n
 
 ConfigspaceNode ConfigspaceGraph::generateRandomNode() const
 {
-    double randX, randY, randZ;
+    double randX, randY, randZ, randTheta, randRho;
 
-    randX = minX() + (minX() + static_cast <double> (rand())) / (static_cast <double> (RAND_MAX / (maxX() - minX())));
-    randY = minY() + (minY() + static_cast <double> (rand())) / (static_cast <double> (RAND_MAX / (maxY() - minY())));
-    randZ = minZ() + (minZ() + static_cast <double> (rand())) / (static_cast <double> (RAND_MAX / (maxZ() - minZ())));
+    randX = randInRange(minX(), maxX());
+    randY = randInRange(minY(), maxY());
+    randZ = randInRange(minZ(), maxZ());
+    randTheta = randInRange(0, 2 * M_PI);
+    randRho = randInRange(- M_PI / 6.0, M_PI / 6.0);
 
-    return ConfigspaceNode(randX, randY, randZ, 0, 0, 0, 0, 0);
+    return ConfigspaceNode(randX, randY, randZ, randTheta, randRho, 0, 0, 0);
 }
 
 ConfigspaceNode ConfigspaceGraph::generateBiasedNode(double biasedX, double biasedY, double biasedZ) const
