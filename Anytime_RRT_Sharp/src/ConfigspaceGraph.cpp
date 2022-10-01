@@ -79,12 +79,12 @@ ConfigspaceNode ConfigspaceGraph::generateRandomNode() const
     randY = minY() + (minY() + static_cast <double> (rand())) / (static_cast <double> (RAND_MAX / (maxY() - minY())));
     randZ = minZ() + (minZ() + static_cast <double> (rand())) / (static_cast <double> (RAND_MAX / (maxZ() - minZ())));
 
-    return ConfigspaceNode(randX, randY, randZ, 0, 0, 0, 0);
+    return ConfigspaceNode(randX, randY, randZ, 0, 0, 0, 0, 0);
 }
 
 ConfigspaceNode ConfigspaceGraph::generateBiasedNode(double biasedX, double biasedY, double biasedZ) const
 {
-    return ConfigspaceNode(biasedX, biasedY, biasedZ, 0, 0, 0, 0);
+    return ConfigspaceNode(biasedX, biasedY, biasedZ, 0, 0, 0, 0, 0);
 }
 
 double ConfigspaceGraph::_computeRadius(double epsilon) const
@@ -173,7 +173,7 @@ void ConfigspaceGraph::setRootNode(State state)
     nodes.clear();
     _parentChildMap.clear();
     numNodeInd = 0;
-    addNode(ConfigspaceNode(state.x(), state.y(), state.z(), state.theta(), numNodeInd, 0, 0));
+    addNode(ConfigspaceNode(state.x(), state.y(), state.z(), state.theta(), state.rho(), numNodeInd, 0, 0));
 }
 
 int ConfigspaceGraph::addNode(ConfigspaceNode node)
@@ -235,7 +235,7 @@ ConfigspaceNode ConfigspaceGraph::extendToNode(GraphNode& parentNode, GraphNode&
 {
     ConfigspaceNode currentNode;
     double dist = parentNode.distanceTo(newNode);
-    double x, y, z, theta, cost;
+    double x, y, z, theta, rho, cost;
 
     if (dist >= maxDist)
     {
@@ -243,6 +243,7 @@ ConfigspaceNode ConfigspaceGraph::extendToNode(GraphNode& parentNode, GraphNode&
         y = parentNode.y() + ((newNode.y() - parentNode.y()) / dist) * maxDist;
         z = parentNode.z() + ((newNode.z() - parentNode.z()) / dist) * maxDist;
         theta = 0;
+        rho = 0;
     }
     else
     {
@@ -250,10 +251,11 @@ ConfigspaceNode ConfigspaceGraph::extendToNode(GraphNode& parentNode, GraphNode&
         y = newNode.y();
         z = newNode.z();
         theta = 0;
+        rho = 0;
     }
     cost = nodes.at(parentNode.id()).cost() + computeCost(parentNode, Point(x, y, z));
 
-    return ConfigspaceNode(x, y, z, theta, 0, parentNode.id(), cost);
+    return ConfigspaceNode(x, y, z, theta, rho, 0, parentNode.id(), cost);
 }
 
 ConfigspaceNode ConfigspaceGraph::connectNodes(ConfigspaceNode parentNode, ConfigspaceNode newNode)

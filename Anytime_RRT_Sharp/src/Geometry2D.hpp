@@ -99,13 +99,13 @@ class DLL_EXPORT GraphNode : public State
         int _id, _parentId;
         void _buildGraphNode();
         void _buildGraphNode(GraphNode n);
-        void _buildGraphNode(Point p, double theta, int id, int parentId);
-        void _buildGraphNode(double x, double y, double z, double theta, int id, int parentId);
+        void _buildGraphNode(Point p, double theta, double rho, int id, int parentId);
+        void _buildGraphNode(double x, double y, double z, double theta, double rho, int id, int parentId);
 
     public:
         GraphNode();
-        GraphNode(Point p, double theta, int id, int parentId);
-        GraphNode(double x, double y, double z, double theta, int id, int parentId);
+        GraphNode(Point p, double theta, double rho, int id, int parentId);
+        GraphNode(double x, double y, double z, double theta, double rho, int id, int parentId);
         int id() const;
         void setId(int id);
         int parentId() const;
