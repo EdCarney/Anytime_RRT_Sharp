@@ -193,14 +193,14 @@ double GoalState::radius() const { return _radius; }
 
 GraphNode::GraphNode() { _buildGraphNode(); }
 
-GraphNode::GraphNode(Point p, double theta, int id, int parentId)
+GraphNode::GraphNode(Point p, double theta, double rho, int id, int parentId)
 {
-    _buildGraphNode(p, theta, id, parentId);
+    _buildGraphNode(p, theta, rho, id, parentId);
 }
 
-GraphNode::GraphNode(double x, double y, double z, double theta, int id, int parentId)
+GraphNode::GraphNode(double x, double y, double z, double theta, double rho, int id, int parentId)
 {
-    _buildGraphNode(x, y, z, theta, id, parentId);
+    _buildGraphNode(x, y, z, theta, rho, id, parentId);
 }
 
 void GraphNode::_buildGraphNode()
@@ -209,6 +209,7 @@ void GraphNode::_buildGraphNode()
     _y = 0;
     _z = 0;
     _theta = 0;
+    _rho = 0;
     _id = 0;
     _parentId = 0;
 }
@@ -219,26 +220,29 @@ void GraphNode::_buildGraphNode(GraphNode n)
     _y = n.y();
     _z = n.z();
     _theta = n.theta();
+    _rho = n.rho();
     _id = n.id();
     _parentId = n.parentId();
 }
 
-void GraphNode::_buildGraphNode(Point p, double theta, int id, int parentId)
+void GraphNode::_buildGraphNode(Point p, double theta, double rho, int id, int parentId)
 {
     _x = p.x();
     _y = p.y();
     _z = p.z();
     _theta = theta;
+    _rho = rho;
     _id = id;
     _parentId = parentId;
 }
 
-void GraphNode::_buildGraphNode(double x, double y, double z, double theta, int id, int parentId)
+void GraphNode::_buildGraphNode(double x, double y, double z, double theta, double rho, int id, int parentId)
 {
     _x = x;
     _y = y;
     _z = z;
     _theta = theta;
+    _rho = rho;
     _id = id;
     _parentId = parentId;
 }
