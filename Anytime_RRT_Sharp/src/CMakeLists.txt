@@ -21,6 +21,8 @@ add_library(Geometry3D Geometry3D.cpp)
 add_library(ArrtsEngine ArrtsEngine.cpp)
 add_library(ArrtsParams ArrtsParams.cpp)
 add_library(ArrtsService ArrtsService.cpp)
+add_library(DubinsManeuver2d Dubins3d/src/DubinsManeuver2d.cpp)
+add_library(DubinsManeuver3d Dubins3d/src/DubinsManeuver3d.cpp)
 
 # main libs
 list(APPEND EXTRA_LIBS ConfigspaceGraph)
@@ -32,6 +34,8 @@ list(APPEND EXTRA_LIBS Geometry3D)
 list(APPEND EXTRA_LIBS ArrtsEngine)
 list(APPEND EXTRA_LIBS ArrtsParams)
 list(APPEND EXTRA_LIBS ArrtsService)
+list(APPEND EXTRA_LIBS DubinsManeuver2d)
+list(APPEND EXTRA_LIBS DubinsManeuver3d)
 
 # libs for testing
 list(APPEND TEST_LIBS ConfigspaceGraph)
