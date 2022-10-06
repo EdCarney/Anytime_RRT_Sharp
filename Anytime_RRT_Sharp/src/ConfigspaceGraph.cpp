@@ -238,31 +238,27 @@ void ConfigspaceGraph::replaceNode(ConfigspaceNode oldNode, ConfigspaceNode newN
     _addParentChildRelation(newNode.id());
 }
 
-ConfigspaceNode ConfigspaceGraph::extendToNode(GraphNode& parentNode, GraphNode& newNode, double maxDist) const
+ConfigspaceNode ConfigspaceGraph::extendToNode(ConfigspaceNode& parentNode, ConfigspaceNode& newNode, double maxDist) const
 {
-    ConfigspaceNode currentNode;
     double dist = parentNode.distanceTo(newNode);
-    double x, y, z, theta, rho, cost;
+    double x, y, z, cost;
 
     if (dist >= maxDist)
     {
         x = parentNode.x() + ((newNode.x() - parentNode.x()) / dist) * maxDist;
         y = parentNode.y() + ((newNode.y() - parentNode.y()) / dist) * maxDist;
         z = parentNode.z() + ((newNode.z() - parentNode.z()) / dist) * maxDist;
-        theta = 0;
-        rho = 0;
     }
     else
     {
         x = newNode.x();
         y = newNode.y();
         z = newNode.z();
-        theta = 0;
-        rho = 0;
     }
+    newNode.generatePathFrom(parentNode);
     cost = nodes.at(parentNode.id()).cost() + computeCost(parentNode, Point(x, y, z));
 
-    return ConfigspaceNode(x, y, z, theta, rho, 0, parentNode.id(), cost);
+    return ConfigspaceNode(x, y, z, newNode.theta(), newNode.rho(), 0, parentNode.id(), cost);
 }
 
 ConfigspaceNode ConfigspaceGraph::connectNodes(ConfigspaceNode parentNode, ConfigspaceNode newNode)
