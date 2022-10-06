@@ -78,8 +78,7 @@ void ArrtsEngine::runArrtsOnGraphs(ConfigspaceGraph& configGraph, WorkspaceGraph
         // skip if the parent node is already in the goal region
         if (!workGraph.checkAtGoal(parentNode))
         {
-            // create a new node by extending from the parent to the temp node
-            // (this includes a collision check); then compute cost
+            // create a new node by extending from the parent to the temp node; then compute cost
             newNode = configGraph.extendToNode(parentNode, tempNode, epsilon);
 
             // if there is a collision, newNode id will be set to its parent's id
