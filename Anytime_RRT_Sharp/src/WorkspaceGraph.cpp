@@ -46,6 +46,7 @@ bool WorkspaceGraph::nodeIsSafe(Point p)
 
 bool WorkspaceGraph::pathIsSafe(Point p1, Point p2)
 {
+    // TODO: generate dubins path instead
     Line pathSegment(p1, p2);
     for (auto o : _obstacles)
         if (o->intersects(pathSegment))
