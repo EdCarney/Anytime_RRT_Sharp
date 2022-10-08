@@ -261,9 +261,6 @@ ConfigspaceNode ConfigspaceGraph::extendToNode(ConfigspaceNode& parentNode, Conf
     ConfigspaceNode temp(x, y, z, newNode.theta(), newNode.rho(), 0, parentNode.id(), cost);
     temp.generatePathFrom(parentNode);
 
-    if (parentNode.id() == 1)
-        printf("CONNECTED FROM ROOT: %f, %f, %f, %f, %f\n", temp.x(), temp.y(), temp.z(), temp.theta(), temp.rho());
-
     return temp;
 }
 
