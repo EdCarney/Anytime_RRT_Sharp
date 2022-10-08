@@ -6,17 +6,24 @@ void ArrtsEngine::_rewireNodes(ConfigspaceGraph& configGraph, WorkspaceGraph& wo
 
     for (ConfigspaceNode rn : remainingNodes)
     {
+        State3d qf { addedNode.x(), addedNode.y(), addedNode.z(), addedNode.theta(), addedNode.rho() };
+        State3d qi { rn.x(), rn.y(), rn.z(), rn.theta(), rn.rho() };
+        double rhoMin = 10;
+        tuple<double, double> pitchLims = { -15.0 * M_PI / 180.0, 15.0 * M_PI / 180.0 };
+        DubinsManeuver3d maneuver(qi, qf, rhoMin, pitchLims);
+
         // check if it is cheaper for the current remaining node to use the added node as
         // its parent node
-        if (!_compareNodes(configGraph, rn, addedNode) && workGraph.pathIsSafe(rn, addedNode))
+        if (maneuver.length() > 0 && !_compareNodes(configGraph, rn, addedNode) && workGraph.pathIsSafe(rn, addedNode))
         {
             // if it's cheaper, then create the new node, set the new cost, and set
             // the parent (now the added node)
             newNode = configGraph.connectNodes(addedNode, rn);
+            newNode.setPathTo(maneuver.computeSampling(100));
 
             // get the old parent of the current remaining node, remove the old
             // edge, add the new edge, and replace the old remaining node
-            remainingNodeParent = configGraph.nodes[rn.parentId()];
+            remainingNodeParent = configGraph.nodes.at(rn.parentId());
             configGraph.removeEdge(remainingNodeParent.id(), rn.id());
             configGraph.addEdge(addedNode, newNode);
             configGraph.replaceNode(rn, newNode);
@@ -34,12 +41,21 @@ void ArrtsEngine::_tryConnectToBestNeighbor(ConfigspaceGraph& configGraph, vecto
     auto bestNeighbor = configGraph.findBestNeighbor(newNode, neighbors);
     auto tempNode = configGraph.connectNodes(bestNeighbor, newNode);
 
-    // if the tempNode is cheaper then make that the newNode
+    // if the tempNode is cheaper then try to make that the newNode
     if (tempNode.cost() < newNode.cost())
     {
-        newNode = tempNode;
-        parentNode = bestNeighbor;
-        configGraph.removeNode(neighbors, bestNeighbor);
+        State3d qf { bestNeighbor.x(), bestNeighbor.y(), bestNeighbor.z(), bestNeighbor.theta(), bestNeighbor.rho() };
+        State3d qi { tempNode.x(), tempNode.y(), tempNode.z(), tempNode.theta(), tempNode.rho() };
+        double rhoMin = 10;
+        tuple<double, double> pitchLims = { -15.0 * M_PI / 180.0, 15.0 * M_PI / 180.0 };
+        DubinsManeuver3d maneuver(qi, qf, rhoMin, pitchLims);
+        if (maneuver.length() > 0)
+        {
+            newNode = tempNode;
+            parentNode = bestNeighbor;
+            configGraph.removeNode(neighbors, bestNeighbor);
+            newNode.setPathTo(maneuver.computeSampling(100));
+        }
     }
 }
 
@@ -81,8 +97,7 @@ void ArrtsEngine::runArrtsOnGraphs(ConfigspaceGraph& configGraph, WorkspaceGraph
             // create a new node by extending from the parent to the temp node; then compute cost
             newNode = configGraph.extendToNode(parentNode, tempNode, epsilon);
 
-            // if there is a collision, newNode id will be set to its parent's id
-            if (workGraph.nodeIsSafe(newNode) && workGraph.pathIsSafe(newNode, parentNode))
+            if (newNode.pathLength() > 0 && workGraph.nodeIsSafe(newNode) && workGraph.pathIsSafe(newNode, parentNode))
             {
                 neighbors = configGraph.findNeighbors(newNode, epsilon, params.maxNeighborCount());
 
@@ -95,7 +110,7 @@ void ArrtsEngine::runArrtsOnGraphs(ConfigspaceGraph& configGraph, WorkspaceGraph
 
                 // add new node and edge to the config graph
                 tempId = configGraph.addNode(newNode);
-                newNode = configGraph.nodes[tempId];
+                newNode = configGraph.nodes.at(tempId);
                 configGraph.addEdge(parentNode, newNode);
 
                 // if we haven't reached the goal yet and the added node is in the

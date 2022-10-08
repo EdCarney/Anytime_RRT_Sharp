@@ -37,12 +37,35 @@ double ConfigspaceNode::cost() const { return _cost; }
 
 double ConfigspaceNode::pathLength() const { return _pathLength; }
 
+const vector<State>& ConfigspaceNode::pathTo() const { return _pathTo; }
+
 void ConfigspaceNode::setCost(double cost) { _cost = cost; }
+
+void ConfigspaceNode::setPathTo(const vector<State>& pathTo)
+{
+    int size = pathTo.size();
+
+    _pathTo.clear();
+    _pathTo.resize(size);
+
+    for (int i = 0; i < size; ++i)
+        _pathTo[i] = State(pathTo.at(i).x(), pathTo.at(i).y(), pathTo.at(i).z(), pathTo.at(i).theta(), pathTo.at(i).rho());
+}
+
+void ConfigspaceNode::setPathTo(const vector<State3d>& pathTo)
+{
+    int size = pathTo.size();
+
+    _pathTo.resize(size);
+
+    for (int i = 0; i < size; ++i)
+        _pathTo[i] = State(pathTo.at(i).x, pathTo.at(i).y, pathTo.at(i).z, pathTo.at(i).theta, pathTo.at(i).gamma);
+}
 
 void ConfigspaceNode::generatePathFrom(State parentState)
 {
-    State3d qi { parentState.x(), parentState.y(), parentState.z(), parentState.theta(), parentState.rho() };
-    State3d qf { x(), y(), z(), theta(), rho() };
+    State3d qf { parentState.x(), parentState.y(), parentState.z(), parentState.theta(), parentState.rho() };
+    State3d qi { x(), y(), z(), theta(), rho() };
 
     double rhoMin = 10;
     tuple<double, double> pitchLims = { -15.0 * M_PI / 180.0, 15.0 * M_PI / 180.0 };
@@ -56,12 +79,5 @@ void ConfigspaceNode::generatePathFrom(State parentState)
         return;
     
     vector<State3d> states = maneuver.computeSampling(100);
-    _pathTo.resize(states.size());
-
-    State temp;
-    for (int i = 0; i < states.size(); ++i)
-    {
-        temp = State(states.at(i).x, states.at(i).y, states.at(i).z, states.at(i).theta, states.at(i).gamma);
-        _pathTo[i] = temp;
-    }
+    setPathTo(states);
 }
