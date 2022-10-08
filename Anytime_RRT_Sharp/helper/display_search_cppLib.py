@@ -6,6 +6,7 @@ from plotting_tools import *
 NODE_FILE_NAME = "nodes.txt"
 EDGE_FILE_NAME = "edges.txt"
 PATH_FILE_NAME = "output_path.txt"
+FULL_PATH_FILE_NAME = "full_output_path.txt"
 TREE_FILE_NAME = "search_tree.txt"
 STATE_FILE_NAME = "states.txt"
 OBSTACLE_FILE_NAME = "obstacles.txt"
@@ -26,6 +27,18 @@ def plotPath(ax, folder: str) -> None:
             np.append(path[2], float(line[2]))
             ])
     ax.plot3D(path[0], path[1], path[2], "g-")
+
+def plotFullPath(ax, folder: str) -> None:
+    pathFile = os.path.join(folder, FULL_PATH_FILE_NAME)
+    lines = __getSplitFileLines(pathFile)
+    path = np.array([[],[],[]])
+    for line in lines:
+        path = np.array([
+            np.append(path[0], float(line[0])),
+            np.append(path[1], float(line[1])),
+            np.append(path[2], float(line[2]))
+            ])
+    ax.plot3D(path[0], path[1], path[2], "r-")
 
 def plotObstacles(ax, folder: str) -> None:
     obstacleFile = os.path.join(folder, OBSTACLE_FILE_NAME)
@@ -61,6 +74,7 @@ fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
 ax = fig.add_subplot(projection='3d')
 
 plotPath(ax, folder)
+plotFullPath(ax, folder)
 plotObstacles(ax, folder)
 plotStates(ax, folder)
 plt.show()
