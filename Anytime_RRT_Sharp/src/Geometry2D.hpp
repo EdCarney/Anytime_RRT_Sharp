@@ -121,8 +121,8 @@ class DLL_EXPORT Edge
     public:
         Edge();
         Edge(GraphNode start, GraphNode end);
-        GraphNode start();
-        GraphNode end();
+        const GraphNode& start() const;
+        const GraphNode& end() const;
 };
 
 #endif //GEOMETRY_2D_H
