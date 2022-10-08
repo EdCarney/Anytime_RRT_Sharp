@@ -94,44 +94,43 @@ void ArrtsService::_exportDataToDirectory(string directory)
     if (directory.empty())
         return;
 
-    ofstream nodeFile, edgeFile, searchTreeFile, outputPathFile, highFidelityPath;
+    ofstream nodeFile, edgeFile, searchTreeFile, outputPathFile, fullOutputPathFile;
 
     // initialize all output files
     nodeFile.open(directory + "/nodes.txt");
     edgeFile.open(directory + "/edges.txt");
     searchTreeFile.open(directory + "/search_tree.txt");
     outputPathFile.open(directory + "/output_path.txt");
+    fullOutputPathFile.open(directory + "/full_output_path.txt");
 
     int numNodes = _configspaceGraph.nodes.size();
     int numEdges = _configspaceGraph.edges.size();
 
     // print out node file
     for (auto itr = _configspaceGraph.nodes.begin(); itr != _configspaceGraph.nodes.end(); ++itr)
-        nodeFile << itr->second.x() << " " << itr->second.y() << " " << itr->second.z() << " " << itr->second.theta() << " " << itr->first << "\n";
+        nodeFile << itr->second.x() << " " << itr->second.y() << " " << itr->second.z() << " " << itr->second.theta() << " " << itr->first << endl;
 
     // print out edge file
     for (int i = 0; i < numEdges; ++i)
-        edgeFile << _configspaceGraph.edges[i].start().id() << " " << _configspaceGraph.edges[i].end().id() << "\n";
+        edgeFile << _configspaceGraph.edges[i].start().id() << " " << _configspaceGraph.edges[i].end().id() << endl;
 
     // print out search tree file
     for (int i = 0; i < numEdges; ++i)
         searchTreeFile << _configspaceGraph.edges[i].start().id() << " " << _configspaceGraph.edges[i].start().x() << " "
             << _configspaceGraph.edges[i].start().y() << " " << _configspaceGraph.edges[i].start().z() << " "
             << _configspaceGraph.edges[i].end().id() << " " << _configspaceGraph.edges[i].end().x() << " "
-            << _configspaceGraph.edges[i].end().y() << " " << _configspaceGraph.edges[i].end().z() << "\n";
+            << _configspaceGraph.edges[i].end().y() << " " << _configspaceGraph.edges[i].end().z() << endl;
 
     // print out output path
     ConfigspaceNode currentNode = _configspaceGraph.nodes[_finalNode.id()];
 
-    outputPathFile << currentNode.x() << " " << currentNode.y() << " " << currentNode.z() << " " << currentNode.theta() << "\n";
-    currentNode = _configspaceGraph.nodes[currentNode.parentId()];
-
     while (currentNode.parentId())
     {
-        outputPathFile << currentNode.x() << " " << currentNode.y() << " " << currentNode.z() << " "  << currentNode.theta() << "\n";
-        currentNode = _configspaceGraph.nodes[currentNode.parentId()];
+        _printFullNodePathToFileStream(currentNode, fullOutputPathFile);
+        _printStateToFileStream(currentNode, outputPathFile);
+        currentNode = _configspaceGraph.nodes.at(currentNode.parentId());
     }
-    outputPathFile << _configspaceGraph.nodes[1].x() << " " << _configspaceGraph.nodes[1].y() << " " << _configspaceGraph.nodes[1].z() << " "  << _configspaceGraph.nodes[1].theta() << "\n";
+    _printStateToFileStream(_configspaceGraph.nodes.at(1), outputPathFile);
 
     printf("Printing nodes to %s/nodes.txt.\n", directory.c_str());
     printf("Printing edges to %s/edges.txt.\n", directory.c_str());
@@ -143,4 +142,21 @@ void ArrtsService::_exportDataToDirectory(string directory)
     edgeFile.close();
     searchTreeFile.close();
     outputPathFile.close();
+    fullOutputPathFile.close();
+}
+
+void ArrtsService::_printFullNodePathToFileStream(const ConfigspaceNode& node, ofstream& fileStream) const
+{
+    _printStatesToFileStream(node.pathTo(), fileStream);
+}
+
+void ArrtsService::_printStateToFileStream(const State& state, ofstream& fileStream) const
+{
+    fileStream << state.x() << " " << state.y() << " " << state.z() << " "  << state.theta() << " "  << state.rho() << endl;
+}
+
+void ArrtsService::_printStatesToFileStream(const vector<State>& states, ofstream& fileStream) const
+{
+    for (State state : states)
+        _printStateToFileStream(state, fileStream);
 }

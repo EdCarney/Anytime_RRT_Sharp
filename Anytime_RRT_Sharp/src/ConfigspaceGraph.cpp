@@ -187,6 +187,7 @@ int ConfigspaceGraph::addNode(ConfigspaceNode node)
 {
     node.setId(++numNodeInd);
     nodes[node.id()] = node;
+    nodes[node.id()].setPathTo(node.pathTo());
     _addParentChildRelation(node.id());
     return node.id();
 }
@@ -255,10 +256,15 @@ ConfigspaceNode ConfigspaceGraph::extendToNode(ConfigspaceNode& parentNode, Conf
         y = newNode.y();
         z = newNode.z();
     }
-    newNode.generatePathFrom(parentNode);
     cost = nodes.at(parentNode.id()).cost() + computeCost(parentNode, Point(x, y, z));
 
-    return ConfigspaceNode(x, y, z, newNode.theta(), newNode.rho(), 0, parentNode.id(), cost);
+    ConfigspaceNode temp(x, y, z, newNode.theta(), newNode.rho(), 0, parentNode.id(), cost);
+    temp.generatePathFrom(parentNode);
+
+    if (parentNode.id() == 1)
+        printf("CONNECTED FROM ROOT: %f, %f, %f, %f, %f\n", temp.x(), temp.y(), temp.z(), temp.theta(), temp.rho());
+
+    return temp;
 }
 
 ConfigspaceNode ConfigspaceGraph::connectNodes(ConfigspaceNode parentNode, ConfigspaceNode newNode)

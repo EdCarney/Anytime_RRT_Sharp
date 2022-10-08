@@ -22,7 +22,10 @@ class ConfigspaceNode : public GraphNode
         ConfigspaceNode(double x, double y, double z, double theta, double rho, int id, int parentId, double cost);
         double cost() const;
         double pathLength() const;
+        const vector<State>& pathTo() const;
         void setCost(double cost);
+        void setPathTo(const vector<State>& pathTo);
+        void setPathTo(const vector<State3d>& pathTo);
         void generatePathFrom(State parentState);
 };
 
