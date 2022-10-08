@@ -267,6 +267,6 @@ Edge::Edge(GraphNode start, GraphNode end)
     _end = end;
 }
 
-GraphNode Edge::start() { return _start; }
+const GraphNode& Edge::start() const { return _start; }
 
-GraphNode Edge::end() { return _end; }
+const GraphNode& Edge::end() const { return _end; }
