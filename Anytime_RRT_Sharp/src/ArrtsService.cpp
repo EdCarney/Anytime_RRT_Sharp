@@ -103,30 +103,15 @@ void ArrtsService::_exportDataToDirectory(string directory)
     outputPathFile.open(directory + "/output_path.txt");
     fullOutputPathFile.open(directory + "/full_output_path.txt");
 
-    int numNodes = _configspaceGraph.nodes.size();
-    int numEdges = _configspaceGraph.edges.size();
-
-    // print out node file
-    for (auto itr = _configspaceGraph.nodes.begin(); itr != _configspaceGraph.nodes.end(); ++itr)
-        nodeFile << itr->second.x() << " " << itr->second.y() << " " << itr->second.z() << " " << itr->second.theta() << " " << itr->first << endl;
-
-    // print out edge file
-    for (int i = 0; i < numEdges; ++i)
-        edgeFile << _configspaceGraph.edges[i].start().id() << " " << _configspaceGraph.edges[i].end().id() << endl;
-
-    // print out search tree file
-    for (int i = 0; i < numEdges; ++i)
-        searchTreeFile << _configspaceGraph.edges[i].start().id() << " " << _configspaceGraph.edges[i].start().x() << " "
-            << _configspaceGraph.edges[i].start().y() << " " << _configspaceGraph.edges[i].start().z() << " "
-            << _configspaceGraph.edges[i].end().id() << " " << _configspaceGraph.edges[i].end().x() << " "
-            << _configspaceGraph.edges[i].end().y() << " " << _configspaceGraph.edges[i].end().z() << endl;
+    _printGraphNodesToFileStream(_configspaceGraph.nodes, nodeFile);
+    _printEdgesToFileStream(_configspaceGraph.edges, edgeFile);
+    _printSearchTreeToFileStream(_configspaceGraph.edges, searchTreeFile);
 
     // print out output path
     ConfigspaceNode currentNode = _configspaceGraph.nodes[_finalNode.id()];
-
     while (currentNode.parentId())
     {
-        _printFullNodePathToFileStream(currentNode, fullOutputPathFile);
+        _printStatesToFileStream(currentNode.pathTo(), fullOutputPathFile);
         _printStateToFileStream(currentNode, outputPathFile);
         currentNode = _configspaceGraph.nodes.at(currentNode.parentId());
     }
@@ -145,9 +130,34 @@ void ArrtsService::_exportDataToDirectory(string directory)
     fullOutputPathFile.close();
 }
 
-void ArrtsService::_printFullNodePathToFileStream(const ConfigspaceNode& node, ofstream& fileStream) const
+void ArrtsService::_printGraphNodesToFileStream(const unordered_map<int, ConfigspaceNode>& nodeMap, ofstream& fileStream) const
 {
-    _printStatesToFileStream(node.pathTo(), fileStream);
+    for (auto itr = nodeMap.begin(); itr != nodeMap.end(); ++itr)
+        _printGraphNodeToFileStream(itr->second, fileStream);
+}
+
+void ArrtsService::_printStatesToFileStream(const vector<State>& states, ofstream& fileStream) const
+{
+    for (State state : states)
+        _printStateToFileStream(state, fileStream);
+}
+
+void ArrtsService::_printEdgesToFileStream(const vector<Edge> edges, ofstream& fileStream) const
+{
+    for (Edge edge : edges)
+        _printBasicEdgeToFileStream(edge, fileStream);
+}
+
+void ArrtsService::_printSearchTreeToFileStream(const vector<Edge> edges, ofstream& fileStream) const
+{
+    for (Edge edge : edges)
+        _printFullEdgeToFileStream(edge, fileStream);
+}
+
+void ArrtsService::_printGraphNodeToFileStream(const GraphNode& graphNode, ofstream& fileStream) const
+{
+    fileStream << graphNode.x() << " " << graphNode.y() << " " << graphNode.z() << " " << graphNode.theta() << " "
+        << graphNode.rho() << " " << graphNode.id() << endl;
 }
 
 void ArrtsService::_printStateToFileStream(const State& state, ofstream& fileStream) const
@@ -155,8 +165,13 @@ void ArrtsService::_printStateToFileStream(const State& state, ofstream& fileStr
     fileStream << state.x() << " " << state.y() << " " << state.z() << " "  << state.theta() << " "  << state.rho() << endl;
 }
 
-void ArrtsService::_printStatesToFileStream(const vector<State>& states, ofstream& fileStream) const
+void ArrtsService::_printBasicEdgeToFileStream(const Edge& edge, ofstream& fileStream) const
 {
-    for (State state : states)
-        _printStateToFileStream(state, fileStream);
+    fileStream << edge.start().id() << " " << edge.end().id() << endl;
+}
+
+void ArrtsService::_printFullEdgeToFileStream(const Edge& edge, ofstream& fileStream) const
+{
+    fileStream << edge.start().id() << " " << edge.start().x() << " " << edge.start().y() << " " << edge.start().z() << " "
+        << edge.end().id() << " " << edge.end().x() << " " << edge.end().y() << " " << edge.end().z() << endl;
 }

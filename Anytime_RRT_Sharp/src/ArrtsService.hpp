@@ -31,9 +31,16 @@ class DLL_EXPORT ArrtsService
         void _configureConfigspace(ArrtsParams params);
         void _runAlgorithm(ArrtsParams params);
         void _exportDataToDirectory(string directory);
-        void _printFullNodePathToFileStream(const ConfigspaceNode& node, ofstream& fileStream) const;
-        void _printStateToFileStream(const State& state, ofstream& fileStream) const;
+        
+        void _printGraphNodesToFileStream(const unordered_map<int, ConfigspaceNode>& nodeMap, ofstream& fileStream) const;
         void _printStatesToFileStream(const vector<State>& states, ofstream& fileStream) const;
+        void _printEdgesToFileStream(const vector<Edge> edges, ofstream& fileStream) const;
+        void _printSearchTreeToFileStream(const vector<Edge> edges, ofstream& fileStream) const;
+
+        void _printGraphNodeToFileStream(const GraphNode& graphNode, ofstream& fileStream) const;
+        void _printStateToFileStream(const State& state, ofstream& fileStream) const;
+        void _printBasicEdgeToFileStream(const Edge& edge, ofstream& fileStream) const;
+        void _printFullEdgeToFileStream(const Edge& edge, ofstream& fileStream) const;
 
     public:
         vector<State> DLL_EXPORT calculatePath(ArrtsParams params, string dataExportDir = "");
