@@ -1,7 +1,7 @@
-#include <unordered_map>
 #include <math.h>
 #include <fstream>
 #include <vector>
+#include <unordered_map>
 #include "cppshrhelp.hpp"
 #include "ConfigspaceNode.hpp"
 #include "Geometry2D.hpp"
