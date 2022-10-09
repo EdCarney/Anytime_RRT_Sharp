@@ -44,13 +44,14 @@ class DubinsEngine
 {
     static maneuverMap _maneuverMap;
 
-    static DubinsData _generateData(const GraphNode& start, const GraphNode& final);
+    static DubinsData _generateData(const State& start, const State& final);
     static bool _maneuverNotInMap(const GraphNode& start, const GraphNode& final);
     static void _addManeuverToMap(const GraphNode& start, const GraphNode& final);
 
     public:
-        static vector<State> generatePath(const GraphNode& start, const GraphNode& final);
+        static vector<State> generatePath(const State& start, const State& final);
         static vector<State> generatePathUsingMap(const GraphNode& start, const GraphNode& final);
+        static double getPathLength(const State& start, const State& final);
 };
 
 #endif //DUBINS_ENGINE_H

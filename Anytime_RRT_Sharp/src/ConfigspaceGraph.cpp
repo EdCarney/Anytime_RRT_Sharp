@@ -135,9 +135,9 @@ ConfigspaceNode& ConfigspaceGraph::findClosestNode(GraphNode& node)
     return nodes[closestNodeId];
 }
 
-double ConfigspaceGraph::computeCost(Point p1, Point p2) const
+double ConfigspaceGraph::computeCost(const State s1, const State s2) const
 {
-    return p1.distanceTo(p2);
+    return DubinsEngine::getPathLength(s1, s2);
 }
 
 vector<ConfigspaceNode> ConfigspaceGraph::findNeighbors(GraphNode& centerNode, double epsilon, int k)
@@ -256,7 +256,7 @@ ConfigspaceNode ConfigspaceGraph::extendToNode(ConfigspaceNode& parentNode, Conf
         y = newNode.y();
         z = newNode.z();
     }
-    cost = nodes.at(parentNode.id()).cost() + computeCost(parentNode, Point(x, y, z));
+    cost = nodes.at(parentNode.id()).cost() + computeCost(parentNode, State(x, y, z, newNode.theta(), newNode.rho()));
 
     ConfigspaceNode temp(x, y, z, newNode.theta(), newNode.rho(), 0, parentNode.id(), cost);
     temp.generatePathFrom(parentNode);
