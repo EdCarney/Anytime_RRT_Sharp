@@ -1,7 +1,7 @@
 #include <vector>
+#include "DubinsEngine.hpp"
 #include "Geometry2D.hpp"
 #include "Geometry3D.hpp"
-#include "Dubins3d/src/DubinsManeuver3d.hpp"
 
 using namespace std;
 
@@ -26,7 +26,7 @@ class ConfigspaceNode : public GraphNode
         void setCost(double cost);
         void setPathTo(const vector<State>& pathTo);
         void setPathTo(const vector<State3d>& pathTo);
-        void generatePathFrom(State parentState);
+        void generatePathFrom(GraphNode parentState);
 };
 
 #endif //CONFIGSPACE_NODE_H

@@ -62,22 +62,13 @@ void ConfigspaceNode::setPathTo(const vector<State3d>& pathTo)
         _pathTo[i] = State(pathTo.at(i).x, pathTo.at(i).y, pathTo.at(i).z, pathTo.at(i).theta, pathTo.at(i).gamma);
 }
 
-void ConfigspaceNode::generatePathFrom(State parentState)
+void ConfigspaceNode::generatePathFrom(GraphNode parentState)
 {
-    State3d qf { parentState.x(), parentState.y(), parentState.z(), parentState.theta(), parentState.rho() };
-    State3d qi { x(), y(), z(), theta(), rho() };
+    auto path = DubinsEngine::generatePath(*this, parentState);
 
-    double rhoMin = 10;
-    tuple<double, double> pitchLims = { -15.0 * M_PI / 180.0, 15.0 * M_PI / 180.0 };
-
-    DubinsManeuver3d maneuver(qi, qf, rhoMin, pitchLims);
-
-    _pathLength = maneuver.length();
-
-    if (_pathLength < 0)
+    if (path.empty())
         // no path possible
         return;
-    
-    vector<State3d> states = maneuver.computeSampling(100);
-    setPathTo(states);
+
+    setPathTo(path);
 }
