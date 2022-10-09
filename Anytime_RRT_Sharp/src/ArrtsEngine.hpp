@@ -2,6 +2,7 @@
 #include "ArrtsParams.hpp"
 #include "ConfigspaceGraph.hpp"
 #include "ConfigspaceNode.hpp"
+#include "DubinsEngine.hpp"
 #include "Geometry2D.hpp"
 #include "Geometry3D.hpp"
 #include "WorkspaceGraph.hpp"
