@@ -3,23 +3,20 @@
 void ArrtsEngine::_rewireNodes(ConfigspaceGraph& configGraph, WorkspaceGraph& workGraph, vector<ConfigspaceNode>& remainingNodes, ConfigspaceNode& addedNode)
 {
     ConfigspaceNode remainingNodeParent, newNode;
+    vector<State> path;
 
     for (ConfigspaceNode rn : remainingNodes)
     {
-        State3d qf { addedNode.x(), addedNode.y(), addedNode.z(), addedNode.theta(), addedNode.rho() };
-        State3d qi { rn.x(), rn.y(), rn.z(), rn.theta(), rn.rho() };
-        double rhoMin = 10;
-        tuple<double, double> pitchLims = { -15.0 * M_PI / 180.0, 15.0 * M_PI / 180.0 };
-        DubinsManeuver3d maneuver(qi, qf, rhoMin, pitchLims);
+        path = DubinsEngine::generatePath(rn, addedNode);
 
         // check if it is cheaper for the current remaining node to use the added node as
         // its parent node
-        if (maneuver.length() > 0 && !_compareNodes(configGraph, rn, addedNode) && workGraph.pathIsSafe(rn, addedNode))
+        if (!path.empty() && !_compareNodes(configGraph, rn, addedNode) && workGraph.pathIsSafe(rn, addedNode))
         {
             // if it's cheaper, then create the new node, set the new cost, and set
             // the parent (now the added node)
             newNode = configGraph.connectNodes(addedNode, rn);
-            newNode.setPathTo(maneuver.computeSampling(100));
+            newNode.setPathTo(path);
 
             // get the old parent of the current remaining node, remove the old
             // edge, add the new edge, and replace the old remaining node
