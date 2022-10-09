@@ -10,9 +10,9 @@ using namespace std;
 #define DUBINS_ENGINE_H
 
 #define NUM_SAMPLES 100
-#define RHO_MIN 10
-#define PITCH_MIN_DEG -15.0 * M_PI / 180.0
-#define PITCH_MAX_DEG 15.0 * M_PI / 180.0
+#define RHO_MIN 5
+#define PITCH_MIN_DEG -20.0 * M_PI / 180.0
+#define PITCH_MAX_DEG 20.0 * M_PI / 180.0
 
 typedef tuple<int, int> id_key_t;
 
