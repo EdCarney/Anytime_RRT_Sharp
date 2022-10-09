@@ -7,6 +7,12 @@ void WorkspaceGraph::_buildWorkspaceGraph()
     _goalRegionReached = false;
 }
 
+bool WorkspaceGraph::_nodeInFreespace(Point& point) const
+{
+    Rectangle limits(_minPoint, _maxPoint);
+    return limits.intersects(point);
+}
+
 void WorkspaceGraph::setGoalRegion(State goalState, double radius)
 {
     _goalRegion = GoalState(goalState.x(), goalState.y(), goalState.z(), radius, goalState.theta());
@@ -52,7 +58,7 @@ bool WorkspaceGraph::pathIsSafe(GraphNode g1, GraphNode g2)
         return false;
 
     for (auto s : states)
-        if (!nodeIsSafe(s))
+        if (!nodeIsSafe(s) || !_nodeInFreespace(s))
             return false;
     return true;
 }
