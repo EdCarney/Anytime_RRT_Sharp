@@ -41,17 +41,13 @@ void ArrtsEngine::_tryConnectToBestNeighbor(ConfigspaceGraph& configGraph, vecto
     // if the tempNode is cheaper then try to make that the newNode
     if (tempNode.cost() < newNode.cost())
     {
-        State3d qf { bestNeighbor.x(), bestNeighbor.y(), bestNeighbor.z(), bestNeighbor.theta(), bestNeighbor.rho() };
-        State3d qi { tempNode.x(), tempNode.y(), tempNode.z(), tempNode.theta(), tempNode.rho() };
-        double rhoMin = 10;
-        tuple<double, double> pitchLims = { -15.0 * M_PI / 180.0, 15.0 * M_PI / 180.0 };
-        DubinsManeuver3d maneuver(qi, qf, rhoMin, pitchLims);
-        if (maneuver.length() > 0)
+        auto path = DubinsEngine::generatePath(tempNode, bestNeighbor);
+        if (!path.empty())
         {
             newNode = tempNode;
             parentNode = bestNeighbor;
             configGraph.removeNode(neighbors, bestNeighbor);
-            newNode.setPathTo(maneuver.computeSampling(100));
+            newNode.setPathTo(path);
         }
     }
 }
