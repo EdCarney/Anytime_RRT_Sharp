@@ -90,7 +90,7 @@ void ArrtsEngine::runArrtsOnGraphs(ConfigspaceGraph& configGraph, WorkspaceGraph
             // create a new node by extending from the parent to the temp node; then compute cost
             newNode = configGraph.extendToNode(parentNode, tempNode, epsilon);
 
-            if (newNode.pathLength() > 0 && workGraph.nodeIsSafe(newNode) && workGraph.pathIsSafe(newNode, parentNode))
+            if (workGraph.nodeIsSafe(newNode) && workGraph.pathIsSafe(tempNode, parentNode))
             {
                 neighbors = configGraph.findNeighbors(newNode, epsilon, params.maxNeighborCount());
 

@@ -1,4 +1,5 @@
 #include <vector>
+#include "DubinsEngine.hpp"
 #include "Geometry2D.hpp"
 #include "Geometry3D.hpp"
 #include "Vehicle.hpp"
@@ -19,8 +20,7 @@ class WorkspaceGraph : public Rectangle
         void defineFreespace(Rectangle limits);
         bool checkAtGoal(GraphNode node);
         bool nodeIsSafe(Point p);
-        bool pathIsSafe(Point p1, Point p2);
-        bool pathIsSafe(Point p1, vector<Point> points);
+        bool pathIsSafe(GraphNode g1, GraphNode g2);
         void addObstacle(double x, double y, double z, double radius);
         void addObstacles(vector<Shape3d*>& obstacles);
         bool atGate(GraphNode node);
