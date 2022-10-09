@@ -44,12 +44,15 @@ bool WorkspaceGraph::nodeIsSafe(Point p)
     return true;
 }
 
-bool WorkspaceGraph::pathIsSafe(Point p1, Point p2)
+bool WorkspaceGraph::pathIsSafe(GraphNode g1, GraphNode g2)
 {
-    // TODO: generate dubins path instead
-    Line pathSegment(p1, p2);
-    for (auto o : _obstacles)
-        if (o->intersects(pathSegment))
+    auto states = DubinsEngine::generatePath(g1, g2);
+
+    if (states.empty())
+        return false;
+
+    for (auto s : states)
+        if (!nodeIsSafe(s))
             return false;
     return true;
 }
