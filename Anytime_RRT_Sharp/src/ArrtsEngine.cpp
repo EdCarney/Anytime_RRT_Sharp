@@ -1,5 +1,16 @@
 #include "ArrtsEngine.hpp"
 
+void ArrtsEngine::_printProgress(int count, int minCount)
+{
+    int percentileSize = 0.01 * (double)REPORTING_PERCENTILE * minCount;
+
+    if (count % percentileSize == 0 && count > 0)
+    {
+        int percentComplete = (int)((double)REPORTING_PERCENTILE * (count / (double)percentileSize));
+        printf("%d percent complete...\n", percentComplete);
+    }
+}
+
 void ArrtsEngine::_rewireNodes(ConfigspaceGraph& configGraph, WorkspaceGraph& workGraph, vector<ConfigspaceNode>& remainingNodes, ConfigspaceNode& addedNode)
 {
     ConfigspaceNode remainingNodeParent, newNode;
@@ -77,6 +88,8 @@ void ArrtsEngine::runArrtsOnGraphs(ConfigspaceGraph& configGraph, WorkspaceGraph
 
     while(!goalRegionReached || count < params.minNodeCount())
     {
+        _printProgress(count, params.minNodeCount());
+
         // create a new node (not yet connected to the graph)
         tempNode = (count++ % goalBiasCount != 0)
                  ? configGraph.generateRandomNode()
