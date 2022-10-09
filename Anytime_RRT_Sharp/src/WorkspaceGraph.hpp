@@ -15,6 +15,8 @@ class WorkspaceGraph : public Rectangle
     void _buildWorkspaceGraph();
     bool _goalRegionReached;
 
+    bool _nodeInFreespace(Point& point) const;
+
     public:
         void setGoalRegion(State goalState, double radius);
         void defineFreespace(Rectangle limits);
