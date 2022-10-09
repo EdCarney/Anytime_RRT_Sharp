@@ -2,7 +2,7 @@
 
 maneuverMap DubinsEngine::_maneuverMap;
 
-DubinsData DubinsEngine::_generateData(const GraphNode& start, const GraphNode& final)
+DubinsData DubinsEngine::_generateData(const State& start, const State& final)
 {
     State3d qi { start.x(), start.y(), start.z(), start.theta(), start.rho() };
     State3d qf { final.x(), final.y(), final.z(), final.theta(), final.rho() };
@@ -41,8 +41,14 @@ vector<State> DubinsEngine::generatePathUsingMap(const GraphNode& start, const G
     return _maneuverMap[make_tuple(start.id(), final.id())].path;
 }
 
-vector<State> DubinsEngine::generatePath(const GraphNode& start, const GraphNode& final)
+vector<State> DubinsEngine::generatePath(const State& start, const State& final)
 {
     DubinsData dubinsData = _generateData(start, final);
     return dubinsData.path;
+}
+
+double DubinsEngine::getPathLength(const State& start, const State& final)
+{
+    DubinsData dubinsData = _generateData(start, final);
+    return dubinsData.maneuver.length();
 }

@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include "cppshrhelp.hpp"
 #include "ConfigspaceNode.hpp"
+#include "DubinsEngine.hpp"
 #include "Geometry2D.hpp"
 #include "Geometry3D.hpp"
 
@@ -53,7 +54,7 @@ class ConfigspaceGraph : Rectangle
         ConfigspaceNode generateRandomNode() const;
         ConfigspaceNode generateBiasedNode(double biasedX, double biasedY, double biasedZ) const;
 
-        double computeCost(Point p1, Point p2) const;
+        double computeCost(const State s1, const State s2) const;
 
         // get the k-nearest neighbors from the current node
         // will not return the centerNode's parent node in the array
