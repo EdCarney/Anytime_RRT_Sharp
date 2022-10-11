@@ -72,23 +72,23 @@ void ArrtsParams::_readStatesFromFile(string fileName, bool isOptional)
     ifstream file(fileName);
     istringstream iss;
     string obstacleType, line;
-    double startX, startY, startZ, startTheta;
-    double goalX, goalY, goalZ, goalTheta, goalRadius;
+    double startX, startY, startZ, startTheta, startRho;
+    double goalX, goalY, goalZ, goalTheta, goalRho, goalRadius;
 
     getline(file, line); // ignore first line (formatting)
 
     getline(file, line);
     iss = istringstream(line);
-    iss >> startX >> startY >> startZ >> startTheta;
+    iss >> startX >> startY >> startZ >> startRho >> startTheta;
 
     getline(file, line);
     iss = istringstream(line);
-    iss >> goalX >> goalY >> goalZ >> goalTheta >> goalRadius;
+    iss >> goalX >> goalY >> goalZ >> goalRho >> goalTheta >> goalRadius;
 
     file.close();
 
-    _start = State(startX, startY, startZ, startTheta, 0);
-    _goal = State(goalX, goalY, goalZ, goalTheta, 0);
+    _start = State(startX, startY, startZ, startTheta, startRho);
+    _goal = State(goalX, goalY, goalZ, goalTheta, goalRho);
     _goalRadius = goalRadius;
 }
 

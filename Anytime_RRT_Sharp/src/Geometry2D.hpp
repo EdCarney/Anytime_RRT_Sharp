@@ -71,12 +71,13 @@ class DLL_EXPORT Plane
 
 class DLL_EXPORT GoalState : public Point
 {
-    double _theta, _radius;
+    double _theta, _rho, _radius;
 
     public:
         GoalState();
-        GoalState(double x, double y, double z, double radius, double theta);
+        GoalState(double x, double y, double z, double radius, double theta, double rho);
         double theta() const;
+        double rho() const;
         double radius() const;
 };
 
