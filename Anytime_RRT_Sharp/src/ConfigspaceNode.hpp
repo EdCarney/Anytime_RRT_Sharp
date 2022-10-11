@@ -14,12 +14,12 @@ class ConfigspaceNode : public GraphNode
     vector<State> _pathTo;
     void _buildConfigspaceNode();
     void _buildConfigspaceNode(GraphNode node);
-    void _buildConfigspaceNode(double x, double y, double z, double theta, double rho, int id, int parentId, double cost);
+    void _buildConfigspaceNode(double x, double y, double z, double theta, double rho, unsigned long id, unsigned long parentId, double cost);
 
     public:
         ConfigspaceNode();
         ConfigspaceNode(GraphNode node);
-        ConfigspaceNode(double x, double y, double z, double theta, double rho, int id, int parentId, double cost);
+        ConfigspaceNode(double x, double y, double z, double theta, double rho, unsigned long id, unsigned long parentId, double cost);
         double cost() const;
         double pathLength() const;
         const vector<State>& pathTo() const;

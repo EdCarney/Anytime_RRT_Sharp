@@ -18,29 +18,29 @@ class ConfigspaceGraph : Rectangle
     void buildGraph();
     void deleteGraph();
 
-    unordered_map<int, vector<int>> _parentChildMap;
+    unordered_map<unsigned long, vector<unsigned long>> _parentChildMap;
 
-    vector<int> _getAllChildIds(vector<int>& ids);
-    void _addParentChildRelation(int id);
-    void _removeParentChildRelation(int id);
-    void _recomputeCost(vector<int>& ids);
+    vector<unsigned long> _getAllChildIds(vector<unsigned long>& ids);
+    void _addParentChildRelation(unsigned long id);
+    void _removeParentChildRelation(unsigned long id);
+    void _recomputeCost(vector<unsigned long>& ids);
 
     // calculate the radius of the ball to consider for the k-nearest neighbor
     double _computeRadius(double epsilon) const;
 
     public:
-        int numNodeInd;                 // used to set the node id; is NOT modified by pruning
+        unsigned long numNodeInd;                 // used to set the node id; is NOT modified by pruning
         double minTheta, maxTheta;
         double gamma_star;              // optimality constraint calculated from percollation theory
         int dim;                        // dimension of the free space
-        unordered_map<int, ConfigspaceNode> nodes;
+        unordered_map<unsigned long, ConfigspaceNode> nodes;
         vector<Edge> edges;
 
         void setRootNode(State state);
         int addNode(ConfigspaceNode node);
         vector<ConfigspaceNode>& removeNode(vector<ConfigspaceNode>& nodeVec, ConfigspaceNode& nodeToRemove);
 
-        void removeEdge(int parentId, int childId);
+        void removeEdge(unsigned long parentId, unsigned long childId);
 
         // function to replace a node in the current graph node array
         void replaceNode(ConfigspaceNode oldNode, ConfigspaceNode newNode);
@@ -60,8 +60,8 @@ class ConfigspaceGraph : Rectangle
         // will not return the centerNode's parent node in the array
         vector<ConfigspaceNode> findNeighbors(GraphNode& centerNode, double radius, int maxNumNeighbors);
         ConfigspaceNode findBestNeighbor(ConfigspaceNode& newNode, vector<ConfigspaceNode>& safeNeighbors);
-        void propagateCost(vector<int>& updatedNodeIds);
-        void propagateCost(int updatedNodeId);
+        void propagateCost(vector<unsigned long>& updatedNodeIds);
+        void propagateCost(unsigned long updatedNodeId);
         ConfigspaceNode extendToNode(ConfigspaceNode& parentNode, ConfigspaceNode& newNode, double maxDist) const;
         ConfigspaceNode connectNodes(ConfigspaceNode parentNode, ConfigspaceNode newNode);
 

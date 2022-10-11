@@ -12,7 +12,7 @@ void ConfigspaceNode::_buildConfigspaceNode(GraphNode n)
     _cost = 0;
 }
 
-void ConfigspaceNode::_buildConfigspaceNode(double x, double y, double z, double theta, double rho, int id, int parentId, double cost)
+void ConfigspaceNode::_buildConfigspaceNode(double x, double y, double z, double theta, double rho, unsigned long id, unsigned long parentId, double cost)
 {
     _buildGraphNode(x, y, z, theta, rho, id, parentId);
     _cost = cost;
@@ -28,7 +28,7 @@ ConfigspaceNode::ConfigspaceNode(GraphNode node)
     _buildConfigspaceNode(node);
 }
 
-ConfigspaceNode::ConfigspaceNode(double x, double y, double z, double theta, double rho, int id, int parentId, double cost)
+ConfigspaceNode::ConfigspaceNode(double x, double y, double z, double theta, double rho, unsigned long id, unsigned long parentId, double cost)
 {
     _buildConfigspaceNode(x, y, z, theta, rho, id, parentId, cost);
 }

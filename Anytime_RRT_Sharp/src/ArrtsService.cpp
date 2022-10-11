@@ -130,7 +130,7 @@ void ArrtsService::_exportDataToDirectory(string directory)
     fullOutputPathFile.close();
 }
 
-void ArrtsService::_printGraphNodesToFileStream(const unordered_map<int, ConfigspaceNode>& nodeMap, ofstream& fileStream) const
+void ArrtsService::_printGraphNodesToFileStream(const unordered_map<unsigned long, ConfigspaceNode>& nodeMap, ofstream& fileStream) const
 {
     for (auto itr = nodeMap.begin(); itr != nodeMap.end(); ++itr)
         _printGraphNodeToFileStream(itr->second, fileStream);

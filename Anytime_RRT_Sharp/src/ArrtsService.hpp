@@ -32,7 +32,7 @@ class DLL_EXPORT ArrtsService
         void _runAlgorithm(ArrtsParams params);
         void _exportDataToDirectory(string directory);
         
-        void _printGraphNodesToFileStream(const unordered_map<int, ConfigspaceNode>& nodeMap, ofstream& fileStream) const;
+        void _printGraphNodesToFileStream(const unordered_map<unsigned long, ConfigspaceNode>& nodeMap, ofstream& fileStream) const;
         void _printStatesToFileStream(const vector<State>& states, ofstream& fileStream) const;
         void _printEdgesToFileStream(const vector<Edge> edges, ofstream& fileStream) const;
         void _printSearchTreeToFileStream(const vector<Edge> edges, ofstream& fileStream) const;

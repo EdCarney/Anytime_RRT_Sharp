@@ -15,13 +15,13 @@ void ConfigspaceGraph::buildGraph()
     dim = 0;
 }
 
-void ConfigspaceGraph::_addParentChildRelation(int id)
+void ConfigspaceGraph::_addParentChildRelation(unsigned long id)
 {
     auto node = nodes[id];
     _parentChildMap[node.parentId()].push_back(node.id());
 }
 
-void ConfigspaceGraph::_removeParentChildRelation(int id)
+void ConfigspaceGraph::_removeParentChildRelation(unsigned long id)
 {
     auto node = nodes[id];
     for (auto itr = _parentChildMap[node.parentId()].begin(); itr < _parentChildMap[node.parentId()].end(); ++itr)
@@ -50,7 +50,7 @@ void ConfigspaceGraph::addEdge(GraphNode parentNode, GraphNode newNode)
     edges.push_back(Edge(parentNode, newNode));
 }
 
-void ConfigspaceGraph::removeEdge(int parentId, int childId)
+void ConfigspaceGraph::removeEdge(unsigned long parentId, unsigned long childId)
 {
     for (auto itr = edges.begin(); itr < edges.end(); ++itr)
     {
@@ -192,25 +192,25 @@ int ConfigspaceGraph::addNode(ConfigspaceNode node)
     return node.id();
 }
 
-void ConfigspaceGraph::propagateCost(int updatedNodeId)
+void ConfigspaceGraph::propagateCost(unsigned long updatedNodeId)
 {
-    vector<int> updateNodes(1, updatedNodeId);
+    vector<unsigned long> updateNodes(1, updatedNodeId);
     propagateCost(updateNodes);
 }
 
-void ConfigspaceGraph::propagateCost(vector<int>& updatedNodeIds)
+void ConfigspaceGraph::propagateCost(vector<unsigned long>& updatedNodeIds)
 {
     if (updatedNodeIds.empty())
         return;
 
-    vector<int> children = _getAllChildIds(updatedNodeIds);
+    auto children = _getAllChildIds(updatedNodeIds);
     _recomputeCost(children);
     propagateCost(children);
 }
 
-vector<int> ConfigspaceGraph::_getAllChildIds(vector<int>& ids)
+vector<unsigned long> ConfigspaceGraph::_getAllChildIds(vector<unsigned long>& ids)
 {
-    vector<int> childIds, tempChildIds;
+    vector<unsigned long> childIds, tempChildIds;
     for (int id : ids)
     {
         tempChildIds = _parentChildMap[id];
@@ -219,7 +219,7 @@ vector<int> ConfigspaceGraph::_getAllChildIds(vector<int>& ids)
     return childIds;
 }
 
-void ConfigspaceGraph::_recomputeCost(vector<int>& ids)
+void ConfigspaceGraph::_recomputeCost(vector<unsigned long>& ids)
 {
     ConfigspaceNode node, parent;
     for (int id : ids)
