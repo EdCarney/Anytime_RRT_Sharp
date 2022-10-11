@@ -15,7 +15,7 @@ bool WorkspaceGraph::_nodeInFreespace(Point& point) const
 
 void WorkspaceGraph::setGoalRegion(State goalState, double radius)
 {
-    _goalRegion = GoalState(goalState.x(), goalState.y(), goalState.z(), radius, goalState.theta());
+    _goalRegion = GoalState(goalState.x(), goalState.y(), goalState.z(), radius, goalState.theta(), goalState.rho());
 }
 
 void WorkspaceGraph::defineFreespace(Rectangle limits)

@@ -89,9 +89,9 @@ ConfigspaceNode ConfigspaceGraph::generateRandomNode() const
     return ConfigspaceNode(randX, randY, randZ, randTheta, randRho, 0, 0, 0);
 }
 
-ConfigspaceNode ConfigspaceGraph::generateBiasedNode(double biasedX, double biasedY, double biasedZ) const
+ConfigspaceNode ConfigspaceGraph::generateBiasedNode(double biasedX, double biasedY, double biasedZ, double biasedTheta, double biasedRho) const
 {
-    return ConfigspaceNode(biasedX, biasedY, biasedZ, 0, 0, 0, 0, 0);
+    return ConfigspaceNode(biasedX, biasedY, biasedZ, biasedTheta, biasedRho, 0, 0, 0);
 }
 
 double ConfigspaceGraph::_computeRadius(double epsilon) const

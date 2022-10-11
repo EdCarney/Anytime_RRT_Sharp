@@ -178,16 +178,19 @@ GoalState::GoalState()
     _theta = 0;
 }
 
-GoalState::GoalState(double x, double y, double z, double radius, double theta)
+GoalState::GoalState(double x, double y, double z, double radius, double theta, double rho)
 {
     _x = x;
     _y = y;
     _z = z;
     _radius = radius;
     _theta = theta;
+    _rho = rho;
 }
 
 double GoalState::theta() const { return _theta; }
+
+double GoalState::rho() const { return _rho; }
 
 double GoalState::radius() const { return _radius; }
 

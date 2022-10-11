@@ -52,7 +52,7 @@ class ConfigspaceGraph : Rectangle
 
         ConfigspaceNode& findClosestNode(GraphNode& node);
         ConfigspaceNode generateRandomNode() const;
-        ConfigspaceNode generateBiasedNode(double biasedX, double biasedY, double biasedZ) const;
+        ConfigspaceNode generateBiasedNode(double biasedX, double biasedY, double biasedZ, double biasedTheta, double biasedRho) const;
 
         double computeCost(const State s1, const State s2) const;
 
