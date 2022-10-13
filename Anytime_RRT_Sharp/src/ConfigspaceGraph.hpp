@@ -18,6 +18,7 @@ class ConfigspaceGraph : Rectangle
     void buildGraph();
     void deleteGraph();
 
+    static unsigned long _numNodeInd;                 // used to set the node id; is NOT modified by pruning
     unordered_map<unsigned long, vector<unsigned long>> _parentChildMap;
 
     vector<unsigned long> _getAllChildIds(vector<unsigned long>& ids);
@@ -29,7 +30,6 @@ class ConfigspaceGraph : Rectangle
     double _computeRadius(double epsilon) const;
 
     public:
-        unsigned long numNodeInd;                 // used to set the node id; is NOT modified by pruning
         double minTheta, maxTheta;
         double gamma_star;              // optimality constraint calculated from percollation theory
         int dim;                        // dimension of the free space

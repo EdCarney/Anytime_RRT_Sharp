@@ -5,9 +5,11 @@ double randInRange(double min, double max)
     return min + (min + static_cast <double> (rand())) / (static_cast <double> (RAND_MAX / (max - min)));
 }
 
+unsigned long ConfigspaceGraph::_numNodeInd;
+
 void ConfigspaceGraph::buildGraph()
 {
-    numNodeInd = 0;
+    _numNodeInd = 0;
     _minPoint = Point(0, 0, 0);
     _maxPoint = Point(0, 0, 0);
     minTheta = 0;
@@ -179,13 +181,13 @@ void ConfigspaceGraph::setRootNode(State state)
 {
     nodes.clear();
     _parentChildMap.clear();
-    numNodeInd = 0;
-    addNode(ConfigspaceNode(state.x(), state.y(), state.z(), state.theta(), state.rho(), numNodeInd, 0, 0));
+    _numNodeInd = 0;
+    addNode(ConfigspaceNode(state.x(), state.y(), state.z(), state.theta(), state.rho(), _numNodeInd, 0, 0));
 }
 
 int ConfigspaceGraph::addNode(ConfigspaceNode node)
 {
-    node.setId(++numNodeInd);
+    node.setId(++_numNodeInd);
     nodes[node.id()] = node;
     nodes[node.id()].setPathTo(node.pathTo());
     _addParentChildRelation(node.id());
