@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include "cppshrhelp.hpp"
 #include "ConfigspaceNode.hpp"
-#include "DubinsEngine.hpp"
+#include "ManeuverEngine.hpp"
 #include "Geometry2D.hpp"
 #include "Geometry3D.hpp"
 

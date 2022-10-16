@@ -37,7 +37,7 @@ class DLL_EXPORT Point
         double x() const;
         double y() const;
         double z() const;
-        double distanceTo(Point& p) const;
+        double distanceTo(const Point& p) const;
 };
 
 class DLL_EXPORT Line

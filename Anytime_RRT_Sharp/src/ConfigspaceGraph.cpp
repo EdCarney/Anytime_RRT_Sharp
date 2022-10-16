@@ -139,7 +139,7 @@ ConfigspaceNode& ConfigspaceGraph::findClosestNode(GraphNode& node)
 
 double ConfigspaceGraph::computeCost(const State s1, const State s2) const
 {
-    return DubinsEngine::getPathLength(s1, s2);
+    return ManeuverEngine::getPathLength(s1, s2);
 }
 
 vector<ConfigspaceNode> ConfigspaceGraph::findNeighbors(GraphNode& centerNode, double epsilon, int k)

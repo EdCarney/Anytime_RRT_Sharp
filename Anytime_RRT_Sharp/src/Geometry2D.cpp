@@ -72,7 +72,7 @@ double Point::y() const { return _y; }
  
 double Point::z() const { return _z; }
 
-double Point::distanceTo(Point& p) const {
+double Point::distanceTo(const Point& p) const {
     double xVal = pow(_x - p.x(), 2);
     double yVal = pow(_y - p.y(), 2);
     double zVal = pow(_z - p.z(), 2);

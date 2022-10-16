@@ -18,7 +18,7 @@ void ArrtsEngine::_rewireNodes(ConfigspaceGraph& configGraph, WorkspaceGraph& wo
 
     for (ConfigspaceNode rn : remainingNodes)
     {
-        path = DubinsEngine::generatePath(rn, addedNode);
+        path = ManeuverEngine::generatePath(rn, addedNode);
 
         // check if it is cheaper for the current remaining node to use the added node as
         // its parent node
@@ -52,7 +52,7 @@ void ArrtsEngine::_tryConnectToBestNeighbor(ConfigspaceGraph& configGraph, vecto
     // if the tempNode is cheaper then try to make that the newNode
     if (tempNode.cost() < newNode.cost())
     {
-        auto path = DubinsEngine::generatePath(tempNode, bestNeighbor);
+        auto path = ManeuverEngine::generatePath(tempNode, bestNeighbor);
         if (!path.empty())
         {
             newNode = tempNode;
@@ -85,6 +85,8 @@ void ArrtsEngine::runArrtsOnGraphs(ConfigspaceGraph& configGraph, WorkspaceGraph
     printf("Epsilon: %f\n", epsilon);
 
     srand(time(NULL));
+
+    ManeuverEngine::maneuverType = DirectPath;
 
     while(!goalRegionReached || count < params.minNodeCount())
     {

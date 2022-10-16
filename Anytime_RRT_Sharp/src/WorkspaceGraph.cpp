@@ -52,7 +52,7 @@ bool WorkspaceGraph::nodeIsSafe(Point p)
 
 bool WorkspaceGraph::pathIsSafe(GraphNode g1, GraphNode g2)
 {
-    auto states = DubinsEngine::generatePath(g1, g2);
+    auto states = ManeuverEngine::generatePath(g1, g2);
 
     if (states.empty())
         return false;

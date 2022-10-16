@@ -64,8 +64,7 @@ void ConfigspaceNode::setPathTo(const vector<State3d>& pathTo)
 
 void ConfigspaceNode::generatePathFrom(GraphNode parentState)
 {
-    auto path = DubinsEngine::generatePath(*this, parentState);
-
+    auto path = ManeuverEngine::generatePath(*this, parentState);
     if (path.empty())
         // no path possible
         return;

@@ -1,13 +1,13 @@
 #include <vector>
 #include <unordered_map>
-#include "Geometry2D.hpp"
 #include "math.h"
 #include "Dubins3d/src/DubinsManeuver3d.hpp"
+#include "Geometry2D.hpp"
 
 using namespace std;
 
-#ifndef DUBINS_ENGINE_H
-#define DUBINS_ENGINE_H
+#ifndef MANEUVER_ENGINE_H
+#define MANEUVER_ENGINE_H
 
 #define NUM_SAMPLES 100
 #define RHO_MIN 5
@@ -40,18 +40,30 @@ struct DubinsData
 
 typedef unordered_map<const id_key_t, DubinsData, key_hash, key_equal> maneuverMap;
 
-class DubinsEngine
+enum ManeuverType
+{
+    DirectPath,
+    Dubins3d
+};
+class ManeuverEngine
 {
     static maneuverMap _maneuverMap;
 
-    static DubinsData _generateData(const State& start, const State& final);
+    static vector<State> _generateDirectLinePath(const State& start, const State& final);
+    static double _getDirectLinePathLength(const State& start, const State& final);
+
+    static vector<State> _generateDubinsPath(const State& start, const State& final);
+    static DubinsData _generateDubinsData(const State& start, const State& final);
+    static double _getDubinsPathLength(const State& start, const State& final);
+
     static bool _maneuverNotInMap(const GraphNode& start, const GraphNode& final);
     static void _addManeuverToMap(const GraphNode& start, const GraphNode& final);
 
     public:
+        static ManeuverType maneuverType;
         static vector<State> generatePath(const State& start, const State& final);
         static vector<State> generatePathUsingMap(const GraphNode& start, const GraphNode& final);
         static double getPathLength(const State& start, const State& final);
 };
 
-#endif //DUBINS_ENGINE_H
+#endif //MANEUVER_ENGINE_H
