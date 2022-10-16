@@ -59,9 +59,10 @@ void ArrtsService::_configureConfigspace(ArrtsParams params)
 
 void ArrtsService::_runAlgorithm(ArrtsParams params)
 {
-    printf("ObsVol: %f, NumObs: %lu, Freespace: [%f, %f, %f, %f]\n", params.obstacleVolume(), params.obstacles().size(), params.limits().minPoint().x(), params.limits().minPoint().y(), params.limits().maxPoint().x(), params.limits().maxPoint().y());
-    printf("UAV Location: %f, %f, %f\n", params.goal().x(), params.goal().y(), params.goal().theta());
-    printf("Root Node:    %f, %f, %f\n", params.start().x(), params.start().y(), params.start().theta());
+    printf("ObsVol: %f, NumObs: %lu\n", params.obstacleVolume(), params.obstacles().size());
+    printf("Freespace Min: [%f, %f, %f], Freespace Max: [%f, %f, %f]\n", params.limits().minPoint().x(), params.limits().minPoint().y(), params.limits().minPoint().z(), params.limits().maxPoint().x(), params.limits().maxPoint().y(), params.limits().maxPoint().z());
+    printf("UAV Position: [%f, %f, %f], UAV Orientation [%f, %f]\n", params.goal().x(), params.goal().y(), params.goal().z(), params.goal().theta(), params.goal().rho());
+    printf("Root Position: [%f, %f, %f], Root Orientation [%f, %f]\n", params.start().x(), params.start().y(), params.start().z(), params.start().theta(), params.start().rho());
     auto start = high_resolution_clock::now();
 
     ArrtsEngine::runArrtsOnGraphs(_configspaceGraph, _workspaceGraph, params);
@@ -73,9 +74,9 @@ void ArrtsService::_runAlgorithm(ArrtsParams params)
     _setFinalPathFromFinalNode();
 
     printf("Total number of points: %lu\n", _configspaceGraph.nodes.size());
-    printf("Final node at: (%f, %f)\n", _finalNode.x(), _finalNode.y());
-    printf("Final cost is: %f\n", _finalNode.cost());
-    printf("Total runtime is %lld ms\n", duration.count());
+    printf("Final Position: [%f, %f, %f]\n", _finalNode.x(), _finalNode.y(), _finalNode.z());
+    printf("Final Cost: %f\n", _finalNode.cost());
+    printf("Total Runtime: %lld ms\n", duration.count());
 }
 
 vector<State> ArrtsService::calculatePath(ArrtsParams params, string dataExportDir)
