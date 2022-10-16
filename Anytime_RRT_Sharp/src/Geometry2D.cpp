@@ -188,10 +188,6 @@ GoalState::GoalState(double x, double y, double z, double radius, double theta, 
     _rho = rho;
 }
 
-double GoalState::theta() const { return _theta; }
-
-double GoalState::rho() const { return _rho; }
-
 double GoalState::radius() const { return _radius; }
 
 GraphNode::GraphNode() { _buildGraphNode(); }
