@@ -69,15 +69,13 @@ class DLL_EXPORT Plane
         Point getIntersectionPoint(const Line& line) const;
 };
 
-class DLL_EXPORT GoalState : public Point
+class DLL_EXPORT GoalState : public State
 {
-    double _theta, _rho, _radius;
+    double _radius;
 
     public:
         GoalState();
         GoalState(double x, double y, double z, double radius, double theta, double rho);
-        double theta() const;
-        double rho() const;
         double radius() const;
 };
 

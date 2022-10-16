@@ -91,9 +91,9 @@ ConfigspaceNode ConfigspaceGraph::generateRandomNode() const
     return ConfigspaceNode(randX, randY, randZ, randTheta, randRho, 0, 0, 0);
 }
 
-ConfigspaceNode ConfigspaceGraph::generateBiasedNode(double biasedX, double biasedY, double biasedZ, double biasedTheta, double biasedRho) const
+ConfigspaceNode ConfigspaceGraph::generateBiasedNode(State biasedState) const
 {
-    return ConfigspaceNode(biasedX, biasedY, biasedZ, biasedTheta, biasedRho, 0, 0, 0);
+    return ConfigspaceNode(biasedState.x(), biasedState.y(), biasedState.z(), biasedState.theta(), biasedState.rho(), 0, 0, 0);
 }
 
 double ConfigspaceGraph::_computeRadius(double epsilon) const
@@ -137,9 +137,9 @@ ConfigspaceNode& ConfigspaceGraph::findClosestNode(GraphNode& node)
     return nodes[closestNodeId];
 }
 
-double ConfigspaceGraph::computeCost(const State s1, const State s2) const
+double ConfigspaceGraph::computeCost(const State start, const State final) const
 {
-    return ManeuverEngine::getPathLength(s1, s2);
+    return ManeuverEngine::getPathLength(start, final);
 }
 
 vector<ConfigspaceNode> ConfigspaceGraph::findNeighbors(GraphNode& centerNode, double epsilon, int k)
