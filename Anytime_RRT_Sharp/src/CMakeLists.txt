@@ -42,11 +42,14 @@ list(APPEND EXTRA_LIBS DubinsManeuver3d)
 # libs for testing
 list(APPEND TEST_LIBS ConfigspaceGraph)
 list(APPEND TEST_LIBS ConfigspaceNode)
+list(APPEND TEST_LIBS ManeuverEngine)
 list(APPEND TEST_LIBS WorkspaceGraph)
 list(APPEND TEST_LIBS Vehicle)
 list(APPEND TEST_LIBS Geometry2D)
 list(APPEND TEST_LIBS Geometry3D)
 list(APPEND TEST_LIBS ArrtsParams)
+list(APPEND TEST_LIBS DubinsManeuver2d)
+list(APPEND TEST_LIBS DubinsManeuver3d)
 list(APPEND TEST_LIBS gtest)
 
 # add googletest directory
