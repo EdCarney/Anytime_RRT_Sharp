@@ -66,7 +66,7 @@ def plotStates(ax, folder: str) -> None:
     plotStartGoalStates(ax, start, goal, goalRadius)
 
 def getAxes(folder: str) -> Tuple[Tuple[float, float, float], Tuple[float, float, float]]:
-    minLims, maxLims = getLimits(folder)
+    minLims, maxLims = getPathLimits(folder)#getLimits(folder)
     axisSizes = list(map(lambda x: x[0] - x[1], zip(maxLims, minLims)))
     maxAxisSize = max(axisSizes)
 
