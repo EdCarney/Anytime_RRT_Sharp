@@ -169,16 +169,9 @@ vector<Point> Rectangle::_calculatePoints() const
 
 bool Rectangle::_intersectsRectangle(Rectangle rect) const
 {
-    bool inXLimits, inYLimits, inZLimits;
     for (Point p : points())
-    {
-        bool inXLimits = p.x() >= rect.minX() && p.x() <= rect.maxX();
-        bool inYLimits = p.y() >= rect.minY() && p.y() <= rect.maxY();
-        bool inZLimits = p.z() >= rect.minZ() && p.z() <= rect.maxZ();
-        if (inXLimits && inYLimits && inZLimits)
+        if (rect.intersects(p))
             return true;
-    }
-
     return false;
 }
 
