@@ -25,7 +25,7 @@ TEST(ArrtsParams_StartState, InitializeFromDataDirectory_CheckVals)
     GTEST_ASSERT_EQ(params.start().x(), 5);
     GTEST_ASSERT_EQ(params.start().y(), 0);
     GTEST_ASSERT_EQ(params.start().z(), 100);
-    GTEST_ASSERT_EQ(params.start().theta(), 0);
+    GTEST_ASSERT_EQ(params.start().theta(), 0.0);
 }
 
 #pragma endregion //ArrtsParams_StartState

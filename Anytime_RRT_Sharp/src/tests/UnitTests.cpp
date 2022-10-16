@@ -2,6 +2,7 @@
 #include "ArrtsParamsTests.hpp"
 #include "Geometry2DTests.hpp"
 #include "Geometry3DTests.hpp"
+#include "ManeuverEngineTests.hpp"
 #include "VehicleTests.hpp"
 
 int main(int argc, char* argv[])

@@ -365,4 +365,14 @@ TEST(Rectangle, RectagleIntersect_DoesNotIntersect)
     EXPECT_FALSE(ro.intersects(r));
 }
 
+TEST(Rectangle, RectagleIntersect_Bug_001)
+{   
+    Point minP(84.85440264061208, 78.30774495501349, 0.0);
+    Point maxP(91.12307617710908, 88.17614485668203, 78.60665605131811);
+    Point p(87.9442, 80.5726, 39.434);
+
+    Shape3d s = Rectangle(minP, maxP);
+    EXPECT_TRUE(s.intersects(p));
+}
+
 #pragma endregion //Rectangle
