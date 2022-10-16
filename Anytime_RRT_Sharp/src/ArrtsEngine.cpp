@@ -42,23 +42,43 @@ void ArrtsEngine::_rewireNodes(ConfigspaceGraph& configGraph, WorkspaceGraph& wo
     }
 }
 
-void ArrtsEngine::_tryConnectToBestNeighbor(ConfigspaceGraph& configGraph, vector<ConfigspaceNode>& neighbors, ConfigspaceNode& newNode, ConfigspaceNode& parentNode)
+void ArrtsEngine::_tryConnectToBestNeighbor(ConfigspaceGraph& configGraph, WorkspaceGraph& workGraph, vector<ConfigspaceNode>& neighbors, ConfigspaceNode& newNode, ConfigspaceNode& parentNode)
 {
-    // find the best safe neighbor and connect newNode and the bestNeighbor
-    // assign the resulting node to tempNode
-    auto bestNeighbor = configGraph.findBestNeighbor(newNode, neighbors);
-    auto tempNode = configGraph.connectNodes(bestNeighbor, newNode);
-
-    // if the tempNode is cheaper then try to make that the newNode
-    if (tempNode.cost() < newNode.cost())
+    while (!neighbors.empty())
     {
-        auto path = ManeuverEngine::generatePath(tempNode, bestNeighbor);
-        if (!path.empty())
+        // find the best safe neighbor and connect newNode and the bestNeighbor
+        // assign the resulting node to tempNode
+        auto bestNeighbor = configGraph.findBestNeighbor(newNode, neighbors);
+        auto tempNode = configGraph.connectNodes(bestNeighbor, newNode);
+
+        // if the tempNode is cheaper then try to make that the newNode
+        if (tempNode.cost() < newNode.cost())
         {
-            newNode = tempNode;
-            parentNode = bestNeighbor;
-            configGraph.removeNode(neighbors, bestNeighbor);
-            newNode.setPathTo(path);
+            auto path = ManeuverEngine::generatePath(tempNode, bestNeighbor);
+            if (workGraph.pathIsSafe(path))
+            {
+                newNode = tempNode;
+                parentNode = bestNeighbor;
+                configGraph.removeNode(neighbors, bestNeighbor);
+                newNode.setPathTo(path);
+                return;
+            }
+            else
+            {
+                // remove this neighbor and try again
+                for (auto itr = neighbors.begin(); itr != neighbors.end(); ++itr)
+                {
+                    if (itr->id() == bestNeighbor.id())
+                    {
+                        neighbors.erase(itr);
+                        break;
+                    }
+                }
+            }
+        }
+        else
+        {
+            return;
         }
     }
 }
@@ -86,7 +106,7 @@ void ArrtsEngine::runArrtsOnGraphs(ConfigspaceGraph& configGraph, WorkspaceGraph
 
     srand(time(NULL));
 
-    ManeuverEngine::maneuverType = DirectPath;
+    ManeuverEngine::maneuverType = Dubins3d;
 
     while(!goalRegionReached || count < params.minNodeCount())
     {
@@ -96,6 +116,7 @@ void ArrtsEngine::runArrtsOnGraphs(ConfigspaceGraph& configGraph, WorkspaceGraph
         tempNode = (count++ % goalBiasCount != 0)
                  ? configGraph.generateRandomNode()
                  : configGraph.generateBiasedNode(workGraph.goalRegion().x(), workGraph.goalRegion().y(), workGraph.goalRegion().z(), workGraph.goalRegion().theta(), workGraph.goalRegion().rho());
+
         // find the closest graph node and set it as the parent
         parentNode = configGraph.findClosestNode(tempNode);
 
@@ -105,16 +126,10 @@ void ArrtsEngine::runArrtsOnGraphs(ConfigspaceGraph& configGraph, WorkspaceGraph
             // create a new node by extending from the parent to the temp node; then compute cost
             newNode = configGraph.extendToNode(parentNode, tempNode, epsilon);
 
-            if (workGraph.nodeIsSafe(newNode) && workGraph.pathIsSafe(tempNode, parentNode))
+            if (workGraph.nodeIsSafe(newNode) && workGraph.pathIsSafe(newNode, parentNode))
             {
                 neighbors = configGraph.findNeighbors(newNode, epsilon, params.maxNeighborCount());
-
-                for (auto itr = neighbors.begin(); itr < neighbors.end(); ++itr)
-                    if (!workGraph.pathIsSafe(newNode, *itr))
-                        neighbors.erase(itr);
-
-                if (!neighbors.empty())
-                    _tryConnectToBestNeighbor(configGraph, neighbors, newNode, parentNode);
+                _tryConnectToBestNeighbor(configGraph, workGraph, neighbors, newNode, parentNode);
 
                 // add new node and edge to the config graph
                 tempId = configGraph.addNode(newNode);
