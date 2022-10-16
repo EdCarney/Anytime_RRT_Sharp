@@ -42,7 +42,7 @@ bool WorkspaceGraph::atGate(GraphNode node)
     return dist <= _goalRegion.radius();
 }
 
-bool WorkspaceGraph::nodeIsSafe(Point p)
+bool WorkspaceGraph::nodeIsSafe(const Point p) const
 {
     for (auto o : _obstacles)
         if (o->intersects(p))
@@ -50,20 +50,25 @@ bool WorkspaceGraph::nodeIsSafe(Point p)
     return true;
 }
 
-bool WorkspaceGraph::pathIsSafe(GraphNode g1, GraphNode g2)
+bool WorkspaceGraph::pathIsSafe(const GraphNode g1, const GraphNode g2) const
 {
-    auto states = ManeuverEngine::generatePath(g1, g2);
+    auto path = ManeuverEngine::generatePath(g1, g2);
+    return pathIsSafe(path);
+}
 
-    if (states.empty())
+bool WorkspaceGraph::pathIsSafe(const vector<State>& path) const
+{
+    if (path.empty())
         return false;
 
-    for (auto s : states)
+    for (auto s : path)
         if (!nodeIsSafe(s) || !_nodeInFreespace(s))
             return false;
+
     return true;
 }
 
-bool WorkspaceGraph::checkAtGoal(GraphNode node)
+bool WorkspaceGraph::checkAtGoal(const GraphNode node)
 {
     // update vehicle state to temp node
     _vehicle.updateState(node);

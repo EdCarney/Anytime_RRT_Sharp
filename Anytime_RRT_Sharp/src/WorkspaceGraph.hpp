@@ -20,9 +20,10 @@ class WorkspaceGraph : public Rectangle
     public:
         void setGoalRegion(State goalState, double radius);
         void defineFreespace(Rectangle limits);
-        bool checkAtGoal(GraphNode node);
-        bool nodeIsSafe(Point p);
-        bool pathIsSafe(GraphNode g1, GraphNode g2);
+        bool checkAtGoal(const GraphNode node);
+        bool nodeIsSafe(const Point p) const;
+        bool pathIsSafe(const GraphNode g1, const GraphNode g2) const;
+        bool pathIsSafe(const vector<State>& path) const;
         void addObstacle(double x, double y, double z, double radius);
         void addObstacles(vector<Shape3d*>& obstacles);
         bool atGate(GraphNode node);
