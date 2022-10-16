@@ -11,9 +11,9 @@ using namespace std;
 struct Shape3d
 {
     virtual double volume() const { return 0; };
-    virtual bool intersects(Point& p) const { return true; };
-    virtual bool intersects(Line& l) const { return true; };
-    virtual bool intersects(Shape3d& s) const { return true; };
+    virtual bool intersects(const Point& p) const { return true; };
+    virtual bool intersects(const Line& l) const { return true; };
+    virtual bool intersects(const Shape3d& s) const { return true; };
 };
 
 class DLL_EXPORT Rectangle: public Shape3d
@@ -32,9 +32,9 @@ class DLL_EXPORT Rectangle: public Shape3d
         Rectangle();
         Rectangle(Point minPoint, Point maxPoint);
         Rectangle(double minX, double minY, double minZ, double maxX, double maxY, double maxZ);
-        bool intersects(Point& p) const;
-        bool intersects(Line& l) const;
-        bool intersects(Shape3d& s) const;
+        bool intersects(const Point& p) const;
+        bool intersects(const Line& l) const;
+        bool intersects(const Shape3d& s) const;
         const vector<Plane>& surfaces() const;
         const Plane& surfaces(int i) const;
         const vector<Point>& points() const;
@@ -62,9 +62,9 @@ class DLL_EXPORT Sphere : public Point, public Shape3d
         Sphere();
         Sphere(Point p, double radius);
         Sphere(double x, double y, double z, double radius);
-        bool intersects(Point& p) const;
-        bool intersects(Line& l) const;
-        bool intersects(Shape3d& s) const;
+        bool intersects(const Point& p) const;
+        bool intersects(const Line& l) const;
+        bool intersects(const Shape3d& s) const;
         double radius() const;
         double volume() const;
 };

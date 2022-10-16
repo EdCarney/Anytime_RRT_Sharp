@@ -51,7 +51,7 @@ void Vehicle::_updateOffsetParams()
     updateState(_state);
 }
 
-void Vehicle::updateState(State newState)
+void Vehicle::updateState(const State newState)
 {
     _state = { newState.x(), newState.y(), newState.z(), newState.theta(), newState.rho() };
 
@@ -110,10 +110,7 @@ void Vehicle::addOffsetNodesFromFile(string fileName)
     addOffsetNodes(x, y, z);
 }
 
-vector<Point> Vehicle::nodes()
-{
-    return _nodes;
-}
+vector<Point> Vehicle::nodes() { return _nodes; }
 
 Point Vehicle::nodes(int i)
 {
@@ -136,12 +133,6 @@ Point Vehicle::offsetNodes(int i)
     return _offsetNodes[i];
 }
 
-State Vehicle::state()
-{
-    return _state;
-}
+State Vehicle::state() const { return _state; }
 
-double Vehicle::boundingRadius()
-{
-    return _boundingRadius;
-}
+double Vehicle::boundingRadius() const { return _boundingRadius; }

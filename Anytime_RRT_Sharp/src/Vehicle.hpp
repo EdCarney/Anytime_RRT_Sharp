@@ -28,7 +28,7 @@ public:
     Vehicle();
     Vehicle(vector<double> x, vector<double> y, vector<double> z);
     Vehicle(string fileName);
-    void updateState(State newState);
+    void updateState(const State newState);
     void addOffsetNode(double x, double y, double z);
     void addOffsetNodes(vector<double> x, vector<double> y, vector<double> z);
     void addOffsetNodesFromFile(string fileName);
@@ -36,8 +36,8 @@ public:
     Point nodes(int i);
     vector<Point> offsetNodes();
     Point offsetNodes(int i);
-    State state();
-    double boundingRadius();
+    State state() const;
+    double boundingRadius() const;
 };
 
 #endif

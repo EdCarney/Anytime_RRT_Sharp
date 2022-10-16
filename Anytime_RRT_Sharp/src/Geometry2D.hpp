@@ -66,7 +66,7 @@ class DLL_EXPORT Plane
         Plane(Point p, Vector normal);
         Point point() const;
         Vector normal() const;
-        Point getIntersectionPoint(Line& line) const;
+        Point getIntersectionPoint(const Line& line) const;
 };
 
 class DLL_EXPORT GoalState : public Point

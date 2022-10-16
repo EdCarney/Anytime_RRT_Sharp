@@ -48,13 +48,13 @@ bool Sphere::_intersectsRectanlge(Rectangle rect) const
     return inXLimits && inYLimits && inZLimits;
 }
 
-bool Sphere::intersects(Point& point) const
+bool Sphere::intersects(const Point& point) const
 {
     double dist = this->distanceTo(point);
     return dist <= _radius;
 }
 
-bool Sphere::intersects(Line& line) const
+bool Sphere::intersects(const Line& line) const
 {
     // http://paulbourke.net/geometry/circlesphere/index.html#linesphere
     Point p1 = line.p1();
@@ -96,9 +96,9 @@ bool Sphere::intersects(Line& line) const
     return false;
 }
 
-bool Sphere::intersects(Shape3d& shape) const
+bool Sphere::intersects(const Shape3d& shape) const
 {
-    auto r = dynamic_cast<Rectangle*>(&shape);
+    auto r = dynamic_cast<const Rectangle*>(&shape);
     if (r != nullptr)
         return _intersectsRectanlge(*r);
     throw new runtime_error("Unknown shape type in intersects()");
@@ -175,7 +175,7 @@ bool Rectangle::_intersectsRectangle(Rectangle rect) const
     return false;
 }
 
-bool Rectangle::intersects(Point& point) const
+bool Rectangle::intersects(const Point& point) const
 {
     bool inXLimits = point.x() >= minX() && point.x() <= maxX();
     bool inYLimits = point.y() >= minY() && point.y() <= maxY();
@@ -183,7 +183,7 @@ bool Rectangle::intersects(Point& point) const
     return inXLimits && inYLimits && inZLimits;
 }
 
-bool Rectangle::intersects(Line& line) const
+bool Rectangle::intersects(const Line& line) const
 {
     // https://stackoverflow.com/questions/66523293/intersection-of-line-with-rectangular-prism-python
     Point p;
@@ -209,9 +209,9 @@ bool Rectangle::intersects(Line& line) const
     return false;
 }
 
-bool Rectangle::intersects(Shape3d& shape) const
+bool Rectangle::intersects(const Shape3d& shape) const
 {
-    Rectangle* r = dynamic_cast<Rectangle*>(&shape);
+    const Rectangle* r = dynamic_cast<const Rectangle*>(&shape);
     if (r)
         return _intersectsRectangle(*r);
     throw new runtime_error("Unknown shape type in intersects()");

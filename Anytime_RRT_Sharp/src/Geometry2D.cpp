@@ -119,7 +119,7 @@ Point Plane::point() const { return _point; }
 
 Vector Plane::normal() const { return _normal; }
 
-Point Plane::getIntersectionPoint(Line& line) const
+Point Plane::getIntersectionPoint(const Line& line) const
 {
     Vector u = line.p2() - line.p1();
     Vector w = line.p1() - point();
