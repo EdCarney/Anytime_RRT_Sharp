@@ -117,6 +117,7 @@ void ArrtsService::_exportDataToDirectory(string directory)
         currentNode = _configspaceGraph.nodes.at(currentNode.parentId());
     }
     _printStateToFileStream(_configspaceGraph.nodes.at(1), outputPathFile);
+    _printStateToFileStream(_configspaceGraph.nodes.at(1), fullOutputPathFile);
 
     printf("Printing nodes to %s/nodes.txt.\n", directory.c_str());
     printf("Printing edges to %s/edges.txt.\n", directory.c_str());

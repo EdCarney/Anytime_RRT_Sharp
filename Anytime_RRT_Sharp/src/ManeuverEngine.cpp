@@ -6,7 +6,7 @@ ManeuverType ManeuverEngine::maneuverType;
 
 vector<State> ManeuverEngine::_generateDirectLinePath(const State& start, const State& final)
 {
-    vector<State> path = { final };
+    vector<State> path = { start };
     return path;
 }
 
