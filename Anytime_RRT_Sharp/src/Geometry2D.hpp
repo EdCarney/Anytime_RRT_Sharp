@@ -16,6 +16,7 @@ class DLL_EXPORT Vector
         Vector();
         Vector(double x, double y, double z);
         Vector operator*(double val) const;
+        Vector operator/(double val) const;
         double x() const;
         double y() const;
         double z() const;
@@ -49,7 +50,7 @@ class DLL_EXPORT Line
 
     public:
         Line();
-        Line(Point& p1, Point& p2);
+        Line(const Point& p1, const Point& p2);
         Point p1() const;
         Point p2() const;
         Vector tangent() const;

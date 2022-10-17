@@ -21,6 +21,11 @@ Vector Vector::operator*(double val) const
     return Vector(x() * val, y() * val, z() * val);
 }
 
+Vector Vector::operator/(double val) const
+{
+    return Vector(x() / val, y() / val, z() / val);
+}
+
 double Vector::x() const { return _x; }
 
 double Vector::y() const { return _y; }
@@ -87,11 +92,11 @@ Line::Line()
     _length = 0;
 }
 
-Line::Line(Point& p1, Point& p2)
+Line::Line(const Point& p1, const Point& p2)
 {
     _p1 = p1;
     _p2 = p2;
-    _tangent = _p2 - _p1;
+    _tangent = (_p2 - _p1) / p1.distanceTo(p2);
     _length = p1.distanceTo(p2);
 }
 
