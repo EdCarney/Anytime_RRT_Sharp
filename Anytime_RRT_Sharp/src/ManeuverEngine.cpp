@@ -6,7 +6,17 @@ ManeuverType ManeuverEngine::maneuverType;
 
 vector<State> ManeuverEngine::_generateDirectLinePath(const State& start, const State& final)
 {
-    vector<State> path = { start };
+    Line line(start, final);
+    vector<State> path(NUM_SAMPLES);
+    Vector deltaVec;
+    double delta = line.length() / (double)NUM_SAMPLES;
+    
+    for (int i = 0; i < NUM_SAMPLES; ++i)
+    {
+        deltaVec = line.tangent() * i * delta;
+        path[i] = State(start.x() + deltaVec.x(), start.y() + deltaVec.y(), start.z() + deltaVec.z(), final.theta(), final.rho());
+    }
+
     return path;
 }
 
