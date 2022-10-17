@@ -57,7 +57,7 @@ void ArrtsService::_configureConfigspace(ArrtsParams params)
     _configspaceGraph.setRootNode(params.start());
 }
 
-void ArrtsService::_runAlgorithm(ArrtsParams params)
+void ArrtsService::_runAlgorithm(ArrtsParams params, ManeuverType maneuverType)
 {
     printf("ObsVol: %f, NumObs: %lu\n", params.obstacleVolume(), params.obstacles().size());
     printf("Freespace Min: [%f, %f, %f], Freespace Max: [%f, %f, %f]\n", params.limits().minPoint().x(), params.limits().minPoint().y(), params.limits().minPoint().z(), params.limits().maxPoint().x(), params.limits().maxPoint().y(), params.limits().maxPoint().z());
@@ -65,7 +65,7 @@ void ArrtsService::_runAlgorithm(ArrtsParams params)
     printf("Root Position: [%f, %f, %f], Root Orientation [%f, %f]\n", params.start().x(), params.start().y(), params.start().z(), params.start().theta(), params.start().rho());
     auto start = high_resolution_clock::now();
 
-    ArrtsEngine::runArrtsOnGraphs(_configspaceGraph, _workspaceGraph, params);
+    ArrtsEngine::runArrtsOnGraphs(_configspaceGraph, _workspaceGraph, params, maneuverType);
 
     auto stop = high_resolution_clock::now();
     auto duration = duration_cast<milliseconds>(stop - start);
@@ -79,12 +79,12 @@ void ArrtsService::_runAlgorithm(ArrtsParams params)
     printf("Total Runtime: %lld ms\n", duration.count());
 }
 
-vector<State> ArrtsService::calculatePath(ArrtsParams params, string dataExportDir)
+vector<State> ArrtsService::calculatePath(ArrtsParams params, string dataExportDir, ManeuverType maneuverType)
 {
     _buildDefaultService();
     _configureWorkspace(params);
     _configureConfigspace(params);
-    _runAlgorithm(params);
+    _runAlgorithm(params, maneuverType);
     _exportDataToDirectory(dataExportDir);
 
     return _path;

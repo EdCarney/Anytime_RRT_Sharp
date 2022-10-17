@@ -5,6 +5,7 @@
 #include "ArrtsParams.hpp"
 #include "ConfigspaceGraph.hpp"
 #include "ConfigspaceNode.hpp"
+#include "ManeuverEngine.hpp"
 #include "cppshrhelp.hpp"
 #include "Geometry2D.hpp"
 #include "Geometry3D.hpp"
@@ -29,7 +30,7 @@ class DLL_EXPORT ArrtsService
         void _setFinalPathFromFinalNode();
         void _configureWorkspace(ArrtsParams params);
         void _configureConfigspace(ArrtsParams params);
-        void _runAlgorithm(ArrtsParams params);
+        void _runAlgorithm(ArrtsParams params, ManeuverType maneuverType);
         void _exportDataToDirectory(string directory);
         
         void _printGraphNodesToFileStream(const unordered_map<unsigned long, ConfigspaceNode>& nodeMap, ofstream& fileStream) const;
@@ -43,7 +44,7 @@ class DLL_EXPORT ArrtsService
         void _printFullEdgeToFileStream(const Edge& edge, ofstream& fileStream) const;
 
     public:
-        vector<State> DLL_EXPORT calculatePath(ArrtsParams params, string dataExportDir = "");
+        vector<State> DLL_EXPORT calculatePath(ArrtsParams params, string dataExportDir, ManeuverType maneuverType);
 };
 
 #endif

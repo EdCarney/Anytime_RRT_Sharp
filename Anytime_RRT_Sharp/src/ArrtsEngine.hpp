@@ -22,7 +22,7 @@ class ArrtsEngine
     static bool _compareNodes(ConfigspaceGraph& configGraph, ConfigspaceNode& n1, ConfigspaceNode& n2);
 
     public:
-        static void runArrtsOnGraphs(ConfigspaceGraph& configGraph, WorkspaceGraph& workGraph, ArrtsParams params);
+        static void runArrtsOnGraphs(ConfigspaceGraph& configGraph, WorkspaceGraph& workGraph, ArrtsParams params, ManeuverType maneuverType);
 
 };
 

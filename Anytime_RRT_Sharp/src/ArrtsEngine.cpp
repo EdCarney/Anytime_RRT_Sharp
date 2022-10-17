@@ -90,7 +90,7 @@ bool ArrtsEngine::_compareNodes(ConfigspaceGraph& configGraph, ConfigspaceNode& 
     return false;
 }
 
-void ArrtsEngine::runArrtsOnGraphs(ConfigspaceGraph& configGraph, WorkspaceGraph& workGraph, ArrtsParams params)
+void ArrtsEngine::runArrtsOnGraphs(ConfigspaceGraph& configGraph, WorkspaceGraph& workGraph, ArrtsParams params, ManeuverType maneuverType)
 {
     ConfigspaceNode tempNode, parentNode, newNode;
     vector<ConfigspaceNode> neighbors;
@@ -100,13 +100,13 @@ void ArrtsEngine::runArrtsOnGraphs(ConfigspaceGraph& configGraph, WorkspaceGraph
     int goalBiasCount = (int)ceil(params.minNodeCount() * 0.01);
     double epsilonToVolRatio = 0.00001;
     double epsilon = workGraph.volume() * epsilonToVolRatio;
-
-    printf("Epsilon/Volume ratio: %f\n", epsilon / workGraph.volume());
-    printf("Epsilon: %f\n", epsilon);
+    ManeuverEngine::maneuverType = maneuverType;
 
     srand(time(NULL));
 
-    ManeuverEngine::maneuverType = Dubins3d;
+    printf("Using %s Maneuvers\n", maneuverType == DirectPath ? "DirectPath" : "Dubins3d");
+    printf("Epsilon/Volume ratio: %f\n", epsilon / workGraph.volume());
+    printf("Epsilon: %f\n", epsilon);
 
     while(!goalRegionReached || count < params.minNodeCount())
     {
