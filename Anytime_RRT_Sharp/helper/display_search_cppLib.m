@@ -13,11 +13,11 @@ clear all
 close all
 clc
 
-folder = "testData_20220918220456"; %% change this
+folder = "testData_20221009165702"; %% change this
 
 node_file = fullfile(folder, 'nodes.txt');
 edge_file = fullfile(folder, 'edges.txt');
-path_file = fullfile(folder, 'output_path.txt');
+path_file = fullfile(folder, 'full_output_path.txt');
 search_tree_file = fullfile(folder, 'search_tree.txt');
 obstacles_file = fullfile(folder, 'obstacles.txt');
 state_file = fullfile(folder, 'states.txt');
@@ -46,8 +46,8 @@ search_tree(2:3:end-1, 3) = search_tree_raw(:, 8);
 edges = nan(3*size(edges_raw, 1), 3);
 
 for i = 1:length(edges_raw(:,1))
-    edges_raw(i, 1) = find(nodes(:,5) == edges_raw(i, 1));
-    edges_raw(i, 2) = find(nodes(:,5) == edges_raw(i, 2));
+    edges_raw(i, 1) = find(nodes(:,6) == edges_raw(i, 1));
+    edges_raw(i, 2) = find(nodes(:,6) == edges_raw(i, 2));
 end
 
 edges(1:3:end-2, 1) = nodes(edges_raw(:, 1),1);
