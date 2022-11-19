@@ -29,8 +29,7 @@ int main(int argc, char** argv)
     ManeuverType maneuverType = getManeuverType(argv[argc - 1]);
 
     if (argc > 1)
-        for (int i = 1; i < argc; ++i)
-            service.calculatePath(ArrtsParams(argv[i]), getOutputDir(argv[i], maneuverType), maneuverType);
+        service.calculatePath(ArrtsParams(argv[1]), getOutputDir(argv[1], maneuverType), maneuverType);
     else
         service.calculatePath(ArrtsParams("./test"), "./test", maneuverType);
 
