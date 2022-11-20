@@ -12,6 +12,7 @@ X = X*r;
 Y = Y*r;
 Z = Z*r;
 
-surf(X + x, Y + y, Z + z)
+s = surf(X + x, Y + y, Z + z);
+set(s, 'FaceColor', 'r', 'FaceAlpha', 0.5, 'FaceLighting', 'gouraud');
 end
 
