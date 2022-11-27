@@ -11,8 +11,8 @@ using namespace std;
 
 #define NUM_SAMPLES 100
 #define RHO_MIN 5
-#define PITCH_MIN_DEG -20.0 * M_PI / 180.0
-#define PITCH_MAX_DEG 20.0 * M_PI / 180.0
+#define PITCH_MIN_DEG -30.0 * M_PI / 180.0
+#define PITCH_MAX_DEG 30.0 * M_PI / 180.0
 
 typedef tuple<int, int> id_key_t;
 
@@ -64,6 +64,7 @@ class ManeuverEngine
         static vector<State> generatePath(const State& start, const State& final);
         static vector<State> generatePathUsingMap(const GraphNode& start, const GraphNode& final);
         static double getPathLength(const State& start, const State& final);
+        static double getRhoChange(const State& start, const State& final);
 };
 
 #endif //MANEUVER_ENGINE_H

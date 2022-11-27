@@ -91,3 +91,18 @@ double ManeuverEngine::getPathLength(const State& start, const State& final)
     else if (maneuverType == DirectPath)
         return _getDirectLinePathLength(start, final);
 }
+
+double ManeuverEngine::getRhoChange(const State& start, const State& final)
+{
+    if (maneuverType == Dubins3d)
+    {
+        DubinsData dubinsData = _generateDubinsData(start, final);
+        double totalChange = 0;
+        int numStates = dubinsData.path.size();
+        for (int i = 1; i < numStates; i++)
+            totalChange += abs(dubinsData.path[i].rho() - dubinsData.path[i - 1].rho());
+        return totalChange;
+    }
+
+    return 0;
+}
