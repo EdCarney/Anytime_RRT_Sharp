@@ -95,6 +95,9 @@ void ArrtsService::_exportDataToDirectory(string directory)
     if (directory.empty())
         return;
 
+    if (!filesystem::is_directory(directory))
+        filesystem::create_directory(directory);
+
     ofstream nodeFile, edgeFile, searchTreeFile, outputPathFile, fullOutputPathFile;
 
     // initialize all output files
