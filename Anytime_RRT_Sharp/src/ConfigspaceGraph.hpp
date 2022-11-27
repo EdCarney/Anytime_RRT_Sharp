@@ -50,7 +50,7 @@ class ConfigspaceGraph : Rectangle
 
         void defineFreespace(Rectangle limits, int dimension, double obstacleVol);
 
-        ConfigspaceNode& findClosestNode(GraphNode& node);
+        ConfigspaceNode& findClosestParentNode(GraphNode& node);
         ConfigspaceNode generateRandomNode() const;
         ConfigspaceNode generateBiasedNode(State biasedState) const;
 

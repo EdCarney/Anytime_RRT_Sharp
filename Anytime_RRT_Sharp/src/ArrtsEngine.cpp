@@ -118,7 +118,7 @@ void ArrtsEngine::runArrtsOnGraphs(ConfigspaceGraph& configGraph, WorkspaceGraph
                  : configGraph.generateBiasedNode(workGraph.goalRegion());
 
         // find the closest graph node and set it as the parent
-        parentNode = configGraph.findClosestNode(tempNode);
+        parentNode = configGraph.findClosestParentNode(tempNode);
 
         // skip if the parent node is already in the goal region
         if (!workGraph.checkAtGoal(parentNode))

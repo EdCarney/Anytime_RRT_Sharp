@@ -117,7 +117,7 @@ double ConfigspaceGraph::_computeRadius(double epsilon) const
     return circleRadius;
 }
 
-ConfigspaceNode& ConfigspaceGraph::findClosestNode(GraphNode& node)
+ConfigspaceNode& ConfigspaceGraph::findClosestParentNode(GraphNode& node)
 {
     // initialize distance with first node
     // use euclidean distance of given node from existing nodes
